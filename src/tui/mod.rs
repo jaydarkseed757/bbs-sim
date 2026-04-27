@@ -5,5 +5,6 @@ pub mod dialer;
 pub mod dialing;
 pub mod login;
 pub mod logout;
+pub mod mail;
 pub mod menus;
 pub mod terminal;

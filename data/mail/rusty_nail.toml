@@ -1,0 +1,87 @@
+# The Rusty Nail BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "ShadowByte"
+subject = "Welcome to The Rusty Nail!"
+timestamp = "04/22/93 20:14"
+body = """
+Hey there -- welcome aboard The Rusty Nail!
+
+Glad you found us. We've been running since '91 and this is one of the
+friendlier boards in the Cincinnati area. Check out the General board
+and introduce yourself. The C64 crowd is especially active lately.
+
+If you run into any weirdness or have questions, mail me directly.
+I'm online most evenings after 9pm EST.
+
+-- ShadowByte (Sysop)"""
+
+[[messages]]
+id = 2
+from = "PhreakMaster"
+subject = "Saw you just logged in"
+timestamp = "04/22/93 22:33"
+body = """
+Hey! Noticed you just joined the Nail. Good choice.
+
+I run the C64 board here mostly. If you're into Commodore stuff at all
+come post over there -- always looking for people who know their SID chips.
+
+Also if you need any help getting your modem config sorted for this board
+just ask. I've helped a few people get their terminal settings right.
+
+-- PhreakMaster"""
+
+[[messages]]
+id = 3
+from = "NeonByte"
+subject = "Re: Your post in General"
+timestamp = "04/23/93 01:17"
+body = """
+Caught your post in General -- good take on the modem situation.
+
+I've been on the Nail for about 8 months now and it's consistently the
+best signal-to-noise ratio of any board I call. ShadowByte keeps it clean.
+
+Come check out the C64 board if you haven't. The SID music thread is gold.
+We've been going back and forth on Rob Hubbard vs Jeroen Tel for weeks.
+
+-- NeonByte"""
+
+[[messages]]
+id = 4
+from = "DataSurfer"
+subject = "14.4k modems -- worth the upgrade?"
+timestamp = "04/23/93 18:05"
+body = """
+Hey -- I posted in the General board about the USR Sportster 14.4k
+and saw you were asking about upgrade paths.
+
+Short answer: absolutely worth it if you can swing the $299.
+The Z-modem speed difference at 14.4 vs 2400 is night and day.
+A 300KB file that used to take an hour downloads in under 4 minutes.
+
+Happy to answer questions if you're on the fence about it.
+
+-- DataSurfer"""
+
+[[messages]]
+id = 5
+from = "ShadowByte"
+subject = "Board rules reminder (please read)"
+timestamp = "04/01/93 09:00"
+body = """
+Hey everyone -- sending this to all new members.
+
+Quick rules reminder for The Rusty Nail:
+
+1. No warez trading via mail. Post requests on the Warez board only.
+2. No personal attacks. Disagree with the idea, not the person.
+3. The C64 board is moderated by PhreakMaster. His word is final there.
+4. Upload ratio: try to contribute something if you're downloading a lot.
+
+That's it. Simple stuff. Most people follow it naturally.
+Any problems, mail me directly.
+
+-- ShadowByte"""

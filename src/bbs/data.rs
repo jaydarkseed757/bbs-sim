@@ -42,3 +42,16 @@ pub struct Board {
     pub name: String,
     pub threads: Vec<Thread>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MailMessage {
+    pub id: u32,
+    pub from: String,
+    #[serde(default)]
+    pub to: String,
+    pub subject: String,
+    pub body: String,
+    pub timestamp: String,
+    #[serde(default)]
+    pub read: bool,
+}

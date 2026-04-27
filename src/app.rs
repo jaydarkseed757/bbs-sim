@@ -1,12 +1,14 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, Message, Thread};
+use crate::bbs::data::{BbsEntry, Board, MailMessage, Message, Thread};
+use crate::bbs::mail::load_mail;
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
+use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
@@ -33,6 +35,9 @@ pub enum Screen {
     ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
     ComposeMessage { board_id: String, thread_id: Option<u32> },
+    Mail,
+    ReadMail { id: u32 },
+    ComposeMail,
     Files,
     Logout,
 }
@@ -55,6 +60,25 @@ pub struct ComposeState {
     pub subject: String,
     pub body: String,
     pub field: ComposeField,
+}
+
+// ---------------------------------------------------------------------------
+// ComposeMailField / ComposeMailState
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ComposeMailField {
+    To,
+    Subject,
+    Body,
+}
+
+pub struct ComposeMailState {
+    pub to: String,
+    pub subject: String,
+    pub body: String,
+    pub field: ComposeMailField,
+    pub reply_to_id: Option<u32>,
 }
 
 // ---------------------------------------------------------------------------
@@ -191,6 +215,10 @@ pub struct App {
     pub read_scroll: usize,
     pub compose: Option<ComposeState>,
     pub logout: Option<LogoutState>,
+    pub mail: Vec<MailMessage>,
+    pub selected_mail_row: usize,
+    pub mail_read_scroll: usize,
+    pub compose_mail: Option<ComposeMailState>,
 }
 
 impl App {
@@ -209,6 +237,10 @@ impl App {
             read_scroll: 0,
             compose: None,
             logout: None,
+            mail: vec![],
+            selected_mail_row: 0,
+            mail_read_scroll: 0,
+            compose_mail: None,
         }
     }
 
@@ -225,6 +257,9 @@ impl App {
                 render_read_thread(self, board_id, thread_id)
             }
             Screen::ComposeMessage { .. } => render_compose(self),
+            Screen::Mail          => render_inbox(self),
+            Screen::ReadMail { id } => render_read_mail(self, id),
+            Screen::ComposeMail   => render_compose_mail(self),
             Screen::Logout        => render_logout(self),
             Screen::Files         => render_stub(),
         }
@@ -243,6 +278,9 @@ impl App {
                 self.read_thread_input(board_id, thread_id)
             }
             Screen::ComposeMessage { .. } => self.compose_input(),
+            Screen::Mail          => self.inbox_input(),
+            Screen::ReadMail { id } => self.read_mail_input(id),
+            Screen::ComposeMail   => self.compose_mail_input(),
             Screen::Logout        => self.logout_input(),
             Screen::Files => {
                 if is_key_pressed(KeyCode::Escape) {
@@ -325,10 +363,12 @@ impl App {
         }
 
         if let Some((handle, bbs_name, slug)) = transition {
-            self.session.login(handle, bbs_name);
+            self.session.login(handle.clone(), bbs_name);
             self.boards = load_boards(&slug);
+            self.mail   = load_mail(&slug, &handle);
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
+            self.selected_mail_row   = 0;
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -461,9 +501,13 @@ impl App {
     fn main_menu_input(&mut self) {
         while let Some(ch) = get_char_pressed() {
             match ch.to_ascii_lowercase() {
-                'm' => {
+                'b' => {
                     self.selected_board_row = 0;
                     self.screen = Screen::MessageBoards;
+                }
+                'm' => {
+                    self.selected_mail_row = 0;
+                    self.screen = Screen::Mail;
                 }
                 'f' => {
                     self.screen = Screen::Files;
@@ -752,6 +796,176 @@ impl App {
                 self.screen = Screen::ThreadList { board_id };
             }
         }
+    }
+
+    // ── Input: inbox ─────────────────────────────────────────────────────────
+
+    fn inbox_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+
+        let len = self.mail.len();
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_mail_row =
+                if self.selected_mail_row == 0 { len.saturating_sub(1) }
+                else { self.selected_mail_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_mail_row =
+                if self.selected_mail_row + 1 >= len { 0 }
+                else { self.selected_mail_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'k' => {
+                    self.selected_mail_row =
+                        if self.selected_mail_row == 0 { len.saturating_sub(1) }
+                        else { self.selected_mail_row - 1 };
+                }
+                'j' => {
+                    self.selected_mail_row =
+                        if self.selected_mail_row + 1 >= len { 0 }
+                        else { self.selected_mail_row + 1 };
+                }
+                'c' => {
+                    self.compose_mail = Some(ComposeMailState {
+                        to: String::new(),
+                        subject: String::new(),
+                        body: String::new(),
+                        field: ComposeMailField::To,
+                        reply_to_id: None,
+                    });
+                    self.screen = Screen::ComposeMail;
+                    return;
+                }
+                _ => {}
+            }
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            if let Some(msg) = self.mail.get_mut(self.selected_mail_row) {
+                let id = msg.id;
+                msg.read = true;
+                self.mail_read_scroll = 0;
+                self.screen = Screen::ReadMail { id };
+            }
+        }
+    }
+
+    // ── Input: read mail ──────────────────────────────────────────────────────
+
+    fn read_mail_input(&mut self, id: u32) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::Mail;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.mail_read_scroll = self.mail_read_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.mail_read_scroll += 1;
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.mail_read_scroll = self.mail_read_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.mail_read_scroll += 10;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch == 'r' {
+                let (from, subject) = self.mail.iter()
+                    .find(|m| m.id == id)
+                    .map(|m| (m.from.clone(), format!("Re: {}", m.subject)))
+                    .unwrap_or_default();
+                self.compose_mail = Some(ComposeMailState {
+                    to: from,
+                    subject,
+                    body: String::new(),
+                    field: ComposeMailField::Body,
+                    reply_to_id: Some(id),
+                });
+                self.screen = Screen::ComposeMail;
+                return;
+            }
+        }
+    }
+
+    // ── Input: compose mail ───────────────────────────────────────────────────
+
+    fn compose_mail_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.compose_mail = None;
+            self.screen = Screen::Mail;
+            return;
+        }
+
+        if is_key_pressed(KeyCode::F1) {
+            self.do_send_mail();
+            return;
+        }
+
+        let Some(ref mut c) = self.compose_mail else { return };
+
+        if is_key_pressed(KeyCode::Tab) {
+            c.field = match c.field {
+                ComposeMailField::To      => ComposeMailField::Subject,
+                ComposeMailField::Subject => ComposeMailField::Body,
+                ComposeMailField::Body    => ComposeMailField::To,
+            };
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            match c.field {
+                ComposeMailField::To      => { c.field = ComposeMailField::Subject; }
+                ComposeMailField::Subject => { c.field = ComposeMailField::Body; }
+                ComposeMailField::Body    => { c.body.push('\n'); }
+            }
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Backspace) {
+            match c.field {
+                ComposeMailField::To      => { c.to.pop(); }
+                ComposeMailField::Subject => { c.subject.pop(); }
+                ComposeMailField::Body    => { c.body.pop(); }
+            }
+            return;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch.is_ascii() && !ch.is_control() {
+                match c.field {
+                    ComposeMailField::To      => { if c.to.len() < 30 { c.to.push(ch); } }
+                    ComposeMailField::Subject => { if c.subject.len() < 60 { c.subject.push(ch); } }
+                    ComposeMailField::Body    => { c.body.push(ch); }
+                }
+            }
+        }
+    }
+
+    fn do_send_mail(&mut self) {
+        let Some(ref c) = self.compose_mail else { return };
+        if c.to.trim().is_empty() || c.body.trim().is_empty() { return; }
+
+        let next_id = self.mail.iter().map(|m| m.id).max().unwrap_or(0) + 1;
+        let from    = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
+        let sent    = MailMessage {
+            id: next_id,
+            from: from.clone(),
+            to: c.to.clone(),
+            subject: if c.subject.is_empty() { "(no subject)".into() } else { c.subject.clone() },
+            body: format!("{}\n\n-- {}", c.body.trim_end(), from),
+            timestamp: "04/27/93 12:00".into(),
+            read: true,
+        };
+        self.mail.push(sent);
+        self.compose_mail = None;
+        self.screen = Screen::Mail;
     }
 
     // ── Input / tick: logout ─────────────────────────────────────────────────

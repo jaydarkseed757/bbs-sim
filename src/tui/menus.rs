@@ -39,9 +39,10 @@ pub fn render_main_menu(app: &App) {
     let start_y = banner_h + CHAR_H * 2.5;
 
     let items: &[(&str, &str, &str)] = &[
-        ("[M]", "essage Boards", "Read and post messages"),
-        ("[F]", "iles Area",     "Browse & download files"),
-        ("[G]", "oodbye",        "Logoff the system"),
+        ("[B]", "oards",    "Read and post on message boards"),
+        ("[M]", "ail",      "Read and send private mail"),
+        ("[F]", "iles",     "Browse & download files"),
+        ("[G]", "oodbye",   "Logoff the system"),
     ];
 
     for (i, (key, rest, hint)) in items.iter().enumerate() {

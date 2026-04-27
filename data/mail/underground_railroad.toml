@@ -1,0 +1,91 @@
+# The Underground Railroad BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "ConductorX"
+subject = "Welcome to The Underground Railroad"
+timestamp = "03/28/93 19:00"
+body = """
+Welcome to The Underground Railroad, Chicago's political BBS.
+
+We're a small board -- maybe 40 active callers -- but the discussion
+quality is better than anything else I've found in the 312 area code.
+
+Three boards: Politics for national and policy debate, News for current
+events analysis, General for everything else including local Chicago talk.
+
+One rule: engage the argument, not the person. I enforce it strictly.
+Violate it and you're gone. Simple.
+
+Good to have you.
+-- ConductorX (Sysop)"""
+
+[[messages]]
+id = 2
+from = "PoliticWatcher"
+subject = "The Clinton grade thread -- your thoughts?"
+timestamp = "03/29/93 10:30"
+body = """
+Hey -- saw you just joined. Get over to the Politics board and weigh in
+on the Clinton 100 days thread. We need more voices.
+
+ConductorX gave him a B-. I'm lower. The gays in military thing was
+handled so badly it set back the underlying cause. You squander political
+capital on a fight you can't win and you lose it for the fights you can.
+
+But the economic team is genuinely strong. Bentsen knows what he's doing.
+Curious where you land on it.
+-- PoliticWatcher"""
+
+[[messages]]
+id = 3
+from = "NewsFreak_IL"
+subject = "Waco coverage -- following it?"
+timestamp = "04/19/93 22:00"
+body = """
+The FBI announced today they're going to force the issue at the Waco compound.
+CS gas injection into a wooden structure. This is going to end badly.
+
+Been posting updates in the News board all day. Come check it out.
+
+Whatever happens tomorrow, the political fallout is going to be enormous.
+The militia right is already constructing the narrative. They'll use whatever
+happens as proof of exactly what they've been saying about federal overreach.
+
+This one matters. -- NewsFreak_IL"""
+
+[[messages]]
+id = 4
+from = "LaborWatch"
+subject = "NAFTA organizing -- Chicago meeting"
+timestamp = "04/15/93 14:00"
+body = """
+Quick note -- there's a NAFTA town hall at the Harold Washington Library
+on April 28th. Several labor reps, an economist, and a Congressman.
+
+If you're following the debate in the Politics board this is worth attending.
+The arguments being made in person are more nuanced than what's in the press.
+
+The core tension: labor wants the side agreements strengthened before a vote.
+Business wants it passed as-is. Clinton is trying to thread a needle that
+may not exist.
+
+-- LaborWatch"""
+
+[[messages]]
+id = 5
+from = "EconMajor93"
+subject = "Your NAFTA post -- wanted to follow up"
+timestamp = "04/16/93 09:45"
+body = """
+Good post in the Politics board on NAFTA transition costs.
+
+The distributional argument is the one that never gets enough attention.
+Aggregate gains hide sector-specific losses. The modeling I've seen from
+the Economic Policy Institute suggests auto and apparel are most exposed.
+
+The Clinton side agreements on labor standards are cosmetically meaningful
+but enforcement mechanisms are weak. Voluntary review panels aren't binding.
+
+Worth posting more on this. The board needs the economic depth.
+-- EconMajor93"""

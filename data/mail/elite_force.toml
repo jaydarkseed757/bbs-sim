@@ -1,0 +1,102 @@
+# ELITE FORCE BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "31337"
+subject = "You found the board"
+timestamp = "04/01/93 01:00"
+body = """
+Welcome to Elite Force. Not many people find this place on purpose.
+
+Three boards: Warez for software discussion, Hacking for tech and
+infosec topics, Music for the tracker/demoscene crowd.
+
+Rules are simple: contribute something or lurk. Don't ask for handouts.
+The regulars here are sharp -- they'll notice if you're just leeching.
+
+If you post something useful you'll fit in fine.
+-- 31337 (Sysop)"""
+
+[[messages]]
+id = 2
+from = "NetSurfer"
+subject = "Mosaic -- did you get it running?"
+timestamp = "04/02/93 09:30"
+body = """
+Posted in the Hacking board about Mosaic. Wanted to follow up directly.
+
+If you've got Unix access through school or work you can run the X11 version
+right now. The Windows port is supposedly a few months out.
+
+The web has maybe 100 public sites right now. Feels like the early days
+of BBSing -- raw, small, but you can feel the potential.
+
+The HTTP protocol is simple enough to implement yourself in a weekend.
+That simplicity is exactly why it's going to take over everything.
+-- NetSurfer"""
+
+[[messages]]
+id = 3
+from = "ModMaster"
+subject = "Your music taste -- S3M recommendations"
+timestamp = "04/05/93 21:15"
+body = """
+Caught your post in the Music board. If you're getting into trackers
+here are the S3M files worth tracking down:
+
+- Skaven's "Second Reality" soundtrack (from the Assembly '92 demo)
+- Purple Motion's work -- anything from Future Crew
+- Necros on the MOD Archive
+
+The Second Reality demo itself is worth finding if you have a 486.
+Best demoscene production of '92. The music syncs perfectly to the visuals.
+
+Drop by the Music board if you want more recommendations.
+-- ModMaster"""
+
+[[messages]]
+id = 4
+from = "ByteRunner"
+subject = "Lemmings 2 tips"
+timestamp = "04/06/93 14:45"
+body = """
+Re: your question about the Space tribe in Lemmings 2.
+
+Level 6 specifically -- the trick is to use the Jet Pack on the left side
+BEFORE you open the trapdoors. Everyone tries to do it the other way around
+and loses half their lemmings in the fall.
+
+The Arctic tribe is harder overall but Space has that one brutal spike.
+Let me know if you need hints for the Medieval tribe -- that one broke me.
+-- ByteRunner"""
+
+[[messages]]
+id = 5
+from = "PacketMonger"
+subject = "HTTP implementation -- want to collaborate?"
+timestamp = "04/10/93 23:00"
+body = """
+Saw your posts in Hacking. You clearly know your networking.
+
+I've got a basic HTTP/0.9 client working in C -- about 400 lines.
+It can fetch a document and dump it to stdout. No HTML parsing yet.
+
+Thinking about adding a simple curses-based display layer next.
+Not trying to clone Mosaic -- just understand the protocol from scratch.
+
+Want to look at the code or compare notes? Mail me back.
+-- PacketMonger"""
+
+[[messages]]
+id = 6
+from = "31337"
+subject = "Defcon -- going?"
+timestamp = "04/20/93 02:00"
+body = """
+Quick note -- first Defcon is in July in Vegas.
+
+A few of us from Elite Force are planning to go. If you're interested
+in joining the group, mail me before June. We're working out logistics.
+
+Dark Tangent is solid. This thing is going to be worth the trip.
+-- 31337"""
