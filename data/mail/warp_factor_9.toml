@@ -1,0 +1,86 @@
+# WARP FACTOR 9 BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "KirkFan"
+subject = "Greetings from WARP FACTOR 9"
+timestamp = "04/15/93 10:01"
+body = """
+Welcome aboard the station, stranger!
+
+WARP FACTOR 9 has been running out of Seattle since early '92.
+We've got three boards: SciFi, Gaming, and Anime. All active.
+
+If you're a Trek fan the SciFi board is where the action is right now --
+DS9 premiere debate is still going strong three months later.
+
+Live long and prosper.
+-- KirkFan (Sysop)"""
+
+[[messages]]
+id = 2
+from = "Tribble99"
+subject = "DS9 thread -- what's your take?"
+timestamp = "04/15/93 14:22"
+body = """
+Hey -- noticed you just joined. Jumping in to get your opinion on DS9.
+
+KirkFan and I have been going back and forth on it for months.
+I think it has serious potential but the first few episodes were uneven.
+The Bajoran religion angle is bold for Trek. Might be too bold.
+
+Anyway, post in the SciFi board and weigh in. We need fresh blood
+in the argument.
+
+-- Tribble99"""
+
+[[messages]]
+id = 3
+from = "AvatarSeeker"
+subject = "Ultima VII Serpent Isle -- have you played it?"
+timestamp = "04/16/93 09:45"
+body = """
+Saw you in the Gaming board. Had to reach out directly.
+
+Serpent Isle is the best RPG expansion I've played. The magic storm
+system completely changes the mid-game and forces real improvisation.
+The connection to the main Ultima VII storyline pays off beautifully.
+
+If you've played it, come post in Gaming. If you haven't -- do it now.
+You need a 486 with 4MB to run it smoothly though. 386 will chug.
+
+-- AvatarSeeker"""
+
+[[messages]]
+id = 4
+from = "MangaFan88"
+subject = "Ghost in the Shell manga source"
+timestamp = "04/17/93 23:10"
+body = """
+Re: your question in the Anime board about where to find the GitS manga.
+
+Dark Horse Comics is distributing the English translation now.
+Your local comic shop should be able to order it if they don't stock it.
+Ask for the Masamune Shirow section -- they usually carry Appleseed too.
+
+The translation is solid. A few of Shirow's technical footnotes got
+simplified but the core story is intact.
+
+-- MangaFan88"""
+
+[[messages]]
+id = 5
+from = "KirkFan"
+subject = "Jurassic Park midnight screening -- organizing a group"
+timestamp = "04/20/93 18:00"
+body = """
+Hey -- movie opens June 11th and I'm organizing a group of board regulars
+to hit the midnight premiere here in Seattle.
+
+If you're in the area, post in the Lounge (I'll make a thread) or mail me back.
+Planning to grab dinner at the Pike Place area first.
+
+The trailer has been playing before every movie for two months. I've seen
+it probably six times now. The T-Rex in the rain is going to be legendary.
+
+-- KirkFan"""

@@ -1,0 +1,90 @@
+# The Digital Dungeon BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "DungeonMstr"
+subject = "Welcome to the Dungeon"
+timestamp = "04/01/93 18:30"
+body = """
+Welcome to The Digital Dungeon! Good to have you.
+
+Quick orientation: we run three boards.
+RPG is for computer RPGs -- Ultima, Wizardry, that sort of thing.
+D&D is for tabletop -- campaigns, rules debates, session stories.
+General is everything else.
+
+The board is pretty quiet compared to the bigger BBSes but the
+discussion quality is high. No warez, no drama. Just games.
+
+Drop me a line if you have questions.
+-- DungeonMstr (Sysop)"""
+
+[[messages]]
+id = 2
+from = "RollD20"
+subject = "Your Wizardry 7 question"
+timestamp = "04/02/93 10:15"
+body = """
+Saw you asking about party builds in the RPG board. Wanted to follow up.
+
+For the Umpani base section: the key is having a Ranger or Ninja
+with a ranged weapon for the sniping positions on the upper level.
+The ambush in corridor C is brutal without someone who can shoot back.
+
+Also: make sure someone in your party has Skull Trap. It's the single
+best spell in the mid-game for crowd control.
+
+Good luck. That section cost me two weeks of real time.
+-- RollD20"""
+
+[[messages]]
+id = 3
+from = "DiceGoblin"
+subject = "Planescape campaign -- looking for players"
+timestamp = "04/05/93 20:00"
+body = """
+Hey -- I'm trying to get a Planescape campaign together via mail and BBS.
+
+Play-by-mail D&D has worked well for a few of us before. Takes patience
+but the slower pace actually works for complex political storylines.
+
+Interested? Post in the D&D board or mail me back. I need 3-4 players.
+I'll be running it with 2nd Ed rules and the full Planescape setting.
+
+Fair warning: I write long, detailed scene descriptions. This is for
+people who like their games to feel like collaborative fiction.
+-- DiceGoblin"""
+
+[[messages]]
+id = 4
+from = "LoreDigger"
+subject = "Ultima Underworld 2 -- stuck on Killorn Keep"
+timestamp = "04/08/93 22:40"
+body = """
+I know you posted about finishing UU2 a while back. Needed to ask for help.
+
+I'm completely stuck on the Killorn Keep world. The key to the upper
+barracks is nowhere I can find. I've talked to every guard and nothing.
+
+Also the lava room puzzle -- am I missing something obvious? Feels like
+there should be a lever somewhere.
+
+Any hints without full spoilers would be appreciated.
+-- LoreDigger"""
+
+[[messages]]
+id = 5
+from = "CrawlMaster"
+subject = "System Shock -- have you seen the preview?"
+timestamp = "04/12/93 14:00"
+body = """
+Looking Glass is showing off System Shock at some industry events.
+It's essentially Ultima Underworld in a cyberpunk space station.
+
+Full 3D environment, real physics, hacking minigames, AI enemy behavior.
+The interface is mouse-driven which sounds weird for a first-person game
+but apparently it works beautifully once you get used to it.
+
+This is the successor to UU that I didn't know I needed.
+Come post in the RPG board -- I started a thread.
+-- CrawlMaster"""

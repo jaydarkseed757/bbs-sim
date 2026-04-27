@@ -1,0 +1,148 @@
+# WARP FACTOR 9 BBS -- file library
+
+[[sections]]
+name = "Sci-Fi Texts"
+
+[[sections.files]]
+id = 1
+name = "SNOWCRASH.TXT"
+size = "6K"
+date = "04/05/93"
+description = "Snow Crash discussion notes & Metaverse analysis"
+kind = "text"
+content = """
+SNOW CRASH -- NOTES AND DISCUSSION
+Posted to WARP FACTOR 9 by DataJockey, April 1993
+
+Neal Stephenson's _Snow Crash_ came out last year and I've been sitting
+with it long enough to put down some thoughts.
+
+THE SETUP:
+
+Hiro Protagonist is a freelance hacker/pizza deliveryman in a near-future
+America where the federal government has collapsed and everything is run
+by franchise operations (the Mafia runs pizza, the Feds run a franchise
+called the FBI, etc.). He spends half his time in the Metaverse -- a
+shared virtual reality built on a protocol anyone can write clients for.
+
+THE METAVERSE:
+
+The Street is a single endless avenue 65536 km in circumference. Property
+on the Street can be purchased and developed. Your avatar is limited by
+your hardware -- rich people have photorealistic avatars, poor people use
+black-and-white low-poly models.
+
+This is going to look prophetic. The web + persistent 3D space + avatar
+identity is where this is going. Not in 1993, but by 2000? Maybe.
+
+THE LINGUISTIC ANGLE:
+
+The plot eventually involves a Sumerian "neurolinguistic" virus that can
+reprogram humans at a deep level -- the idea being that early human
+cognition was more like a computer running interpreted bytecode, and
+Asherah's virus exploits that substrate.
+
+Stephenson pulls in Chomsky's deep structure, Godel-Escher-Bach style
+recursion, and actual Sumerian mythology. It's ambitious to the point of
+being slightly ridiculous, but it works because he commits to it.
+
+The climax involves Snow Crash -- the visual equivalent of the virus that
+crashes avatar software (written in assembly) and can affect human
+operators.
+
+VERDICT:
+
+The first 100 pages are the best cyberpunk writing since Neuromancer. The
+ending is a bit rushed. The Raven character is great. Y.T. is great.
+
+Read it. Then read it again and pay attention to the linguistics chapters.
+
+-- DataJockey
+"""
+
+[[sections.files]]
+id = 2
+name = "TREK_TNG_S6.TXT"
+size = "11K"
+date = "03/28/93"
+description = "TNG Season 6 episode guide with commentary"
+kind = "text"
+content = """
+STAR TREK: THE NEXT GENERATION -- SEASON 6 EPISODE NOTES
+Compiled by KirkFan for WARP FACTOR 9 BBS
+
+Season 6 is airing now (1992-93). Running commentary as episodes air.
+
+TAPESTRY (Air date: Feb 15, 1993)
+Q gives Picard a chance to relive the fight where he lost his artificial
+heart. If he'd been more cautious, he'd have survived... but become a
+mediocre lieutenant who never made captain. The message is blunt but the
+execution is excellent. One of the best Q episodes.
+
+CHAIN OF COMMAND (Part 1 & 2, Dec 1992)
+Picard is captured by Cardassians and tortured. "There are FOUR lights."
+Riker has to deal with a new captain (Jellico) who is abrasive but not
+wrong. The Picard torture scenes are the most mature thing this show has
+attempted. Based loosely on 1984.
+
+SCHISMS (Oct 1992)
+Crew members are being abducted and experimented on by beings from
+subspace. Unsettling in a way Trek rarely is. The recreation of the
+alien operating table from crew descriptions is a great scene.
+
+FACE OF THE ENEMY (Feb 1993)
+Troi wakes up surgically altered to look like a Romulan. She has to
+improvise her way through a Romulan warbird without blowing her cover.
+One of Sirtis's best performances -- she's genuinely tense throughout.
+
+BIRTHRIGHT (Part 1 & 2, Feb 1993)
+Worf finds a settlement of Klingon POWs who have assimilated with
+Romulans and no longer care about Klingon honor. Part 2 is a quiet
+meditation on cultural identity that Trek rarely attempts.
+
+RELICS (Oct 1992)
+Scotty is found in transporter stasis after 75 years. The writers
+handle the "out of time" character well -- he's not played for laughs.
+The holodeck Enterprise-A scene is exactly as good as you want it to be.
+
+UPCOMING:
+- Timescape (temporal anomaly episode, looks good)
+- Descent (Borg + Data emotion, season finale)
+
+Overall: strongest season since S3. The show has figured out what it is.
+
+-- KirkFan / WARP FACTOR 9
+"""
+
+[[sections]]
+name = "Games"
+
+[[sections.files]]
+id = 3
+name = "XTREK.ZIP"
+size = "234K"
+date = "04/01/93"
+description = "X-Trek multiplayer space game for LAN/BBS play"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 4
+name = "TRADWARS2.ZIP"
+size = "89K"
+date = "02/20/93"
+description = "Trade Wars 2002 -- BBS door game"
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Utils"
+
+[[sections.files]]
+id = 5
+name = "TELIX351.ZIP"
+size = "198K"
+date = "01/05/93"
+description = "Telix 3.51 terminal emulator w/ SALT scripting"
+kind = "binary"
+content = ""

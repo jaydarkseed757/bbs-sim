@@ -1,6 +1,314 @@
-name     = "The Rusty Nail BBS"
-number   = "555-6502"
-sysop    = "ShadowByte"
-location = "Cincinnati, OH"
-baud     = 2400
-boards   = ["General", "Warez", "C64", "Tech Talk"]
+# The Rusty Nail BBS — board data
+
+[[boards]]
+id = "general"
+name = "General"
+
+[[boards.threads]]
+id = 1
+subject = "Welcome to The Rusty Nail!"
+
+[[boards.threads.posts]]
+id = 1
+author = "ShadowByte"
+subject = "Welcome to The Rusty Nail!"
+timestamp = "04/01/93 09:14"
+body = """
+Hey everyone, welcome aboard The Rusty Nail BBS!
+Rules are simple: be cool, no lamers, no drama.
+This is your home away from home in cyberspace.
+Sysop is online most evenings after 9pm EST."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PhreakMaster"
+subject = "Re: Welcome to The Rusty Nail!"
+timestamp = "04/01/93 11:42"
+body = """
+Thanks! Glad to be here. This place looks rad.
+Anyone else running a C64 out there?
+Just got my SwiftLink cartridge working."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NeonByte"
+subject = "Re: Welcome to The Rusty Nail!"
+timestamp = "04/02/93 02:17"
+body = """
+C64 gang represent! SwiftLink + 38400 baud = smooth as butter.
+Glad the sysop finally got this place running again.
+Last board I was on went down in January and never came back."""
+
+[[boards.threads]]
+id = 2
+subject = "What modem are you running?"
+
+[[boards.threads.posts]]
+id = 1
+author = "DataSurfer"
+subject = "What modem are you running?"
+timestamp = "04/10/93 18:05"
+body = """
+Just picked up a USRobotics Sportster 14.4k last month.
+Incredible speed. Worth every penny of the $299.
+What are you all running? Still seeing a lot of 2400 callers."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ShadowByte"
+subject = "Re: What modem are you running?"
+timestamp = "04/10/93 20:33"
+body = """
+Still rocking the 2400 Hayes here. Saving up for that USR.
+Maybe by summer if I can convince my parents it's educational.
+The 14.4 transfer speeds must be insane for file downloads."""
+
+[[boards.threads.posts]]
+id = 3
+author = "DataSurfer"
+subject = "Re: What modem are you running?"
+timestamp = "04/11/93 09:01"
+body = """
+Told mine it was for "research projects." Worked like a charm.
+Z-modem at 14.4 is wild -- 1.4KB/sec sustained on a good line.
+Download a 300K file in under 4 minutes. That used to take an hour."""
+
+[[boards.threads]]
+id = 3
+subject = "Anyone going to Defcon this summer?"
+
+[[boards.threads.posts]]
+id = 1
+author = "H4x0rZone"
+subject = "Anyone going to Defcon this summer?"
+timestamp = "04/20/93 14:44"
+body = """
+First Defcon is happening in July out in Las Vegas.
+Dark Tangent is organizing it. Who's going?
+Heard it's gonna be the real deal -- hackers only, no suits."""
+
+[[boards.threads.posts]]
+id = 2
+author = "Cipher"
+subject = "Re: Anyone going to Defcon this summer?"
+timestamp = "04/21/93 00:12"
+body = """
+I'm trying to get there. Road trip from Cincinnati with two others.
+Anyone know the exact dates yet? Need to book the room early.
+Vegas in July is gonna be brutal heat-wise but worth it."""
+
+# ── Warez ────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "warez"
+name = "Warez"
+
+[[boards.threads]]
+id = 1
+subject = "Doom -- anyone have the playtest?"
+
+[[boards.threads.posts]]
+id = 1
+author = "RipTide"
+subject = "Doom -- anyone have the playtest?"
+timestamp = "03/15/93 22:30"
+body = """
+id Software is working on something called Doom.
+Supposed to be like Wolfenstein but way more advanced.
+3D engine looks incredible from the screenshots in PC Gamer.
+Anyone got a connection to the beta or know the release date?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "NeonByte"
+subject = "Re: Doom -- anyone have the playtest?"
+timestamp = "03/16/93 01:45"
+body = """
+No beta but I've seen the press shots. This thing looks INSANE.
+Full texture mapping, variable height floors and ceilings.
+Carmack is a genius. Wolfenstein was already mind-blowing, this is next level.
+Rumor is shareware episode drops later this year."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ByteWrangler"
+subject = "Re: Doom -- anyone have the playtest?"
+timestamp = "03/17/93 11:20"
+body = """
+John Romero posted some stuff on the id BBS.
+They're aiming for late '93. Shareware model like Wolf3D.
+If it runs on a 386/33 with VGA I am there day one.
+Anyone else have a copy of Spear of Destiny sitting around?"""
+
+[[boards.threads]]
+id = 2
+subject = "Mortal Kombat PC port -- good or bad?"
+
+[[boards.threads.posts]]
+id = 1
+author = "FightClub"
+subject = "Mortal Kombat PC port -- good or bad?"
+timestamp = "04/05/93 20:00"
+body = """
+Finally grabbed the PC version. Blood codes DO work on PC unlike SNES.
+But the controls on keyboard are rough. Anyone got a joystick that works well?
+Graphics are passable but the arcade original still smokes it."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ArcadeKing"
+subject = "Re: Mortal Kombat PC port -- good or bad?"
+timestamp = "04/06/93 15:22"
+body = """
+I use a Gravis Gamepad. Way better than keyboard for fighting games.
+The PC Sound Blaster audio is actually solid -- better than SNES in my opinion.
+Still wish they'd kept the red blood by default like the Genesis."""
+
+[[boards.threads.posts]]
+id = 3
+author = "RipTide"
+subject = "Re: Mortal Kombat PC port -- good or bad?"
+timestamp = "04/07/93 08:45"
+body = """
+The digitized actors look better on PC than SNES too imo.
+Just need a proper 6-button controller solution.
+Someone told me Acclaim is working on a MK2 already. Excited."""
+
+# ── C64 ──────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "c64"
+name = "C64"
+
+[[boards.threads]]
+id = 1
+subject = "Best SID tunes of all time?"
+
+[[boards.threads.posts]]
+id = 1
+author = "SidHead"
+subject = "Best SID tunes of all time?"
+timestamp = "03/28/93 19:00"
+body = """
+Starting a debate: best SID composers of all time?
+My list: Rob Hubbard, Martin Galway, David Whittaker.
+Hubbard's Commando and Monty on the Run are perfection.
+Fight me."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PhreakMaster"
+subject = "Re: Best SID tunes of all time?"
+timestamp = "03/29/93 00:33"
+body = """
+Rob Hubbard is god tier no argument there.
+But you're sleeping on Jeroen Tel -- Myth and Supremacy are incredible.
+Also Ben Daglish deserves more credit. Auf Wiedersehen Monty is a banger."""
+
+[[boards.threads.posts]]
+id = 3
+author = "8BitWitch"
+subject = "Re: Best SID tunes of all time?"
+timestamp = "03/30/93 14:15"
+body = """
+All good picks but let me throw in Chris Huelsbeck.
+The Great Giana Sisters soundtrack is stunning for the hardware.
+HVSC now has over 10,000 SID files if anyone hasn't grabbed it yet."""
+
+[[boards.threads]]
+id = 2
+subject = "SwiftLink vs UserPort modem -- which is faster?"
+
+[[boards.threads.posts]]
+id = 1
+author = "ModemWrangler"
+subject = "SwiftLink vs UserPort modem -- which is faster?"
+timestamp = "04/08/93 10:00"
+body = """
+Running a userport modem at 1200 baud right now. Considering upgrading.
+SwiftLink cartridge can allegedly do 38400 -- is that real or hype?
+What are people actually seeing in practice on the C64?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "PhreakMaster"
+subject = "Re: SwiftLink vs UserPort modem -- which is faster?"
+timestamp = "04/08/93 22:47"
+body = """
+SwiftLink is the real deal. Running 38400 here with a 14.4k external modem.
+The C64's 6551 ACIA chip handles it fine with the right software.
+CCGMS Term is what you want. NovaTerm also works great.
+Night and day difference from userport."""
+
+# ── Tech Talk ─────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "tech"
+name = "Tech Talk"
+
+[[boards.threads]]
+id = 1
+subject = "DOS 6.0 -- worth upgrading?"
+
+[[boards.threads.posts]]
+id = 1
+author = "PcJockey"
+subject = "DOS 6.0 -- worth upgrading?"
+timestamp = "03/31/93 10:00"
+body = """
+Microsoft just dropped DOS 6.0. DoubleSpace looks interesting
+but I've heard scary stories about it eating whole drives.
+Anyone tried it yet? Worth the $50 upgrade?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "TechWiz"
+subject = "Re: DOS 6.0 -- worth upgrading?"
+timestamp = "04/01/93 08:21"
+body = """
+DoubleSpace is risky. Stick with Stacker if you need compression.
+MemMaker is legit though -- freed up 47k of conventional RAM for me.
+MultiConfig boot menus alone make it worth it."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NeonByte"
+subject = "Re: DOS 6.0 -- worth upgrading?"
+timestamp = "04/02/93 16:09"
+body = """
+MultiConfig in CONFIG.SYS is the killer feature.
+Boot menu between DOS gaming config and Windows config? Yes please.
+Finally I can have HIMEM and EMM386 only when I need them."""
+
+[[boards.threads]]
+id = 2
+subject = "VGA vs SVGA -- real difference?"
+
+[[boards.threads.posts]]
+id = 1
+author = "PixelPusher"
+subject = "VGA vs SVGA -- real difference?"
+timestamp = "04/15/93 21:00"
+body = """
+My friend says SVGA is just marketing hype.
+Is 800x600 actually noticeably better or is 320x200 good enough?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "GfxGuru"
+subject = "Re: VGA vs SVGA -- real difference?"
+timestamp = "04/16/93 00:15"
+body = """
+For games? 320x200 Mode 13h is king -- palette tricks look amazing.
+For productivity and Windows? 800x600 is a huge difference.
+Get a Diamond Stealth VGA with 1MB VRAM and you can do both."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PcJockey"
+subject = "Re: VGA vs SVGA -- real difference?"
+timestamp = "04/16/93 09:30"
+body = """
+Running a Cirrus Logic 512KB card at 800x600 right now.
+Windows 3.1 is a whole different experience at higher res.
+Still use 320x200 for gaming though -- the dithered palette tricks are art."""

@@ -1,12 +1,21 @@
 use macroquad::prelude::*;
 
-use crate::bbs::data::BbsEntry;
+use crate::bbs::boards::{hardcoded_boards, load_boards};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Thread};
+use crate::bbs::files::load_files;
+use crate::bbs::mail::load_mail;
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
+use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
+use crate::tui::compose::render_compose;
+use crate::tui::files::{render_file_list, render_view_file};
+use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
+use crate::tui::logout::render_logout;
+use crate::tui::menus::render_main_menu;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
 // Palette constants reused across tick methods.
@@ -25,10 +34,85 @@ pub enum Screen {
     Login,
     MainMenu,
     MessageBoards,
+    ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
-    ComposeMessage,
+    ComposeMessage { board_id: String, thread_id: Option<u32> },
+    Mail,
+    ReadMail { id: u32 },
+    ComposeMail,
     Files,
+    ViewFile { id: u32 },
     Logout,
+}
+
+// ---------------------------------------------------------------------------
+// ComposeField / ComposeState
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ComposeField {
+    Subject,
+    Body,
+}
+
+pub struct ComposeState {
+    pub board_id: String,
+    pub board_name: String,
+    pub thread_id: Option<u32>,
+    pub reply_subject: String,
+    pub subject: String,
+    pub body: String,
+    pub field: ComposeField,
+}
+
+// ---------------------------------------------------------------------------
+// ComposeMailField / ComposeMailState
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ComposeMailField {
+    To,
+    Subject,
+    Body,
+}
+
+pub struct ComposeMailState {
+    pub to: String,
+    pub subject: String,
+    pub body: String,
+    pub field: ComposeMailField,
+    pub reply_to_id: Option<u32>,
+}
+
+// ---------------------------------------------------------------------------
+// LogoutState
+// ---------------------------------------------------------------------------
+
+pub struct LogoutState {
+    pub bbs_name: String,
+    pub typer: BaudTyper,
+    pub buffer: TerminalBuffer,
+    pub done: bool,
+}
+
+impl LogoutState {
+    fn new(bbs_name: String, handle: &str, baud: u32) -> Self {
+        let mut typer = BaudTyper::new(baud);
+        let msg = format!(
+            "\r\n\r\nThank you for calling {}!\r\n\
+             Come back soon, {}!\r\n\r\n\
+             Disconnecting...\r\n\r\n\
+             NO CARRIER\r\n",
+            bbs_name, handle
+        );
+        typer.enqueue(&msg);
+        Self {
+            bbs_name,
+            typer,
+            buffer: TerminalBuffer::new(80, 100),
+            done: false,
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -128,6 +212,20 @@ pub struct App {
     pub dial: Option<DialingState>,
     pub login: Option<LoginState>,
     pub session: Session,
+    pub boards: Vec<Board>,
+    pub selected_board_row: usize,
+    pub selected_thread_row: usize,
+    pub read_scroll: usize,
+    pub compose: Option<ComposeState>,
+    pub logout: Option<LogoutState>,
+    pub mail: Vec<MailMessage>,
+    pub selected_mail_row: usize,
+    pub mail_read_scroll: usize,
+    pub compose_mail: Option<ComposeMailState>,
+    pub files: Vec<FileSection>,
+    pub selected_file_row: usize,
+    pub file_view_scroll: usize,
+    pub file_download_notice: bool,
 }
 
 impl App {
@@ -140,30 +238,64 @@ impl App {
             dial: None,
             login: None,
             session: Session::new(),
+            boards: hardcoded_boards(),
+            selected_board_row: 0,
+            selected_thread_row: 0,
+            read_scroll: 0,
+            compose: None,
+            logout: None,
+            mail: vec![],
+            selected_mail_row: 0,
+            mail_read_scroll: 0,
+            compose_mail: None,
+            files: vec![],
+            selected_file_row: 0,
+            file_view_scroll: 0,
+            file_download_notice: false,
         }
     }
 
     pub fn render(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer  => render_dialer(self),
-            Screen::Dialing => render_dialing(self),
-            Screen::Login   => render_login(self),
-            _               => render_stub(),
+            Screen::Dialer        => render_dialer(self),
+            Screen::Dialing       => render_dialing(self),
+            Screen::Login         => render_login(self),
+            Screen::MainMenu      => render_main_menu(self),
+            Screen::MessageBoards => render_message_boards(self),
+            Screen::ThreadList { ref board_id } => render_thread_list(self, board_id),
+            Screen::ReadThread { ref board_id, thread_id } => {
+                render_read_thread(self, board_id, thread_id)
+            }
+            Screen::ComposeMessage { .. } => render_compose(self),
+            Screen::Mail          => render_inbox(self),
+            Screen::ReadMail { id } => render_read_mail(self, id),
+            Screen::ComposeMail   => render_compose_mail(self),
+            Screen::Files         => render_file_list(self),
+            Screen::ViewFile { id } => render_view_file(self, id),
+            Screen::Logout        => render_logout(self),
         }
     }
 
     pub fn handle_input(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer  => self.dialer_input(),
-            Screen::Dialing => self.dialing_input(),
-            Screen::Login   => self.login_input(),
-            _ => {
-                if is_key_pressed(KeyCode::Escape) {
-                    self.screen = Screen::Dialer;
-                }
+            Screen::Dialer        => self.dialer_input(),
+            Screen::Dialing       => self.dialing_input(),
+            Screen::Login         => self.login_input(),
+            Screen::MainMenu      => self.main_menu_input(),
+            Screen::MessageBoards => self.message_boards_input(),
+            Screen::ThreadList { board_id } => self.thread_list_input(board_id),
+            Screen::ReadThread { board_id, thread_id } => {
+                self.read_thread_input(board_id, thread_id)
             }
+            Screen::ComposeMessage { .. } => self.compose_input(),
+            Screen::Mail          => self.inbox_input(),
+            Screen::ReadMail { id } => self.read_mail_input(id),
+            Screen::ComposeMail   => self.compose_mail_input(),
+            Screen::Files         => self.files_input(),
+            Screen::ViewFile { id } => self.view_file_input(id),
+            Screen::Logout        => self.logout_input(),
         }
     }
 
@@ -171,6 +303,7 @@ impl App {
         match self.screen.clone() {
             Screen::Dialing => self.tick_dialing(),
             Screen::Login   => self.tick_login(),
+            Screen::Logout  => self.tick_logout(),
             _               => {}
         }
     }
@@ -195,7 +328,7 @@ impl App {
     // ── Tick: login ──────────────────────────────────────────────────────────
 
     fn tick_login(&mut self) {
-        let mut transition: Option<(String, String)> = None;
+        let mut transition: Option<(String, String, String)> = None;
 
         if let Some(ref mut d) = self.login {
             // Drain the baud typer into the buffer.
@@ -228,14 +361,25 @@ impl App {
                     d.step = LoginStep::Done;
                 }
                 LoginStep::Done => {
-                    transition = Some((d.user_handle.clone(), d.bbs.name.clone()));
+                    transition = Some((
+                        d.user_handle.clone(),
+                        d.bbs.name.clone(),
+                        d.bbs.slug.clone(),
+                    ));
                 }
                 _ => {}
             }
         }
 
-        if let Some((handle, bbs_name)) = transition {
-            self.session.login(handle, bbs_name);
+        if let Some((handle, bbs_name, slug)) = transition {
+            self.session.login(handle.clone(), bbs_name);
+            self.boards = load_boards(&slug);
+            self.mail   = load_mail(&slug, &handle);
+            self.files  = load_files(&slug);
+            self.selected_board_row  = 0;
+            self.selected_thread_row = 0;
+            self.selected_mail_row   = 0;
+            self.selected_file_row   = 0;
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -362,21 +506,611 @@ impl App {
             }
         }
     }
-}
 
-// ---------------------------------------------------------------------------
-// Placeholder for unimplemented screens
-// ---------------------------------------------------------------------------
+    // ── Input: main menu ─────────────────────────────────────────────────────
 
-fn render_stub() {
-    draw_rectangle_lines(0.0, 0.0, screen_width(), screen_height(), 2.0, DARKGRAY);
-    draw_text(
-        "Screen not yet implemented -- press [Esc] to return.",
-        16.0,
-        32.0,
-        20.0,
-        WHITE,
-    );
+    fn main_menu_input(&mut self) {
+        while let Some(ch) = get_char_pressed() {
+            match ch.to_ascii_lowercase() {
+                'b' => {
+                    self.selected_board_row = 0;
+                    self.screen = Screen::MessageBoards;
+                }
+                'm' => {
+                    self.selected_mail_row = 0;
+                    self.screen = Screen::Mail;
+                }
+                'f' => {
+                    self.selected_file_row = 0;
+                    self.file_download_notice = false;
+                    self.screen = Screen::Files;
+                }
+                'g' | 'l' => {
+                    self.begin_logout();
+                }
+                _ => {}
+            }
+        }
+        if is_key_pressed(KeyCode::Escape) {
+            self.begin_logout();
+        }
+    }
+
+    // ── Input: message boards ────────────────────────────────────────────────
+
+    fn message_boards_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+
+        let len = self.boards.len();
+
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_board_row =
+                if self.selected_board_row == 0 { len.saturating_sub(1) }
+                else { self.selected_board_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_board_row =
+                if self.selected_board_row + 1 >= len { 0 }
+                else { self.selected_board_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'k' => {
+                    self.selected_board_row =
+                        if self.selected_board_row == 0 { len.saturating_sub(1) }
+                        else { self.selected_board_row - 1 };
+                }
+                'j' => {
+                    self.selected_board_row =
+                        if self.selected_board_row + 1 >= len { 0 }
+                        else { self.selected_board_row + 1 };
+                }
+                _ => {}
+            }
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            if let Some(board) = self.boards.get(self.selected_board_row) {
+                let board_id = board.id.clone();
+                self.selected_thread_row = 0;
+                self.screen = Screen::ThreadList { board_id };
+            }
+        }
+    }
+
+    // ── Input: thread list ───────────────────────────────────────────────────
+
+    fn thread_list_input(&mut self, board_id: String) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MessageBoards;
+            return;
+        }
+
+        let len = self.boards.iter()
+            .find(|b| b.id == board_id)
+            .map(|b| b.threads.len())
+            .unwrap_or(0);
+
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_thread_row =
+                if self.selected_thread_row == 0 { len.saturating_sub(1) }
+                else { self.selected_thread_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_thread_row =
+                if self.selected_thread_row + 1 >= len { 0 }
+                else { self.selected_thread_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'k' => {
+                    self.selected_thread_row =
+                        if self.selected_thread_row == 0 { len.saturating_sub(1) }
+                        else { self.selected_thread_row - 1 };
+                }
+                'j' => {
+                    self.selected_thread_row =
+                        if self.selected_thread_row + 1 >= len { 0 }
+                        else { self.selected_thread_row + 1 };
+                }
+                'n' => {
+                    if let Some(board) = self.boards.iter().find(|b| b.id == board_id) {
+                        let board_name = board.name.clone();
+                        self.compose = Some(ComposeState {
+                            board_id: board_id.clone(),
+                            board_name,
+                            thread_id: None,
+                            reply_subject: String::new(),
+                            subject: String::new(),
+                            body: String::new(),
+                            field: ComposeField::Subject,
+                        });
+                        self.screen = Screen::ComposeMessage {
+                            board_id,
+                            thread_id: None,
+                        };
+                        return;
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            if let Some(board) = self.boards.iter().find(|b| b.id == board_id) {
+                if let Some(thread) = board.threads.get(self.selected_thread_row) {
+                    let thread_id = thread.id;
+                    self.read_scroll = 0;
+                    self.screen = Screen::ReadThread { board_id, thread_id };
+                }
+            }
+        }
+    }
+
+    // ── Input: read thread ───────────────────────────────────────────────────
+
+    fn read_thread_input(&mut self, board_id: String, thread_id: u32) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::ThreadList { board_id };
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.read_scroll = self.read_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.read_scroll += 1;
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.read_scroll = self.read_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.read_scroll += 10;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch == 'r' {
+                let board_name = self.boards.iter()
+                    .find(|b| b.id == board_id)
+                    .map(|b| b.name.clone())
+                    .unwrap_or_default();
+                let reply_subject = self.boards.iter()
+                    .find(|b| b.id == board_id)
+                    .and_then(|b| b.threads.iter().find(|t| t.id == thread_id))
+                    .map(|t| t.subject.clone())
+                    .unwrap_or_default();
+                self.compose = Some(ComposeState {
+                    board_id: board_id.clone(),
+                    board_name,
+                    thread_id: Some(thread_id),
+                    reply_subject,
+                    subject: String::new(),
+                    body: String::new(),
+                    field: ComposeField::Body,
+                });
+                self.screen = Screen::ComposeMessage {
+                    board_id,
+                    thread_id: Some(thread_id),
+                };
+                return;
+            }
+        }
+    }
+
+    // ── Input: compose ───────────────────────────────────────────────────────
+
+    fn compose_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            let (board_id, thread_id) = self.compose.as_ref()
+                .map(|c| (c.board_id.clone(), c.thread_id))
+                .unwrap_or_default();
+            self.compose = None;
+            self.screen = match thread_id {
+                Some(tid) => Screen::ReadThread { board_id, thread_id: tid },
+                None      => Screen::ThreadList { board_id },
+            };
+            return;
+        }
+
+        if is_key_pressed(KeyCode::F1) {
+            self.do_post();
+            return;
+        }
+
+        let Some(ref mut compose) = self.compose else { return };
+
+        if compose.thread_id.is_none() && is_key_pressed(KeyCode::Tab) {
+            compose.field = match compose.field {
+                ComposeField::Subject => ComposeField::Body,
+                ComposeField::Body    => ComposeField::Subject,
+            };
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            match compose.field {
+                ComposeField::Subject => { compose.field = ComposeField::Body; }
+                ComposeField::Body    => { compose.body.push('\n'); }
+            }
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Backspace) {
+            match compose.field {
+                ComposeField::Subject => { compose.subject.pop(); }
+                ComposeField::Body    => { compose.body.pop(); }
+            }
+            return;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch.is_ascii() && !ch.is_control() {
+                match compose.field {
+                    ComposeField::Subject => {
+                        if compose.subject.len() < 60 {
+                            compose.subject.push(ch);
+                        }
+                    }
+                    ComposeField::Body => {
+                        compose.body.push(ch);
+                    }
+                }
+            }
+        }
+    }
+
+    fn do_post(&mut self) {
+        let Some(ref compose) = self.compose else { return };
+        if compose.thread_id.is_none() && compose.subject.trim().is_empty() { return; }
+        if compose.body.trim().is_empty() { return; }
+
+        let handle    = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
+        let timestamp = "04/27/93 12:00".to_string();
+        let board_id  = compose.board_id.clone();
+        let thread_id = compose.thread_id;
+        let subject   = compose.subject.clone();
+        let body      = compose.body.trim_end().to_string();
+
+        if let Some(board) = self.boards.iter_mut().find(|b| b.id == board_id) {
+            if let Some(tid) = thread_id {
+                if let Some(thread) = board.threads.iter_mut().find(|t| t.id == tid) {
+                    let msg_id = thread.posts.len() as u32 + 1;
+                    thread.posts.push(Message {
+                        id: msg_id,
+                        author: handle,
+                        subject: format!("Re: {}", thread.subject),
+                        body,
+                        timestamp,
+                    });
+                }
+                self.compose    = None;
+                self.read_scroll = usize::MAX; // clamped in render
+                self.screen = Screen::ReadThread { board_id, thread_id: tid };
+            } else {
+                let new_tid = board.threads.iter().map(|t| t.id).max().unwrap_or(0) + 1;
+                board.threads.push(Thread {
+                    id: new_tid,
+                    subject: subject.clone(),
+                    posts: vec![Message {
+                        id: 1,
+                        author: handle,
+                        subject,
+                        body,
+                        timestamp,
+                    }],
+                });
+                let last = board.threads.len() - 1;
+                self.compose             = None;
+                self.selected_thread_row = last;
+                self.screen = Screen::ThreadList { board_id };
+            }
+        }
+    }
+
+    // ── Input: files ─────────────────────────────────────────────────────────
+
+    fn files_input(&mut self) {
+        let any_key = is_key_pressed(KeyCode::Up)
+            || is_key_pressed(KeyCode::Down)
+            || is_key_pressed(KeyCode::Escape);
+
+        if self.file_download_notice && any_key {
+            self.file_download_notice = false;
+        }
+
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+
+        let flat_count: usize = self.files.iter().map(|s| s.files.len()).sum();
+
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_file_row =
+                if self.selected_file_row == 0 { flat_count.saturating_sub(1) }
+                else { self.selected_file_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_file_row =
+                if flat_count == 0 || self.selected_file_row + 1 >= flat_count { 0 }
+                else { self.selected_file_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if self.file_download_notice {
+                self.file_download_notice = false;
+                continue;
+            }
+            match ch.to_ascii_lowercase() {
+                'k' => {
+                    self.selected_file_row =
+                        if self.selected_file_row == 0 { flat_count.saturating_sub(1) }
+                        else { self.selected_file_row - 1 };
+                }
+                'j' => {
+                    self.selected_file_row =
+                        if flat_count == 0 || self.selected_file_row + 1 >= flat_count { 0 }
+                        else { self.selected_file_row + 1 };
+                }
+                'v' => {
+                    let file = self.files.iter()
+                        .flat_map(|s| s.files.iter())
+                        .nth(self.selected_file_row)
+                        .cloned();
+                    if let Some(f) = file {
+                        if f.kind == "text" {
+                            self.file_view_scroll = 0;
+                            self.screen = Screen::ViewFile { id: f.id };
+                            return;
+                        }
+                    }
+                }
+                'd' => {
+                    self.file_download_notice = true;
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn view_file_input(&mut self, _id: u32) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::Files;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.file_view_scroll = self.file_view_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.file_view_scroll += 1;
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.file_view_scroll = self.file_view_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.file_view_scroll += 10;
+        }
+    }
+
+    // ── Input: inbox ─────────────────────────────────────────────────────────
+
+    fn inbox_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+
+        let len = self.mail.len();
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_mail_row =
+                if self.selected_mail_row == 0 { len.saturating_sub(1) }
+                else { self.selected_mail_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_mail_row =
+                if self.selected_mail_row + 1 >= len { 0 }
+                else { self.selected_mail_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'k' => {
+                    self.selected_mail_row =
+                        if self.selected_mail_row == 0 { len.saturating_sub(1) }
+                        else { self.selected_mail_row - 1 };
+                }
+                'j' => {
+                    self.selected_mail_row =
+                        if self.selected_mail_row + 1 >= len { 0 }
+                        else { self.selected_mail_row + 1 };
+                }
+                'c' => {
+                    self.compose_mail = Some(ComposeMailState {
+                        to: String::new(),
+                        subject: String::new(),
+                        body: String::new(),
+                        field: ComposeMailField::To,
+                        reply_to_id: None,
+                    });
+                    self.screen = Screen::ComposeMail;
+                    return;
+                }
+                _ => {}
+            }
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            if let Some(msg) = self.mail.get_mut(self.selected_mail_row) {
+                let id = msg.id;
+                msg.read = true;
+                self.mail_read_scroll = 0;
+                self.screen = Screen::ReadMail { id };
+            }
+        }
+    }
+
+    // ── Input: read mail ──────────────────────────────────────────────────────
+
+    fn read_mail_input(&mut self, id: u32) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::Mail;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.mail_read_scroll = self.mail_read_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.mail_read_scroll += 1;
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.mail_read_scroll = self.mail_read_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.mail_read_scroll += 10;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch == 'r' {
+                let (from, subject) = self.mail.iter()
+                    .find(|m| m.id == id)
+                    .map(|m| (m.from.clone(), format!("Re: {}", m.subject)))
+                    .unwrap_or_default();
+                self.compose_mail = Some(ComposeMailState {
+                    to: from,
+                    subject,
+                    body: String::new(),
+                    field: ComposeMailField::Body,
+                    reply_to_id: Some(id),
+                });
+                self.screen = Screen::ComposeMail;
+                return;
+            }
+        }
+    }
+
+    // ── Input: compose mail ───────────────────────────────────────────────────
+
+    fn compose_mail_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.compose_mail = None;
+            self.screen = Screen::Mail;
+            return;
+        }
+
+        if is_key_pressed(KeyCode::F1) {
+            self.do_send_mail();
+            return;
+        }
+
+        let Some(ref mut c) = self.compose_mail else { return };
+
+        if is_key_pressed(KeyCode::Tab) {
+            c.field = match c.field {
+                ComposeMailField::To      => ComposeMailField::Subject,
+                ComposeMailField::Subject => ComposeMailField::Body,
+                ComposeMailField::Body    => ComposeMailField::To,
+            };
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            match c.field {
+                ComposeMailField::To      => { c.field = ComposeMailField::Subject; }
+                ComposeMailField::Subject => { c.field = ComposeMailField::Body; }
+                ComposeMailField::Body    => { c.body.push('\n'); }
+            }
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Backspace) {
+            match c.field {
+                ComposeMailField::To      => { c.to.pop(); }
+                ComposeMailField::Subject => { c.subject.pop(); }
+                ComposeMailField::Body    => { c.body.pop(); }
+            }
+            return;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch.is_ascii() && !ch.is_control() {
+                match c.field {
+                    ComposeMailField::To      => { if c.to.len() < 30 { c.to.push(ch); } }
+                    ComposeMailField::Subject => { if c.subject.len() < 60 { c.subject.push(ch); } }
+                    ComposeMailField::Body    => { c.body.push(ch); }
+                }
+            }
+        }
+    }
+
+    fn do_send_mail(&mut self) {
+        let Some(ref c) = self.compose_mail else { return };
+        if c.to.trim().is_empty() || c.body.trim().is_empty() { return; }
+
+        let next_id = self.mail.iter().map(|m| m.id).max().unwrap_or(0) + 1;
+        let from    = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
+        let sent    = MailMessage {
+            id: next_id,
+            from: from.clone(),
+            to: c.to.clone(),
+            subject: if c.subject.is_empty() { "(no subject)".into() } else { c.subject.clone() },
+            body: format!("{}\n\n-- {}", c.body.trim_end(), from),
+            timestamp: "04/27/93 12:00".into(),
+            read: true,
+        };
+        self.mail.push(sent);
+        self.compose_mail = None;
+        self.screen = Screen::Mail;
+    }
+
+    // ── Input / tick: logout ─────────────────────────────────────────────────
+
+    fn logout_input(&mut self) {
+        let done = self.logout.as_ref().map(|s| s.done).unwrap_or(false);
+        if is_key_pressed(KeyCode::Escape)
+            || (done && (is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some()))
+        {
+            self.finish_logout();
+        }
+    }
+
+    fn tick_logout(&mut self) {
+        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        if let Some(ref mut state) = self.logout {
+            for ch in state.typer.tick() {
+                state.buffer.push_char(ch, CellStyle::fg(green));
+            }
+            if state.typer.is_empty() {
+                state.done = true;
+            }
+        }
+    }
+
+    fn begin_logout(&mut self) {
+        let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
+        let handle   = self.session.user_handle.clone().unwrap_or_default();
+        let baud     = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.baud)
+            .unwrap_or(2400);
+        self.logout = Some(LogoutState::new(bbs_name, &handle, baud));
+        self.screen = Screen::Logout;
+    }
+
+    fn finish_logout(&mut self) {
+        if let Some(ref state) = self.logout {
+            let bbs_name = state.bbs_name.clone();
+            if let Some(entry) = self.phonebook.iter_mut().find(|e| e.name == bbs_name) {
+                entry.last_called = Some("04/27/93".into());
+            }
+        }
+        self.session.logout();
+        self.logout = None;
+        self.screen = Screen::Dialer;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -393,6 +1127,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 2400,
             boards: vec!["General".into(), "Warez".into(), "C64".into(), "Tech Talk".into()],
             last_called: Some("04/22/93".into()),
+            slug: "rusty_nail".into(),
         },
         BbsEntry {
             name: "WARP FACTOR 9".into(),
@@ -402,6 +1137,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 9600,
             boards: vec!["SciFi".into(), "Gaming".into(), "Anime".into()],
             last_called: Some("04/15/93".into()),
+            slug: "warp_factor_9".into(),
         },
         BbsEntry {
             name: "The Digital Dungeon".into(),
@@ -411,6 +1147,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 2400,
             boards: vec!["RPG".into(), "D&D".into(), "General".into()],
             last_called: None,
+            slug: "digital_dungeon".into(),
         },
         BbsEntry {
             name: "ELITE FORCE BBS".into(),
@@ -420,6 +1157,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 14400,
             boards: vec!["Warez".into(), "Hacking".into(), "Music".into()],
             last_called: Some("04/01/93".into()),
+            slug: "elite_force".into(),
         },
         BbsEntry {
             name: "The Underground Railroad".into(),
@@ -429,6 +1167,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 2400,
             boards: vec!["Politics".into(), "News".into(), "General".into()],
             last_called: Some("03/28/93".into()),
+            slug: "underground_railroad".into(),
         },
         BbsEntry {
             name: "Midnight Rendezvous".into(),
@@ -436,8 +1175,9 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             sysop: "Pr0phet".into(),
             location: "New York, NY".into(),
             baud: 9600,
-            boards: vec!["Phreaking".into(), "Anarchy".into(), "Carding".into()],
+            boards: vec!["Phreaking".into(), "Underground".into(), "Lounge".into()],
             last_called: Some("03/14/93".into()),
+            slug: "midnight_rendezvous".into(),
         },
     ]
 }

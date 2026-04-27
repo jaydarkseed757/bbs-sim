@@ -1,0 +1,229 @@
+# The Underground Railroad BBS — board data
+
+[[boards]]
+id = "politics"
+name = "Politics"
+
+[[boards.threads]]
+id = 1
+subject = "Clinton's first 100 days -- grade him"
+
+[[boards.threads.posts]]
+id = 1
+author = "ConductorX"
+subject = "Clinton's first 100 days -- grade him"
+timestamp = "04/10/93 14:00"
+body = """
+Clinton hit 100 days in office last week. Let's grade the performance.
+Economic plan looks credible -- deficit reduction is the right priority.
+Family and Medical Leave Act signed already. Strong start on domestic policy.
+NAFTA though: labor concerns are legitimate and he's dancing around them."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PoliticWatcher"
+subject = "Re: Clinton's first 100 days -- grade him"
+timestamp = "04/11/93 09:30"
+body = """
+B- from me. The gays in military issue was badly handled -- forced a confrontation
+before the political groundwork was laid. Don't ask don't tell is a half-measure.
+The economic team is strong: Bentsen at Treasury, Rubin at NEC.
+Healthcare reform coming -- that's the big test. If he gets it done: A."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NewsFreak_IL"
+subject = "Re: Clinton's first 100 days -- grade him"
+timestamp = "04/12/93 18:45"
+body = """
+The tax increase on upper brackets is overdue. Reagan deficits were unsustainable.
+Stimulus package got killed by Congress but the budget framework is solid.
+Foreign policy is where I'm worried -- Somalia, Bosnia, North Korea all active.
+He inherited a mess. Grade pending but cautiously optimistic."""
+
+[[boards.threads]]
+id = 2
+subject = "NAFTA -- good or bad for workers?"
+
+[[boards.threads.posts]]
+id = 1
+author = "LaborWatch"
+subject = "NAFTA -- good or bad for workers?"
+timestamp = "03/05/93 20:00"
+body = """
+NAFTA debate is heating up. Clinton has to decide before year end.
+Perot's "giant sucking sound" line is exaggerated but not completely wrong.
+The economic models show net jobs gains but the distribution of who loses matters.
+Manufacturing workers in the midwest are going to feel this hardest."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ConductorX"
+subject = "Re: NAFTA -- good or bad for workers?"
+timestamp = "03/06/93 10:15"
+body = """
+The free trade case is solid on paper -- comparative advantage works.
+But transition costs fall on workers not corporations. That's the real issue.
+The side agreements Clinton negotiated on labor and environment are weak.
+Support it with teeth or kill it. The middle path satisfies no one."""
+
+[[boards.threads.posts]]
+id = 3
+author = "EconMajor93"
+subject = "Re: NAFTA -- good or bad for workers?"
+timestamp = "03/07/93 22:00"
+body = """
+Long-term: net positive. Short-term: real pain for specific sectors.
+The auto industry is the canary -- watch Michigan and Ohio closely.
+Mexico gets a lot out of this deal. The US gains are spread thinner.
+Either way it's passing. The corporate lobby is too strong to stop it."""
+
+[[boards.threads]]
+id = 3
+subject = "Waco -- how did it end like this?"
+
+[[boards.threads.posts]]
+id = 1
+author = "NewsFreak_IL"
+subject = "Waco -- how did it end like this?"
+timestamp = "04/20/93 20:30"
+body = """
+The Branch Davidian standoff ended in fire today. 76 dead.
+Whatever you think of Koresh this is a catastrophic failure of negotiation.
+The ATF raid in February was botched. The FBI siege made it worse.
+There will be investigations but no one is going to be satisfied by the answers."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ConductorX"
+subject = "Re: Waco -- how did it end like this?"
+timestamp = "04/21/93 08:00"
+body = """
+The CS gas injection into a wooden structure with a standoff going on -- reckless.
+Reno approved it. She'll take the hit but the operational decisions were FBI.
+The children in there is the part I can't get past. All other politics aside.
+Congressional hearings are inevitable and they should be thorough."""
+
+[[boards.threads.posts]]
+id = 3
+author = "LibertarianLou"
+subject = "Re: Waco -- how did it end like this?"
+timestamp = "04/21/93 14:45"
+body = """
+This is going to radicalize a lot of people on the militia right. Watch for it.
+Federal overreach narrative is already forming in those circles.
+I'm not defending Koresh -- the man was dangerous. But the execution here
+validates every fear those communities have about government force."""
+
+# ── News ─────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "news"
+name = "News"
+
+[[boards.threads]]
+id = 1
+subject = "World Trade Center bombing -- what happened?"
+
+[[boards.threads.posts]]
+id = 1
+author = "NewsFreak_IL"
+subject = "World Trade Center bombing -- what happened?"
+timestamp = "02/27/93 18:00"
+body = """
+A bomb went off in the WTC parking garage this afternoon. Six dead, hundreds injured.
+Massive truck bomb in the underground lot. The towers didn't fall but the damage is severe.
+FBI is treating as terrorism. Early reports suggest foreign connection.
+This is a different kind of threat than we've seen on domestic soil."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ConductorX"
+subject = "Re: World Trade Center bombing -- what happened?"
+timestamp = "02/28/93 09:15"
+body = """
+The intended effect was clearly to topple one tower into the other.
+The structural engineering held -- those buildings are overbuilt by design.
+Six dead is six too many but it could have been thousands.
+The investigation is going to be interesting. This required real logistics."""
+
+[[boards.threads]]
+id = 2
+subject = "Space shuttle Discovery -- STS-56 mission"
+
+[[boards.threads.posts]]
+id = 1
+author = "StarGazer_CHI"
+subject = "Space shuttle Discovery -- STS-56 mission"
+timestamp = "04/08/93 15:00"
+body = """
+Discovery launched today on STS-56, the ATLAS-2 atmospheric research mission.
+This is the good stuff -- measuring ozone depletion data, greenhouse gases.
+The political football of climate science needs this kind of hard data.
+Five astronauts up there doing real science while we argue about everything else."""
+
+[[boards.threads.posts]]
+id = 2
+author = "NewsFreak_IL"
+subject = "Re: Space shuttle Discovery -- STS-56 mission"
+timestamp = "04/09/93 10:30"
+body = """
+The LIDAR instrument on this mission is particularly interesting.
+Atmospheric profiling in 3D -- we'll have a much better ozone depletion map.
+The post-Challenger skepticism about shuttle safety has faded but the program
+still needs a clearer direction. What's after station assembly?"""
+
+# ── General ───────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "general"
+name = "General"
+
+[[boards.threads]]
+id = 1
+subject = "Welcome to The Underground Railroad"
+
+[[boards.threads.posts]]
+id = 1
+author = "ConductorX"
+subject = "Welcome to The Underground Railroad"
+timestamp = "09/01/92 18:00"
+body = """
+Welcome to The Underground Railroad BBS, Chicago's home for political discussion.
+We cover national politics, local Chicago news, labor issues, and current events.
+Rules: no hate speech, no personal attacks. Vigorous disagreement is welcome.
+I'm a night owl -- usually online 10pm to 2am CST."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PoliticWatcher"
+subject = "Re: Welcome to The Underground Railroad"
+timestamp = "09/02/92 12:00"
+body = """
+Good to find a BBS focused on substance over noise.
+The political boards I've found elsewhere devolve into flamewars in days.
+Looking forward to actual debate. The election season is heating up."""
+
+[[boards.threads]]
+id = 2
+subject = "Best Chicago deep dish -- settle this debate"
+
+[[boards.threads.posts]]
+id = 1
+author = "ConductorX"
+subject = "Best Chicago deep dish -- settle this debate"
+timestamp = "01/15/93 19:00"
+body = """
+Lou Malnati's vs. Giordano's vs. Pizzeria Uno. Go.
+I'll start: Lou Malnati's wins on butter crust alone.
+The sausage quality is also a cut above. No contest."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ChiTownFoodie"
+subject = "Re: Best Chicago deep dish -- settle this debate"
+timestamp = "01/16/93 12:30"
+body = """
+Giordano's stuffed is a different category than deep dish. It's stuffed pizza.
+If we're comparing apples to apples: Malnati's on butter crust, Uno's on history.
+But the correct Chicago pizza is thin crust tavern style. Fight me."""

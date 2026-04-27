@@ -10,6 +10,8 @@ pub struct BbsEntry {
     pub boards: Vec<String>,
     #[serde(default)]
     pub last_called: Option<String>,
+    #[serde(default)]
+    pub slug: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -39,4 +41,35 @@ pub struct Board {
     pub id: String,
     pub name: String,
     pub threads: Vec<Thread>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MailMessage {
+    pub id: u32,
+    pub from: String,
+    #[serde(default)]
+    pub to: String,
+    pub subject: String,
+    pub body: String,
+    pub timestamp: String,
+    #[serde(default)]
+    pub read: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BbsFile {
+    pub id: u32,
+    pub name: String,
+    pub size: String,
+    pub date: String,
+    pub description: String,
+    pub kind: String,
+    #[serde(default)]
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FileSection {
+    pub name: String,
+    pub files: Vec<BbsFile>,
 }

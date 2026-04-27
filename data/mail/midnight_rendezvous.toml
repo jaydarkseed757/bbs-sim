@@ -1,0 +1,110 @@
+# Midnight Rendezvous BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "Pr0phet"
+subject = "You found the Rendezvous"
+timestamp = "03/14/93 00:30"
+body = """
+Welcome to Midnight Rendezvous. We run late -- you'll fit in fine if
+you're reading this at 12:30am.
+
+Three boards: Phreaking for telecom and phone network stuff, Underground
+for tech culture and digital rights, Lounge for everything else.
+
+The crowd here is technically sharp and doesn't suffer fools. But if you
+bring something worth reading people will engage with it seriously.
+
+The 2600 meeting in NYC is first Friday of every month if you're local.
+Worth going at least once.
+
+-- Pr0phet (Sysop)"""
+
+[[messages]]
+id = 2
+from = "TelcoGhost"
+subject = "SS7 thread -- your question"
+timestamp = "03/15/93 11:00"
+body = """
+Caught your question in the Phreaking board about SS7 and caller ID.
+
+Short answer: caller ID is delivered as an FSK data burst between the
+first and second ring. The SCP (Service Control Point) handles the lookup
+and sends the ANI data back through the SS7 network to the terminating switch.
+
+The reason it can be spoofed is that the originating switch is trusted
+by default. There's no authentication of the A-number at the SS7 level.
+
+This is documented in Bellcore SR-TSV-002476 if you can find it.
+-- TelcoGhost"""
+
+[[messages]]
+id = 3
+from = "CyberLiberty"
+subject = "Hacker Crackdown -- Sterling's talk"
+timestamp = "03/20/93 22:15"
+body = """
+Bruce Sterling is doing a talk at UT Austin next month based on the book.
+
+If you haven't read The Hacker Crackdown yet -- it's freely distributable,
+Sterling released it himself. Find it on any decent FTP archive.
+
+The EFF's ongoing ECPA reform work is the practical follow-through from
+everything the book describes. The 1986 law was written before anyone
+understood what digital communication would become.
+
+Worth following the EFF mailing list if you're not already.
+-- CyberLiberty"""
+
+[[messages]]
+id = 4
+from = "RingMaster"
+subject = "COCOT phone at 34th St -- interesting find"
+timestamp = "04/01/93 01:45"
+body = """
+Found a Elcotel COCOT at the 34th St station that has an unusual response
+to a specific dialing sequence. Not going to put details in mail but
+if you know what you're looking for it's worth investigating.
+
+The engineering on these things is genuinely sloppy compared to RBOC hardware.
+The assumption was always that nobody would bother -- which is exactly backwards
+from how curious people work.
+
+Post in the Phreaking board if you want to compare notes.
+-- RingMaster"""
+
+[[messages]]
+id = 5
+from = "DataJockey"
+subject = "Snow Crash -- finished it?"
+timestamp = "04/10/93 23:30"
+body = """
+Saw the cyberpunk thread in the Underground board. Have to ask directly:
+did you finish Snow Crash?
+
+The Mafia pizza delivery economics bit at the start is brilliant but the
+second half of the book is where Stephenson really goes for it. The
+linguistic/neurology angle in the climax is the most original SF idea
+I've read in years.
+
+The Metaverse description is going to look prophetic in ten years.
+The web + VR combination he's describing -- it's coming.
+
+-- DataJockey"""
+
+[[messages]]
+id = 6
+from = "Pr0phet"
+subject = "2600 meeting this Friday"
+timestamp = "04/29/93 20:00"
+body = """
+Quick reminder -- 2600 meeting is this Friday at the World Trade Center.
+First Friday as always. Show up around 5pm, Citibank lobby atrium.
+
+Security has been tighter since the February bombing but they've been
+leaving us alone. Bring ID just in case.
+
+About 40 people usually show. Good mix. Come find me -- I'll be the one
+with the PowerBook and a very long phone cord.
+
+-- Pr0phet"""

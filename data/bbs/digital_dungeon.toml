@@ -1,6 +1,238 @@
-name     = "The Digital Dungeon"
-number   = "555-4096"
-sysop    = "DungeonMstr"
-location = "Austin, TX"
-baud     = 2400
-boards   = ["RPG", "D&D", "General"]
+# The Digital Dungeon BBS — board data
+
+[[boards]]
+id = "rpg"
+name = "RPG"
+
+[[boards.threads]]
+id = 1
+subject = "Ultima Underworld 2 -- best immersive sim yet?"
+
+[[boards.threads.posts]]
+id = 1
+author = "DungeonMstr"
+subject = "Ultima Underworld 2 -- best immersive sim yet?"
+timestamp = "01/15/93 21:00"
+body = """
+UU2 dropped last month and I haven't left the dungeon since.
+The full 3D world with physics and real-time movement still feels like magic.
+The multiple worlds (Killorn Keep, Talorus, etc.) are all distinct and well-designed.
+Origin is operating at a level no one else can touch right now."""
+
+[[boards.threads.posts]]
+id = 2
+author = "RollD20"
+subject = "Re: Ultima Underworld 2 -- best immersive sim yet?"
+timestamp = "01/16/93 09:30"
+body = """
+Played both UU1 and UU2. The sequel is bigger but UU1 had tighter dungeon design.
+The magic system in UU2 is deeper though -- rune combinations are satisfying to figure out.
+My 486/33 handles it beautifully at 640x480. Worth every upgrade penny."""
+
+[[boards.threads.posts]]
+id = 3
+author = "CrawlMaster"
+subject = "Re: Ultima Underworld 2 -- best immersive sim yet?"
+timestamp = "01/17/93 14:22"
+body = """
+The Looking Glass team is doing things no one else is attempting.
+Real physics, genuine 3D space, NPCs with schedules.
+System Shock is apparently their next project. I cannot wait."""
+
+[[boards.threads]]
+id = 2
+subject = "Wizardry 7 party builds -- share yours"
+
+[[boards.threads.posts]]
+id = 1
+author = "WizardKing"
+subject = "Wizardry 7 party builds -- share yours"
+timestamp = "02/10/93 20:00"
+body = """
+Running: Faerie Ninja, Lizardman Fighter, Rawulf Priest, Gnome Alchemist,
+Human Bard, Mook Ranger. Bard's treasure finding has been clutch.
+The Umpani questline is brutal without a solid fighter upfront.
+What are other people running for the Rattkin section?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "DungeonMstr"
+subject = "Re: Wizardry 7 party builds -- share yours"
+timestamp = "02/11/93 08:15"
+body = """
+I went heavy on spellcasters: two Mages, a Priest, a Psionicist, Fighter, Ninja.
+Late game the mage damage output is spectacular but early game was brutal.
+Died a lot in the Umpani base until I found the armor vendor.
+Bard is always worth it for the songs -- +AC and +to-hit adds up."""
+
+[[boards.threads.posts]]
+id = 3
+author = "LoreDigger"
+subject = "Re: Wizardry 7 party builds -- share yours"
+timestamp = "02/12/93 22:40"
+body = """
+Ranger is underrated. Dual wield plus archery backup has saved me constantly.
+The Crusaders of the Dark Savant storyline connecting to Wiz6 is brilliant.
+If you didn't play 6 before 7 you're missing a lot of the narrative payoff."""
+
+[[boards.threads]]
+id = 3
+subject = "Eye of the Beholder 2 -- completed it?"
+
+[[boards.threads.posts]]
+id = 1
+author = "ADnDFan"
+subject = "Eye of the Beholder 2 -- completed it?"
+timestamp = "03/05/93 17:00"
+body = """
+Finally beat Eye of the Beholder 2 last weekend. Took me 3 months.
+The Darkmoon temple section near the end is genuinely tough.
+Westwood Studios knocked it out of the park. Best Gold Box-style game.
+Anyone else get wrecked by the drow level? Brutal."""
+
+[[boards.threads.posts]]
+id = 2
+author = "RollD20"
+subject = "Re: Eye of the Beholder 2 -- completed it?"
+timestamp = "03/06/93 10:20"
+body = """
+Got stuck on the drow level for two weeks. Tip: protection from poison is mandatory.
+The final boss felt anticlimactic after all that but the journey was worth it.
+Eye of the Beholder 3 is in development supposedly. Can't come soon enough."""
+
+# ── D&D ──────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "dnd"
+name = "D&D"
+
+[[boards.threads]]
+id = 1
+subject = "Planescape setting -- anyone running a campaign?"
+
+[[boards.threads.posts]]
+id = 1
+author = "DiceGoblin"
+subject = "Planescape setting -- anyone running a campaign?"
+timestamp = "01/20/93 19:30"
+body = """
+TSR just released Planescape. The art direction from Tony DiTerlizzi is stunning.
+The cant (faction language) takes getting used to but adds real texture.
+Running a campaign set in Sigil with a Tiefling Thief as the main character.
+The Lady of Pain as a background threat is deliciously ominous."""
+
+[[boards.threads.posts]]
+id = 2
+author = "CampaignNerd"
+subject = "Re: Planescape setting -- anyone running a campaign?"
+timestamp = "01/21/93 14:00"
+body = """
+Ran a one-shot in Planescape last month to test the waters. Players loved it.
+The multiplanar cosmology gives you literally infinite adventure space.
+The faction politics in Sigil alone could sustain a years-long campaign.
+DiTerlizzi's illustrations make everything feel alive and weird in the right way."""
+
+[[boards.threads.posts]]
+id = 3
+author = "DungeonMstr"
+subject = "Re: Planescape setting -- anyone running a campaign?"
+timestamp = "01/22/93 22:15"
+body = """
+Converting my existing FR campaign to Planescape slowly.
+Players found a portal accidentally and now they're in Mechanus.
+The modrons are the most confusing and delightful NPCs I've ever used.
+Highly recommend the Monstrous Compendium appendix -- brilliant creature design."""
+
+[[boards.threads]]
+id = 2
+subject = "2nd Edition AD&D -- better or worse than 1st?"
+
+[[boards.threads.posts]]
+id = 1
+author = "OldSchoolRoller"
+subject = "2nd Edition AD&D -- better or worse than 1st?"
+timestamp = "02/28/93 16:00"
+body = """
+Still running 1st edition. The weapon speed/segment system is fiddly but I love it.
+2nd edition cleaned things up but lost some of the grit in the process.
+The removal of Assassins and Half-Orcs as PC races still annoys me.
+What does everyone prefer at the table?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "RollD20"
+subject = "Re: 2nd Edition AD&D -- better or worse than 1st?"
+timestamp = "03/01/93 11:00"
+body = """
+2nd Ed at my table. The THAC0 system actually makes sense once you internalize it.
+Non-weapon proficiencies added meaningful character customization.
+The Complete books (Priest, Wizard, Fighter, Thief) are excellent supplements.
+The fluff is cleaner -- less chaotic than 1st edition's kitchen-sink approach."""
+
+[[boards.threads.posts]]
+id = 3
+author = "DiceGoblin"
+subject = "Re: 2nd Edition AD&D -- better or worse than 1st?"
+timestamp = "03/02/93 20:30"
+body = """
+Use 2nd Ed rules but 1st Ed sensibility. Best of both worlds.
+Keep demons and devils but use the 2nd Ed proficiency system.
+The real answer is: whatever your table has fun with is the best edition.
+Also AD&D 1st Ed hardcovers are getting cheap at used bookstores lately."""
+
+# ── General ───────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "general"
+name = "General"
+
+[[boards.threads]]
+id = 1
+subject = "Welcome to The Digital Dungeon!"
+
+[[boards.threads.posts]]
+id = 1
+author = "DungeonMstr"
+subject = "Welcome to The Digital Dungeon!"
+timestamp = "11/01/92 18:00"
+body = """
+Welcome to the Dungeon! This BBS is for RPG fans -- tabletop and computer both.
+Three boards: RPG (computer), D&D (tabletop), and this one for everything else.
+No flaming, no warez, no spam. Just good discussion about games we love.
+I'm online most nights 8pm-midnight CST. Drop a message anytime."""
+
+[[boards.threads.posts]]
+id = 2
+author = "RollD20"
+subject = "Re: Welcome to The Digital Dungeon!"
+timestamp = "11/02/92 10:15"
+body = """
+Great to find a quality RPG BBS. Most boards I've found are all warez.
+The RPG board is already the best discussion I've found online.
+Kudos to DungeonMstr for keeping the noise down."""
+
+[[boards.threads]]
+id = 2
+subject = "Origins Awards 1993 -- predictions?"
+
+[[boards.threads.posts]]
+id = 1
+author = "CampaignNerd"
+subject = "Origins Awards 1993 -- predictions?"
+timestamp = "04/01/93 14:00"
+body = """
+Origins is in July this year. Predictions for the game awards?
+Best RPG is probably Planescape or Shadowrun 2nd Ed for tabletop.
+Computer RPG is trickier -- Ultima Underworld 2 or Ultima VII Serpent Isle?
+Dark Sun: Wake of the Ravager is also in the running I think."""
+
+[[boards.threads.posts]]
+id = 2
+author = "DiceGoblin"
+subject = "Re: Origins Awards 1993 -- predictions?"
+timestamp = "04/02/93 09:00"
+body = """
+Going with Planescape for best RPG. TSR marketing machine will push it hard.
+Computer side: Ultima VII Serpent Isle is stunning but UU2 might edge it.
+The Ultima franchise has dominated that category for three years running.
+Dark Sun is a dark horse -- the atrocity cards mechanic is genuinely innovative."""
