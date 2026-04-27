@@ -110,6 +110,17 @@ impl TerminalBuffer {
         }
     }
 
+    /// Remove the character immediately before the cursor on the current line.
+    pub fn backspace(&mut self) {
+        if self.cursor_col == 0 {
+            return; // don't erase onto the previous line
+        }
+        self.cursor_col -= 1;
+        if let Some(line) = self.lines.get_mut(self.cursor_row) {
+            line.truncate(self.cursor_col);
+        }
+    }
+
     /// Draw the buffer contents using macroquad.
     pub fn draw(
         &self,
