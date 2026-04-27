@@ -1,12 +1,15 @@
 use macroquad::prelude::*;
 
-use crate::bbs::data::BbsEntry;
+use crate::bbs::boards::hardcoded_boards;
+use crate::bbs::data::{BbsEntry, Board};
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
+use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
+use crate::tui::menus::render_main_menu;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
 // Palette constants reused across tick methods.
@@ -25,6 +28,7 @@ pub enum Screen {
     Login,
     MainMenu,
     MessageBoards,
+    ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
     ComposeMessage,
     Files,
@@ -128,6 +132,10 @@ pub struct App {
     pub dial: Option<DialingState>,
     pub login: Option<LoginState>,
     pub session: Session,
+    pub boards: Vec<Board>,
+    pub selected_board_row: usize,
+    pub selected_thread_row: usize,
+    pub read_scroll: usize,
 }
 
 impl App {
@@ -140,25 +148,41 @@ impl App {
             dial: None,
             login: None,
             session: Session::new(),
+            boards: hardcoded_boards(),
+            selected_board_row: 0,
+            selected_thread_row: 0,
+            read_scroll: 0,
         }
     }
 
     pub fn render(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer  => render_dialer(self),
-            Screen::Dialing => render_dialing(self),
-            Screen::Login   => render_login(self),
-            _               => render_stub(),
+            Screen::Dialer      => render_dialer(self),
+            Screen::Dialing     => render_dialing(self),
+            Screen::Login       => render_login(self),
+            Screen::MainMenu    => render_main_menu(self),
+            Screen::MessageBoards => render_message_boards(self),
+            Screen::ThreadList { ref board_id } => render_thread_list(self, board_id),
+            Screen::ReadThread { ref board_id, thread_id } => {
+                render_read_thread(self, board_id, thread_id)
+            }
+            _ => render_stub(),
         }
     }
 
     pub fn handle_input(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer  => self.dialer_input(),
-            Screen::Dialing => self.dialing_input(),
-            Screen::Login   => self.login_input(),
+            Screen::Dialer      => self.dialer_input(),
+            Screen::Dialing     => self.dialing_input(),
+            Screen::Login       => self.login_input(),
+            Screen::MainMenu    => self.main_menu_input(),
+            Screen::MessageBoards => self.message_boards_input(),
+            Screen::ThreadList { board_id } => self.thread_list_input(board_id),
+            Screen::ReadThread { board_id, thread_id } => {
+                self.read_thread_input(board_id, thread_id)
+            }
             _ => {
                 if is_key_pressed(KeyCode::Escape) {
                     self.screen = Screen::Dialer;
@@ -360,6 +384,149 @@ impl App {
                 let echo = if step == LoginStep::Password { '*' } else { ch };
                 d.buffer.push_char(echo, CellStyle::fg(INPUT_GREEN));
             }
+        }
+    }
+
+    // ── Input: main menu ─────────────────────────────────────────────────────
+
+    fn main_menu_input(&mut self) {
+        while let Some(ch) = get_char_pressed() {
+            match ch.to_ascii_lowercase() {
+                'm' => {
+                    self.selected_board_row = 0;
+                    self.screen = Screen::MessageBoards;
+                }
+                'f' => {
+                    self.screen = Screen::Files;
+                }
+                'g' | 'l' => {
+                    self.session.logout();
+                    self.screen = Screen::Dialer;
+                }
+                _ => {}
+            }
+        }
+        if is_key_pressed(KeyCode::Escape) {
+            self.session.logout();
+            self.screen = Screen::Dialer;
+        }
+    }
+
+    // ── Input: message boards ────────────────────────────────────────────────
+
+    fn message_boards_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+
+        let len = self.boards.len();
+
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_board_row =
+                if self.selected_board_row == 0 { len.saturating_sub(1) }
+                else { self.selected_board_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_board_row =
+                if self.selected_board_row + 1 >= len { 0 }
+                else { self.selected_board_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'k' => {
+                    self.selected_board_row =
+                        if self.selected_board_row == 0 { len.saturating_sub(1) }
+                        else { self.selected_board_row - 1 };
+                }
+                'j' => {
+                    self.selected_board_row =
+                        if self.selected_board_row + 1 >= len { 0 }
+                        else { self.selected_board_row + 1 };
+                }
+                _ => {}
+            }
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            if let Some(board) = self.boards.get(self.selected_board_row) {
+                let board_id = board.id.clone();
+                self.selected_thread_row = 0;
+                self.screen = Screen::ThreadList { board_id };
+            }
+        }
+    }
+
+    // ── Input: thread list ───────────────────────────────────────────────────
+
+    fn thread_list_input(&mut self, board_id: String) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MessageBoards;
+            return;
+        }
+
+        let len = self.boards.iter()
+            .find(|b| b.id == board_id)
+            .map(|b| b.threads.len())
+            .unwrap_or(0);
+
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_thread_row =
+                if self.selected_thread_row == 0 { len.saturating_sub(1) }
+                else { self.selected_thread_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_thread_row =
+                if self.selected_thread_row + 1 >= len { 0 }
+                else { self.selected_thread_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'k' => {
+                    self.selected_thread_row =
+                        if self.selected_thread_row == 0 { len.saturating_sub(1) }
+                        else { self.selected_thread_row - 1 };
+                }
+                'j' => {
+                    self.selected_thread_row =
+                        if self.selected_thread_row + 1 >= len { 0 }
+                        else { self.selected_thread_row + 1 };
+                }
+                _ => {}
+            }
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            if let Some(board) = self.boards.iter().find(|b| b.id == board_id) {
+                if let Some(thread) = board.threads.get(self.selected_thread_row) {
+                    let thread_id = thread.id;
+                    self.read_scroll = 0;
+                    self.screen = Screen::ReadThread { board_id, thread_id };
+                }
+            }
+        }
+    }
+
+    // ── Input: read thread ───────────────────────────────────────────────────
+
+    fn read_thread_input(&mut self, board_id: String, _thread_id: u32) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::ThreadList { board_id };
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.read_scroll = self.read_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.read_scroll += 1;
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.read_scroll = self.read_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.read_scroll += 10;
         }
     }
 }

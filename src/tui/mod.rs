@@ -1,4 +1,5 @@
 pub mod ansi;
+pub mod boards;
 pub mod dialer;
 pub mod dialing;
 pub mod login;
