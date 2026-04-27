@@ -1,155 +1,153 @@
-use ratatui::{
-    layout::{Constraint, Direction, Layout},
-    style::{Color, Modifier, Style},
-    text::{Line, Span},
-    widgets::{Block, Borders, Cell, Paragraph, Row, Table},
-    Frame,
-};
+use macroquad::prelude::*;
 
 use crate::app::App;
 
-const HEADER_ART: &str = concat!(
-    "  ██████╗ ██████╗ ███████╗       ███████╗██╗███╗   ███╗\n",
-    "  ██╔══██╗██╔══██╗██╔════╝       ██╔════╝██║████╗ ████║\n",
-    "  ██████╔╝██████╔╝███████╗ █████╗███████╗██║██╔████╔██║\n",
-    "  ██╔══██╗██╔══██╗╚════██║ ╚════╝╚════██║██║██║╚██╔╝██║\n",
-    "  ██████╔╝██████╔╝███████║       ███████║██║██║ ╚═╝ ██║\n",
-    "  ╚═════╝ ╚═════╝ ╚══════╝       ╚══════╝╚═╝╚═╝     ╚═╝"
-);
+const FONT_SIZE: f32 = 18.0;
+const CYAN: Color = Color::new(0.0, 0.87, 0.87, 1.0);
+const CHAR_H: f32 = FONT_SIZE * 1.3;
 
-pub fn render_dialer(frame: &mut Frame, app: &mut App) {
-    let area = frame.area();
+// TODO: replace with a TTF font that covers box-drawing (U+2500-U+257F) for
+//       authentic borders. The built-in macroquad bitmap font is ASCII-only.
+const HEADER_ART: &[&str] = &[
+    r"  ____  ____  ____       ____  ___ __  __ ",
+    r" | __ )| __ )/ ___|     / ___|_ _|  \/  |",
+    r" |  _ \|  _ \\___ \ ____\___ \| || |\/| |",
+    r" | |_) | |_) |___) |____|__) | || |  | |",
+    r" |____/|____/|____/     |____/___|_|  |_|",
+    r"   Bulletin Board System Simulator v0.1   ",
+];
 
-    let chunks = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(8),  // ASCII art header
-            Constraint::Min(5),     // phonebook table
-            Constraint::Length(3),  // help bar
-        ])
-        .split(area);
+const HEADER_ROWS: usize = 6;
 
-    // ── Header ──────────────────────────────────────────────────────────────
-    let header = Paragraph::new(HEADER_ART)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title("  BBS-SIM v0.1.0 — PHONEBOOK DIALER  ")
-                .title_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
-                .style(Style::default().fg(Color::Green)),
+pub fn render_dialer(app: &App) {
+    let sw = screen_width();
+    let sh = screen_height();
+
+    let header_h = CHAR_H * (HEADER_ROWS as f32 + 2.0); // art + padding
+    let footer_h = CHAR_H * 2.5;
+    let table_y = header_h;
+    let footer_y = sh - footer_h;
+
+    // ── Header zone ──────────────────────────────────────────────────────────
+    draw_rectangle_lines(1.0, 1.0, sw - 2.0, header_h - 1.0, 1.5, DARKGRAY);
+
+    // Title line
+    let title = "  BBS-SIM v0.1.0 -- PHONEBOOK DIALER  ";
+    draw_text_ex(
+        title,
+        8.0,
+        CHAR_H,
+        TextParams { font_size: FONT_SIZE as u16, color: YELLOW, ..Default::default() },
+    );
+
+    // ASCII art
+    for (i, line) in HEADER_ART.iter().enumerate() {
+        draw_text_ex(
+            line,
+            8.0,
+            CHAR_H * (i as f32 + 2.0),
+            TextParams { font_size: FONT_SIZE as u16, color: GREEN, ..Default::default() },
         );
-    frame.render_widget(header, chunks[0]);
+    }
 
-    // ── Phonebook table ──────────────────────────────────────────────────────
-    let col_header = Row::new([
-        Cell::from("  BBS NAME").style(
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD | Modifier::UNDERLINED),
-        ),
-        Cell::from("PHONE NUMBER").style(
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD | Modifier::UNDERLINED),
-        ),
-        Cell::from("BAUD").style(
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD | Modifier::UNDERLINED),
-        ),
-        Cell::from("LAST CALLED").style(
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD | Modifier::UNDERLINED),
-        ),
-    ])
-    .height(1)
-    .bottom_margin(1);
+    // ── Table zone ───────────────────────────────────────────────────────────
+    draw_rectangle_lines(1.0, table_y, sw - 2.0, footer_y - table_y - 1.0, 1.5, DARKGRAY);
+    draw_text_ex(
+        " PHONEBOOK ",
+        8.0,
+        table_y + CHAR_H * 0.8,
+        TextParams { font_size: FONT_SIZE as u16, color: CYAN, ..Default::default() },
+    );
 
-    let rows: Vec<Row> = app
-        .phonebook
+    // Column layout — cumulative x offsets matching percentage widths
+    let col_pct = [0.42_f32, 0.22, 0.12, 0.24];
+    let col_x: Vec<f32> = col_pct
         .iter()
-        .map(|entry| {
-            let last = entry.last_called.as_deref().unwrap_or("Never");
-            Row::new([
-                Cell::from(format!("  {}", entry.name)),
-                Cell::from(entry.number.clone()),
-                Cell::from(format!("{}", entry.baud)),
-                Cell::from(last.to_string()),
-            ])
-            .style(Style::default().fg(Color::Green))
+        .scan(4.0_f32, |acc, &p| {
+            let x = *acc;
+            *acc += sw * p;
+            Some(x)
         })
         .collect();
 
-    let table = Table::new(
-        rows,
-        [
-            Constraint::Percentage(42),
-            Constraint::Percentage(22),
-            Constraint::Percentage(12),
-            Constraint::Percentage(24),
-        ],
-    )
-    .header(col_header)
-    .block(
-        Block::default()
-            .borders(Borders::ALL)
-            .title(" PHONEBOOK ")
-            .title_style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
-            .style(Style::default().fg(Color::DarkGray)),
-    )
-    .row_highlight_style(
-        Style::default()
-            .bg(Color::DarkGray)
-            .fg(Color::LightGreen)
-            .add_modifier(Modifier::BOLD),
-    )
-    .highlight_symbol("►  ");
+    // Column headers
+    let header_y = table_y + CHAR_H * 1.8;
+    let col_labels = ["  BBS NAME", "PHONE NUMBER", "BAUD", "LAST CALLED"];
+    for (i, label) in col_labels.iter().enumerate() {
+        draw_text_ex(
+            label,
+            col_x[i],
+            header_y,
+            TextParams { font_size: FONT_SIZE as u16, color: YELLOW, ..Default::default() },
+        );
+    }
 
-    frame.render_stateful_widget(table, chunks[1], &mut app.dialer_state);
+    // Divider under headers
+    draw_line(4.0, header_y + 4.0, sw - 4.0, header_y + 4.0, 1.0, DARKGRAY);
 
-    // ── Help bar ─────────────────────────────────────────────────────────────
-    let help = Paragraph::new(Line::from(vec![
-        Span::styled(
-            "  [↑↓/jk]",
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD),
-        ),
-        Span::styled(" Navigate  ", Style::default().fg(Color::DarkGray)),
-        Span::styled(
-            "[D]",
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD),
-        ),
-        Span::styled(" Dial  ", Style::default().fg(Color::DarkGray)),
-        Span::styled(
-            "[A]",
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD),
-        ),
-        Span::styled(" Add  ", Style::default().fg(Color::DarkGray)),
-        Span::styled(
-            "[Del]",
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD),
-        ),
-        Span::styled(" Remove  ", Style::default().fg(Color::DarkGray)),
-        Span::styled(
-            "[Q/Esc]",
-            Style::default()
-                .fg(Color::Yellow)
-                .add_modifier(Modifier::BOLD),
-        ),
-        Span::styled(" Quit", Style::default().fg(Color::DarkGray)),
-    ]))
-    .block(
-        Block::default()
-            .borders(Borders::ALL)
-            .style(Style::default().fg(Color::DarkGray)),
-    );
-    frame.render_widget(help, chunks[2]);
+    // Data rows
+    let row_start_y = header_y + CHAR_H * 1.4;
+    for (i, entry) in app.phonebook.iter().enumerate() {
+        let ry = row_start_y + i as f32 * CHAR_H * 1.25;
+
+        // Clip rows that would overflow into footer
+        if ry + CHAR_H > footer_y {
+            break;
+        }
+
+        let selected = i == app.selected_row;
+        let (fg, prefix) = if selected {
+            draw_rectangle(2.0, ry - CHAR_H + 4.0, sw - 4.0, CHAR_H + 2.0, Color::new(0.0, 0.25, 0.0, 1.0));
+            (GREEN, "►  ")
+        } else {
+            (Color::new(0.0, 0.65, 0.0, 1.0), "   ")
+        };
+
+        let last = entry.last_called.as_deref().unwrap_or("Never");
+        let cells = [
+            format!("{}{}", prefix, entry.name),
+            entry.number.clone(),
+            entry.baud.to_string(),
+            last.to_string(),
+        ];
+
+        for (j, cell) in cells.iter().enumerate() {
+            draw_text_ex(
+                cell,
+                col_x[j],
+                ry,
+                TextParams { font_size: FONT_SIZE as u16, color: fg, ..Default::default() },
+            );
+        }
+    }
+
+    // ── Footer / help bar ────────────────────────────────────────────────────
+    draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, DARKGRAY);
+
+    let hints: &[(&str, &str)] = &[
+        ("[↑↓/jk]", " Navigate  "),
+        ("[D]", " Dial  "),
+        ("[A]", " Add  "),
+        ("[Del]", " Remove  "),
+        ("[Q/Esc]", " Quit"),
+    ];
+
+    let mut hx = 8.0;
+    let hy = footer_y + CHAR_H * 1.2;
+    for (key, desc) in hints {
+        draw_text_ex(
+            key,
+            hx,
+            hy,
+            TextParams { font_size: FONT_SIZE as u16, color: YELLOW, ..Default::default() },
+        );
+        hx += measure_text(key, None, FONT_SIZE as u16, 1.0).width;
+        draw_text_ex(
+            desc,
+            hx,
+            hy,
+            TextParams { font_size: FONT_SIZE as u16, color: DARKGRAY, ..Default::default() },
+        );
+        hx += measure_text(desc, None, FONT_SIZE as u16, 1.0).width;
+    }
 }

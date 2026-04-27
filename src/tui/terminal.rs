@@ -1,30 +1,53 @@
 #![allow(dead_code)]
 
-use ratatui::{
-    style::Style,
-    text::{Line, Span, Text},
-};
+use macroquad::prelude::*;
 
-#[derive(Clone)]
+// ---------------------------------------------------------------------------
+// CellStyle — replaces ratatui::style::Style
+// ---------------------------------------------------------------------------
+
+#[derive(Clone, Copy, Debug)]
+pub struct CellStyle {
+    pub fg: Color,
+    pub bg: Option<Color>,
+    pub bold: bool,
+}
+
+impl CellStyle {
+    pub fn plain() -> Self {
+        Self { fg: GREEN, bg: None, bold: false }
+    }
+
+    pub fn fg(color: Color) -> Self {
+        Self { fg: color, bg: None, bold: false }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// StyledChar
+// ---------------------------------------------------------------------------
+
+#[derive(Clone, Copy)]
 pub struct StyledChar {
     pub ch: char,
-    pub style: Style,
+    pub style: CellStyle,
 }
 
 impl StyledChar {
     pub fn plain(ch: char) -> Self {
-        Self {
-            ch,
-            style: Style::default(),
-        }
+        Self { ch, style: CellStyle::plain() }
     }
 
-    pub fn styled(ch: char, style: Style) -> Self {
+    pub fn styled(ch: char, style: CellStyle) -> Self {
         Self { ch, style }
     }
 }
 
-/// Scrolling character buffer for BBS terminal output.
+// ---------------------------------------------------------------------------
+// TerminalBuffer
+// ---------------------------------------------------------------------------
+
+/// Scrolling character grid for BBS terminal output.
 pub struct TerminalBuffer {
     pub lines: Vec<Vec<StyledChar>>,
     pub cursor_row: usize,
@@ -44,7 +67,7 @@ impl TerminalBuffer {
         }
     }
 
-    pub fn push_char(&mut self, ch: char, style: Style) {
+    pub fn push_char(&mut self, ch: char, style: CellStyle) {
         match ch {
             '\r' => {
                 self.cursor_col = 0;
@@ -72,25 +95,10 @@ impl TerminalBuffer {
         }
     }
 
-    pub fn push_str(&mut self, s: &str, style: Style) {
+    pub fn push_str(&mut self, s: &str, style: CellStyle) {
         for ch in s.chars() {
             self.push_char(ch, style);
         }
-    }
-
-    pub fn as_text(&self) -> Text<'static> {
-        let lines: Vec<Line<'static>> = self
-            .lines
-            .iter()
-            .map(|row| {
-                let spans: Vec<Span<'static>> = row
-                    .iter()
-                    .map(|sc| Span::styled(sc.ch.to_string(), sc.style))
-                    .collect();
-                Line::from(spans)
-            })
-            .collect();
-        Text::from(lines)
     }
 
     /// Returns the last `height` lines for rendering.
@@ -99,6 +107,42 @@ impl TerminalBuffer {
             &self.lines
         } else {
             &self.lines[self.lines.len() - height..]
+        }
+    }
+
+    /// Draw the buffer contents using macroquad.
+    pub fn draw(
+        &self,
+        origin_x: f32,
+        origin_y: f32,
+        char_w: f32,
+        char_h: f32,
+        font: Option<&Font>,
+        font_size: u16,
+        rows_visible: usize,
+    ) {
+        for (row, line) in self.visible_lines(rows_visible).iter().enumerate() {
+            for (col, sc) in line.iter().enumerate() {
+                let x = origin_x + col as f32 * char_w;
+                let y = origin_y + row as f32 * char_h + char_h; // baseline offset
+
+                if let Some(bg) = sc.style.bg {
+                    draw_rectangle(x, y - char_h, char_w, char_h, bg);
+                }
+
+                let s = sc.ch.to_string();
+                draw_text_ex(
+                    &s,
+                    x,
+                    y,
+                    TextParams {
+                        font,
+                        font_size,
+                        color: sc.style.fg,
+                        ..Default::default()
+                    },
+                );
+            }
         }
     }
 }

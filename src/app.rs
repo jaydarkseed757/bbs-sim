@@ -1,5 +1,4 @@
-use crossterm::event::{KeyCode, KeyEvent, KeyEventKind};
-use ratatui::{widgets::TableState, Frame};
+use macroquad::prelude::*;
 
 use crate::bbs::data::BbsEntry;
 use crate::sim::modem::DialPhase;
@@ -30,40 +29,33 @@ pub struct App {
     pub screen: Screen,
     pub should_quit: bool,
     pub phonebook: Vec<BbsEntry>,
-    pub dialer_state: TableState,
+    pub selected_row: usize,
 }
 
 impl App {
     pub fn new() -> Self {
-        let mut dialer_state = TableState::default();
-        dialer_state.select(Some(0));
-
         Self {
             screen: Screen::Dialer,
             should_quit: false,
             phonebook: hardcoded_phonebook(),
-            dialer_state,
+            selected_row: 0,
         }
     }
 
-    pub fn render(&mut self, frame: &mut Frame) {
+    pub fn render(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer => render_dialer(frame, self),
-            // All other screens are stubs — render a placeholder.
-            _ => render_stub(frame),
+            Screen::Dialer => render_dialer(self),
+            _ => render_stub(),
         }
     }
 
-    pub fn handle_input(&mut self, key: KeyEvent) {
-        if key.kind != KeyEventKind::Press {
-            return;
-        }
+    pub fn handle_input(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer => self.dialer_input(key),
+            Screen::Dialer => self.dialer_input(),
             _ => {
-                if key.code == KeyCode::Esc {
+                if is_key_pressed(KeyCode::Escape) {
                     self.screen = Screen::Dialer;
                 }
             }
@@ -76,61 +68,57 @@ impl App {
 
     // ── Dialer input ────────────────────────────────────────────────────────
 
-    fn dialer_input(&mut self, key: KeyEvent) {
+    fn dialer_input(&mut self) {
         let len = self.phonebook.len();
-        match key.code {
-            KeyCode::Esc | KeyCode::Char('q') | KeyCode::Char('Q') => {
-                self.should_quit = true;
-            }
-            KeyCode::Down | KeyCode::Char('j') => {
-                let next = self
-                    .dialer_state
-                    .selected()
-                    .map(|i| if i + 1 >= len { 0 } else { i + 1 })
-                    .unwrap_or(0);
-                self.dialer_state.select(Some(next));
-            }
-            KeyCode::Up | KeyCode::Char('k') => {
-                let prev = self
-                    .dialer_state
-                    .selected()
-                    .map(|i| if i == 0 { len.saturating_sub(1) } else { i - 1 })
-                    .unwrap_or(0);
-                self.dialer_state.select(Some(prev));
-            }
-            KeyCode::Char('d') | KeyCode::Char('D') => {
-                if let Some(idx) = self.dialer_state.selected() {
-                    if let Some(bbs) = self.phonebook.get(idx).cloned() {
+
+        // Arrow keys (edge-triggered)
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_row = if self.selected_row == 0 { len.saturating_sub(1) } else { self.selected_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_row = if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
+        }
+        if is_key_pressed(KeyCode::Escape) {
+            self.should_quit = true;
+        }
+
+        // Character keys
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                'q' | 'Q' => self.should_quit = true,
+                'j' => {
+                    self.selected_row = if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
+                }
+                'k' => {
+                    self.selected_row = if self.selected_row == 0 { len.saturating_sub(1) } else { self.selected_row - 1 };
+                }
+                'd' | 'D' => {
+                    if let Some(bbs) = self.phonebook.get(self.selected_row).cloned() {
                         self.screen = Screen::Dialing {
                             bbs,
                             phase: DialPhase::PickingUpLine,
                         };
                     }
                 }
+                _ => {}
             }
-            _ => {}
         }
     }
 }
 
 // ---------------------------------------------------------------------------
-// Placeholder render for unimplemented screens
+// Placeholder for unimplemented screens
 // ---------------------------------------------------------------------------
 
-fn render_stub(frame: &mut Frame) {
-    use ratatui::{
-        style::{Color, Style},
-        text::Line,
-        widgets::{Block, Borders, Paragraph},
-    };
-    let msg = Paragraph::new(Line::from("  Screen not yet implemented — press [Esc] to return."))
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .title(" BBS-SIM ")
-                .style(Style::default().fg(Color::DarkGray)),
-        );
-    frame.render_widget(msg, frame.area());
+fn render_stub() {
+    draw_rectangle_lines(0.0, 0.0, screen_width(), screen_height(), 2.0, DARKGRAY);
+    draw_text(
+        "Screen not yet implemented -- press [Esc] to return.",
+        16.0,
+        32.0,
+        20.0,
+        WHITE,
+    );
 }
 
 // ---------------------------------------------------------------------------
