@@ -1,14 +1,16 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::hardcoded_boards;
-use crate::bbs::data::{BbsEntry, Board};
+use crate::bbs::data::{BbsEntry, Board, Message, Thread};
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
+use crate::tui::compose::render_compose;
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
+use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
@@ -30,9 +32,60 @@ pub enum Screen {
     MessageBoards,
     ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
-    ComposeMessage,
+    ComposeMessage { board_id: String, thread_id: Option<u32> },
     Files,
     Logout,
+}
+
+// ---------------------------------------------------------------------------
+// ComposeField / ComposeState
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ComposeField {
+    Subject,
+    Body,
+}
+
+pub struct ComposeState {
+    pub board_id: String,
+    pub board_name: String,
+    pub thread_id: Option<u32>,
+    pub reply_subject: String,
+    pub subject: String,
+    pub body: String,
+    pub field: ComposeField,
+}
+
+// ---------------------------------------------------------------------------
+// LogoutState
+// ---------------------------------------------------------------------------
+
+pub struct LogoutState {
+    pub bbs_name: String,
+    pub typer: BaudTyper,
+    pub buffer: TerminalBuffer,
+    pub done: bool,
+}
+
+impl LogoutState {
+    fn new(bbs_name: String, handle: &str, baud: u32) -> Self {
+        let mut typer = BaudTyper::new(baud);
+        let msg = format!(
+            "\r\n\r\nThank you for calling {}!\r\n\
+             Come back soon, {}!\r\n\r\n\
+             Disconnecting...\r\n\r\n\
+             NO CARRIER\r\n",
+            bbs_name, handle
+        );
+        typer.enqueue(&msg);
+        Self {
+            bbs_name,
+            typer,
+            buffer: TerminalBuffer::new(80, 100),
+            done: false,
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -136,6 +189,8 @@ pub struct App {
     pub selected_board_row: usize,
     pub selected_thread_row: usize,
     pub read_scroll: usize,
+    pub compose: Option<ComposeState>,
+    pub logout: Option<LogoutState>,
 }
 
 impl App {
@@ -152,40 +207,46 @@ impl App {
             selected_board_row: 0,
             selected_thread_row: 0,
             read_scroll: 0,
+            compose: None,
+            logout: None,
         }
     }
 
     pub fn render(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer      => render_dialer(self),
-            Screen::Dialing     => render_dialing(self),
-            Screen::Login       => render_login(self),
-            Screen::MainMenu    => render_main_menu(self),
+            Screen::Dialer        => render_dialer(self),
+            Screen::Dialing       => render_dialing(self),
+            Screen::Login         => render_login(self),
+            Screen::MainMenu      => render_main_menu(self),
             Screen::MessageBoards => render_message_boards(self),
             Screen::ThreadList { ref board_id } => render_thread_list(self, board_id),
             Screen::ReadThread { ref board_id, thread_id } => {
                 render_read_thread(self, board_id, thread_id)
             }
-            _ => render_stub(),
+            Screen::ComposeMessage { .. } => render_compose(self),
+            Screen::Logout        => render_logout(self),
+            Screen::Files         => render_stub(),
         }
     }
 
     pub fn handle_input(&mut self) {
         let screen = self.screen.clone();
         match screen {
-            Screen::Dialer      => self.dialer_input(),
-            Screen::Dialing     => self.dialing_input(),
-            Screen::Login       => self.login_input(),
-            Screen::MainMenu    => self.main_menu_input(),
+            Screen::Dialer        => self.dialer_input(),
+            Screen::Dialing       => self.dialing_input(),
+            Screen::Login         => self.login_input(),
+            Screen::MainMenu      => self.main_menu_input(),
             Screen::MessageBoards => self.message_boards_input(),
             Screen::ThreadList { board_id } => self.thread_list_input(board_id),
             Screen::ReadThread { board_id, thread_id } => {
                 self.read_thread_input(board_id, thread_id)
             }
-            _ => {
+            Screen::ComposeMessage { .. } => self.compose_input(),
+            Screen::Logout        => self.logout_input(),
+            Screen::Files => {
                 if is_key_pressed(KeyCode::Escape) {
-                    self.screen = Screen::Dialer;
+                    self.screen = Screen::MainMenu;
                 }
             }
         }
@@ -195,6 +256,7 @@ impl App {
         match self.screen.clone() {
             Screen::Dialing => self.tick_dialing(),
             Screen::Login   => self.tick_login(),
+            Screen::Logout  => self.tick_logout(),
             _               => {}
         }
     }
@@ -400,15 +462,13 @@ impl App {
                     self.screen = Screen::Files;
                 }
                 'g' | 'l' => {
-                    self.session.logout();
-                    self.screen = Screen::Dialer;
+                    self.begin_logout();
                 }
                 _ => {}
             }
         }
         if is_key_pressed(KeyCode::Escape) {
-            self.session.logout();
-            self.screen = Screen::Dialer;
+            self.begin_logout();
         }
     }
 
@@ -494,6 +554,25 @@ impl App {
                         if self.selected_thread_row + 1 >= len { 0 }
                         else { self.selected_thread_row + 1 };
                 }
+                'n' => {
+                    if let Some(board) = self.boards.iter().find(|b| b.id == board_id) {
+                        let board_name = board.name.clone();
+                        self.compose = Some(ComposeState {
+                            board_id: board_id.clone(),
+                            board_name,
+                            thread_id: None,
+                            reply_subject: String::new(),
+                            subject: String::new(),
+                            body: String::new(),
+                            field: ComposeField::Subject,
+                        });
+                        self.screen = Screen::ComposeMessage {
+                            board_id,
+                            thread_id: None,
+                        };
+                        return;
+                    }
+                }
                 _ => {}
             }
         }
@@ -511,7 +590,7 @@ impl App {
 
     // ── Input: read thread ───────────────────────────────────────────────────
 
-    fn read_thread_input(&mut self, board_id: String, _thread_id: u32) {
+    fn read_thread_input(&mut self, board_id: String, thread_id: u32) {
         if is_key_pressed(KeyCode::Escape) {
             self.screen = Screen::ThreadList { board_id };
             return;
@@ -528,6 +607,190 @@ impl App {
         if is_key_pressed(KeyCode::PageDown) {
             self.read_scroll += 10;
         }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch == 'r' {
+                let board_name = self.boards.iter()
+                    .find(|b| b.id == board_id)
+                    .map(|b| b.name.clone())
+                    .unwrap_or_default();
+                let reply_subject = self.boards.iter()
+                    .find(|b| b.id == board_id)
+                    .and_then(|b| b.threads.iter().find(|t| t.id == thread_id))
+                    .map(|t| t.subject.clone())
+                    .unwrap_or_default();
+                self.compose = Some(ComposeState {
+                    board_id: board_id.clone(),
+                    board_name,
+                    thread_id: Some(thread_id),
+                    reply_subject,
+                    subject: String::new(),
+                    body: String::new(),
+                    field: ComposeField::Body,
+                });
+                self.screen = Screen::ComposeMessage {
+                    board_id,
+                    thread_id: Some(thread_id),
+                };
+                return;
+            }
+        }
+    }
+
+    // ── Input: compose ───────────────────────────────────────────────────────
+
+    fn compose_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            let (board_id, thread_id) = self.compose.as_ref()
+                .map(|c| (c.board_id.clone(), c.thread_id))
+                .unwrap_or_default();
+            self.compose = None;
+            self.screen = match thread_id {
+                Some(tid) => Screen::ReadThread { board_id, thread_id: tid },
+                None      => Screen::ThreadList { board_id },
+            };
+            return;
+        }
+
+        if is_key_pressed(KeyCode::F1) {
+            self.do_post();
+            return;
+        }
+
+        let Some(ref mut compose) = self.compose else { return };
+
+        if compose.thread_id.is_none() && is_key_pressed(KeyCode::Tab) {
+            compose.field = match compose.field {
+                ComposeField::Subject => ComposeField::Body,
+                ComposeField::Body    => ComposeField::Subject,
+            };
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Enter) {
+            match compose.field {
+                ComposeField::Subject => { compose.field = ComposeField::Body; }
+                ComposeField::Body    => { compose.body.push('\n'); }
+            }
+            return;
+        }
+
+        if is_key_pressed(KeyCode::Backspace) {
+            match compose.field {
+                ComposeField::Subject => { compose.subject.pop(); }
+                ComposeField::Body    => { compose.body.pop(); }
+            }
+            return;
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if ch.is_ascii() && !ch.is_control() {
+                match compose.field {
+                    ComposeField::Subject => {
+                        if compose.subject.len() < 60 {
+                            compose.subject.push(ch);
+                        }
+                    }
+                    ComposeField::Body => {
+                        compose.body.push(ch);
+                    }
+                }
+            }
+        }
+    }
+
+    fn do_post(&mut self) {
+        let Some(ref compose) = self.compose else { return };
+        if compose.thread_id.is_none() && compose.subject.trim().is_empty() { return; }
+        if compose.body.trim().is_empty() { return; }
+
+        let handle    = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
+        let timestamp = "04/27/93 12:00".to_string();
+        let board_id  = compose.board_id.clone();
+        let thread_id = compose.thread_id;
+        let subject   = compose.subject.clone();
+        let body      = compose.body.trim_end().to_string();
+
+        if let Some(board) = self.boards.iter_mut().find(|b| b.id == board_id) {
+            if let Some(tid) = thread_id {
+                if let Some(thread) = board.threads.iter_mut().find(|t| t.id == tid) {
+                    let msg_id = thread.posts.len() as u32 + 1;
+                    thread.posts.push(Message {
+                        id: msg_id,
+                        author: handle,
+                        subject: format!("Re: {}", thread.subject),
+                        body,
+                        timestamp,
+                    });
+                }
+                self.compose    = None;
+                self.read_scroll = usize::MAX; // clamped in render
+                self.screen = Screen::ReadThread { board_id, thread_id: tid };
+            } else {
+                let new_tid = board.threads.iter().map(|t| t.id).max().unwrap_or(0) + 1;
+                board.threads.push(Thread {
+                    id: new_tid,
+                    subject: subject.clone(),
+                    posts: vec![Message {
+                        id: 1,
+                        author: handle,
+                        subject,
+                        body,
+                        timestamp,
+                    }],
+                });
+                let last = board.threads.len() - 1;
+                self.compose             = None;
+                self.selected_thread_row = last;
+                self.screen = Screen::ThreadList { board_id };
+            }
+        }
+    }
+
+    // ── Input / tick: logout ─────────────────────────────────────────────────
+
+    fn logout_input(&mut self) {
+        let done = self.logout.as_ref().map(|s| s.done).unwrap_or(false);
+        if is_key_pressed(KeyCode::Escape)
+            || (done && (is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some()))
+        {
+            self.finish_logout();
+        }
+    }
+
+    fn tick_logout(&mut self) {
+        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        if let Some(ref mut state) = self.logout {
+            for ch in state.typer.tick() {
+                state.buffer.push_char(ch, CellStyle::fg(green));
+            }
+            if state.typer.is_empty() {
+                state.done = true;
+            }
+        }
+    }
+
+    fn begin_logout(&mut self) {
+        let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
+        let handle   = self.session.user_handle.clone().unwrap_or_default();
+        let baud     = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.baud)
+            .unwrap_or(2400);
+        self.logout = Some(LogoutState::new(bbs_name, &handle, baud));
+        self.screen = Screen::Logout;
+    }
+
+    fn finish_logout(&mut self) {
+        if let Some(ref state) = self.logout {
+            let bbs_name = state.bbs_name.clone();
+            if let Some(entry) = self.phonebook.iter_mut().find(|e| e.name == bbs_name) {
+                entry.last_called = Some("04/27/93".into());
+            }
+        }
+        self.session.logout();
+        self.logout = None;
+        self.screen = Screen::Dialer;
     }
 }
 

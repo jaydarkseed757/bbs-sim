@@ -123,6 +123,7 @@ pub fn render_thread_list(app: &App, board_id: &str) {
     draw_hint_bar(footer_y + CHAR_H * 1.2, &[
         ("[↑↓/jk]", " Navigate  "),
         ("[Enter]", " Read Thread  "),
+        ("[N]", " New Thread  "),
         ("[Esc]", " Boards"),
     ]);
 }
@@ -177,6 +178,7 @@ pub fn render_read_thread(app: &App, board_id: &str, thread_id: u32) {
     draw_hint_bar(footer_y + CHAR_H * 1.2, &[
         ("[↑↓]", " Scroll  "),
         ("[PgUp/PgDn]", " Page  "),
+        ("[R]", " Reply  "),
         ("[Esc]", " Back"),
     ]);
 }

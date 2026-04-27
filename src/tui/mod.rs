@@ -1,7 +1,9 @@
 pub mod ansi;
 pub mod boards;
+pub mod compose;
 pub mod dialer;
 pub mod dialing;
 pub mod login;
+pub mod logout;
 pub mod menus;
 pub mod terminal;
