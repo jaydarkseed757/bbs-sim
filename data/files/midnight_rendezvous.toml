@@ -1,0 +1,206 @@
+# Midnight Rendezvous BBS -- file library
+
+[[sections]]
+name = "Phreaking"
+
+[[sections.files]]
+id = 1
+name = "SS7_NOTES.TXT"
+size = "14K"
+date = "03/28/93"
+description = "SS7 signaling architecture -- technical deep dive"
+kind = "text"
+content = """
+SS7 SIGNALING SYSTEM 7 -- TECHNICAL NOTES
+By TelcoGhost / Midnight Rendezvous BBS
+
+This is the architecture document I wish existed when I started.
+
+OVERVIEW:
+
+SS7 (Signaling System 7) is the protocol that controls phone calls
+on the modern PSTN. It handles: call setup and teardown, number
+translation, caller ID delivery, toll-free routing, and roaming for
+mobile (though GSM/cellular specifics differ).
+
+The key architectural decision: SS7 runs on a SEPARATE network from
+the voice traffic it controls. This is Common Channel Signaling (CCS).
+The old system (MF/in-band, what blue boxing exploited) put control
+tones on the same audio channel as voice. SS7 uses packet-switched
+links between switches.
+
+THE COMPONENTS:
+
+Service Switching Point (SSP)
+  Your local central office switch. Originates and terminates calls.
+  Sends query messages upstream for number translation, etc.
+
+Signal Transfer Point (STP)
+  A packet switch for SS7 messages. Routes signaling between SSPs
+  and SCPs. Typically deployed in pairs for redundancy.
+
+Service Control Point (SCP)
+  A database node. Handles queries: "what does 800-555-0100 translate
+  to?", "is this caller ID number valid?", "what roaming agreement
+  applies here?"
+
+CALL FLOW FOR A SIMPLE CALL:
+
+1. You dial. Your local SSP recognizes a complete dialed number.
+2. SSP sends IAM (Initial Address Message) toward destination SSP.
+3. If routing requires database lookup (800 number, etc.), SSP queries
+   SCP via STP. SCP returns routing info.
+4. Destination SSP rings the line. Sends ACM (Address Complete Message)
+   back to originating SSP.
+5. Called party answers. Destination sends ANM (Answer Message).
+6. Voice path is established. SS7 signaling is done for this call.
+7. Either party hangs up. REL (Release) and RLC (Release Complete)
+   messages clear the circuit.
+
+CALLER ID AND ANI:
+
+Caller ID (the display thing) is different from ANI (Automatic Number
+Identification).
+
+ANI is billing-grade -- the originating switch certifies the number.
+Used for 800 calls to bill the recipient correctly. Hard to spoof
+because the originating carrier is accountable.
+
+Caller ID uses CPID (Calling Party ID) in the SS7 IAM. This is NOT
+authenticated. The originating switch sends whatever it wants.
+PBX systems and some specialized services can insert arbitrary numbers.
+CNAM (the name display) is a separate SCP lookup done at the terminating
+end -- it queries a LIDB (Line Information Data Base) with the number.
+
+THE SECURITY PICTURE:
+
+SS7 was designed in the 1970s-80s assuming only telcos had access to it.
+Trust was implicit -- all SS7 nodes were expected to be operated by
+telcos who had physical and logical access controls.
+
+This assumption has always been imperfect (international interconnect
+gives foreign carriers access to message routing) and is getting worse
+as SS7 links are exposed through new carrier interconnect arrangements.
+
+The attacks that are theoretically possible (location tracking via
+MAP/HLR queries in GSM, call interception via routing manipulation)
+are not something a random person can execute -- you need actual SS7
+network access. But the number of entities with that access is growing.
+
+RESOURCES:
+
+Bellcore SR-TSV-002476 (SS7 overview, not classified, just hard to find)
+CCITT Blue Book, Q.700 series (the actual protocol specs)
+Telcordia (formerly Bellcore) technical references -- some via NTIS
+
+-- TelcoGhost / Midnight Rendezvous BBS
+"""
+
+[[sections.files]]
+id = 2
+name = "PHREAK_BK.ZIP"
+size = "430K"
+date = "01/20/93"
+description = "Phreaker's handbook collection -- classic text files"
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Underground"
+
+[[sections.files]]
+id = 3
+name = "HACKCRCK.TXT"
+size = "7K"
+date = "02/10/93"
+description = "Hacker Crackdown -- Sterling excerpt & commentary"
+kind = "text"
+content = """
+THE HACKER CRACKDOWN -- NOTES AND CONTEXT
+By CyberLiberty / Midnight Rendezvous BBS
+
+Bruce Sterling's _The Hacker Crackdown_ was published in 1992. Sterling
+released it for free distribution -- he wanted it read.
+
+WHY THIS BOOK MATTERS:
+
+Sterling is a science fiction writer. He comes to the 1990 Operation
+Sundevil raids without a technical background but with the ability to
+talk to people on both sides and write about them as human beings.
+
+The book has four parts:
+
+Part 1: The history of telephone technology and the culture it created.
+Part 2: The hacker community as Sterling found it in 1990.
+Part 3: The law enforcement world -- the Secret Service, Gail Thackeray,
+        the phone company security people.
+Part 4: The legal aftermath -- the Jackson Games case, the founding
+        of EFF, Phrack trial.
+
+THE SUNDEVIL FRAMING:
+
+Operation Sundevil was a multi-city Secret Service sweep in May 1990.
+The stated target was credit card fraud and phone code trafficking.
+
+The actual execution was broader. Systems were seized based on who used
+them, not what they contained. The Secret Service operated under the
+theory that hacker boards were organized criminal enterprises similar
+to fencing operations.
+
+This was wrong as a factual matter (most boards were not organized that
+way) and counterproductive (it drove the community to encrypt and go
+darker rather than operate openly).
+
+THE LESSON ABOUT CULTURAL DISTANCE:
+
+The most interesting part of the book is watching the cultural gap.
+Hackers thought they were: curious, technically skilled, not hurting
+anyone, doing something analogous to looking through windows.
+
+Law enforcement thought they were: organized criminals, dangerous,
+running a criminal infrastructure.
+
+Both groups were partly right. Neither could talk to the other.
+
+The EFF (Electronic Frontier Foundation) was founded specifically to
+create a group that could speak both languages. Mitch Kapor (Lotus)
+and John Perry Barlow (Grateful Dead lyricist, ranch owner, Compuserve
+user who'd gotten the "manifesto") funded it.
+
+WHERE TO GET IT:
+
+It's on ftp.eff.org. Any decent FTP archive has it. Sterling wanted
+it distributed.
+
+-- CyberLiberty / Midnight Rendezvous BBS
+"""
+
+[[sections.files]]
+id = 4
+name = "2600_BACK.ZIP"
+size = "890K"
+date = "04/01/93"
+description = "2600 magazine issues 1984-1992 -- complete back issues"
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Utils"
+
+[[sections.files]]
+id = 5
+name = "UUENCODE.ZIP"
+size = "14K"
+date = "02/28/93"
+description = "UUENCODE/UUDECODE for DOS -- post binaries on Usenet"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 6
+name = "DIALBACK.ZIP"
+size = "31K"
+date = "03/15/93"
+description = "Dialback security door for PCBoard -- caller verification"
+kind = "binary"
+content = ""

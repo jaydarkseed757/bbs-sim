@@ -1,0 +1,172 @@
+# ELITE FORCE BBS -- file library
+
+[[sections]]
+name = "Warez"
+
+[[sections.files]]
+id = 1
+name = "WPWIN60.ZIP"
+size = "6.3M"
+date = "04/15/93"
+description = "WordPerfect 6.0 for Windows -- cracked by NukeCrew"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 2
+name = "PHOTOSHP.ZIP"
+size = "4.8M"
+date = "03/30/93"
+description = "Adobe Photoshop 2.5 -- cracked, runs without dongle"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 3
+name = "MSWORKS3.ZIP"
+size = "2.2M"
+date = "04/01/93"
+description = "Microsoft Works 3.0 -- patched serial check"
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Phreaking"
+
+[[sections.files]]
+id = 4
+name = "COCOT_GDE.TXT"
+size = "12K"
+date = "03/22/93"
+description = "COCOT payphone guide -- models, quirks, and finds"
+kind = "text"
+content = """
+CUSTOMER-OWNED COIN-OPERATED TELEPHONE (COCOT) GUIDE
+Compiled by 31337 / ELITE FORCE BBS
+
+COCOTs are privately-owned payphones -- not RBOC equipment. They're
+everywhere now: convenience stores, laundromats, small hotels.
+
+The key difference: COCOTs use cheap off-the-shelf hardware and their
+owners often don't bother to update firmware or change default configs.
+RBOC equipment (Western Electric, NEC) is engineered to be locked down.
+COCOTs are engineered to be cheap.
+
+MAJOR MANUFACTURERS (1992-93):
+
+ELCOTEL
+  Most common COCOT in NYC and Chicago.
+  Known for a firmware bug in early units: hitting '0' during the
+  initial answer tone sometimes bypasses the coin requirement and
+  routes you to an operator. Not universal -- depends on firmware rev.
+  The display shows a 4-digit code on power-cycle. Meaningless to us
+  but interesting as a fingerprint.
+
+DAVEL
+  Common in Midwest and South. Solid hardware, fewer quirks.
+  The "test" button on the internal board (accessible if you have the
+  case open) cycles through self-diagnostic modes including displaying
+  the ANI number.
+
+PHONETEL
+  Budget end of the market. Unreliable. Often misconfigured.
+  Some models pass through 950 access code calls (10-10-xxx) without
+  charging -- this varies by unit and programming.
+
+INTELLICALL
+  Higher end. Used by hotel chains. Somewhat better security.
+  The default administrative PIN on early units is 1234 or 1111.
+  Most operators change this. Many don't.
+
+WHAT TO LOOK FOR:
+
+Loose internal panels (some can be opened with a standard flathead)
+Factory stickers with configuration information
+Handset with extended access (operator mode, maintenance menu)
+ANI display behavior -- some units show the ANI they reported to the
+  carrier on the LCD after call completion
+
+LEGAL NOTE:
+
+This document is for educational purposes. Actually opening a COCOT
+case is tampering with telephone equipment and is a federal crime.
+Documenting externally observable behavior in a public location is not.
+
+-- 31337 / ELITE FORCE BBS
+"""
+
+[[sections.files]]
+id = 5
+name = "BOXING_93.TXT"
+size = "18K"
+date = "04/05/93"
+description = "Blue Boxing in 1993 -- historical & technical overview"
+kind = "text"
+content = """
+BLUE BOXING IN 1993: A TECHNICAL AND HISTORICAL OVERVIEW
+By 31337 / ELITE FORCE BBS
+
+This is a historical document. The techniques described here no longer
+work on most of the US network as of 1993. SS7 has replaced in-band
+signaling on nearly all domestic trunk routes.
+
+WHAT BLUE BOXING WAS:
+
+The AT&T Long Lines network, from the 1960s through the mid-1980s,
+used in-band signaling -- control tones sent over the same audio path
+as the voice call. A 2600 Hz tone held for at least 100ms caused a
+trunk to "seize" and drop the current call while remaining connected
+to the inter-exchange trunk.
+
+After seizing with 2600 Hz, the caller could then use multi-frequency
+(MF) tones to route calls anywhere in the network. The MF frequencies
+were documented in Bellcore technical references (not exactly secret)
+but the knowledge that the same path carried both voice and signaling
+was less widely known.
+
+A "blue box" generated these tones. Wozniak and Jobs sold them in 1971
+for $150. Wozniak has said the experience of building something that
+could "talk to the phone network" directly influenced what became Apple.
+
+THE 2600 HZ CONNECTION:
+
+The 2600 magazine took its name from this frequency. It was a symbol:
+understanding that the infrastructure around you has exploitable seams,
+that documentation exists if you know where to look, and that curious
+people will find things official channels don't expect.
+
+WHY IT'S GONE:
+
+SS7 (Signaling System 7) uses a separate packet-switched network for
+all signaling. The 2600 Hz tone on an SS7 trunk does nothing. The
+control plane is completely separated from the voice plane.
+
+The conversion started in the early 1980s and is nearly complete.
+International routes still sometimes use the older C5 signaling
+that is exploitable -- but that's not something you'll stumble into
+from a COCOT.
+
+LEGACY:
+
+Understanding blue boxing teaches something deeper about networks:
+whenever control and data share the same channel, the control signals
+can be forged. This is still true in other contexts. DTMF in IVR
+systems. Protocol commands in FTP (PORT injection). HTTP header
+smuggling against proxies that parse differently than backend servers.
+
+The specific exploit is dead. The lesson is not.
+
+-- 31337 / ELITE FORCE BBS
+"""
+
+[[sections]]
+name = "Music"
+
+[[sections.files]]
+id = 6
+name = "MODFILES.ZIP"
+size = "2.8M"
+date = "04/12/93"
+description = "Best-of MOD/S3M collection -- 40 tracks, tracker music"
+kind = "binary"
+content = ""

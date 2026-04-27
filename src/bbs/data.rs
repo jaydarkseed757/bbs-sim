@@ -55,3 +55,21 @@ pub struct MailMessage {
     #[serde(default)]
     pub read: bool,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BbsFile {
+    pub id: u32,
+    pub name: String,
+    pub size: String,
+    pub date: String,
+    pub description: String,
+    pub kind: String,
+    #[serde(default)]
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FileSection {
+    pub name: String,
+    pub files: Vec<BbsFile>,
+}

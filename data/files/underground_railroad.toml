@@ -1,0 +1,164 @@
+# The Underground Railroad BBS -- file library
+
+[[sections]]
+name = "Politics & News"
+
+[[sections.files]]
+id = 1
+name = "EFF_ALERT.TXT"
+size = "8K"
+date = "04/20/93"
+description = "EFF action alert -- Clipper Chip opposition"
+kind = "text"
+content = """
+ELECTRONIC FRONTIER FOUNDATION -- ACTION ALERT
+April 1993 / Redistributed by ConductorX / The Underground Railroad BBS
+
+THE CLIPPER CHIP PROPOSAL
+
+On April 16, 1993, the Clinton administration announced the "Clipper
+Chip" key escrow encryption standard. The NSA-designed chip would be
+built into phones and other communication devices. The government would
+hold a copy of every key.
+
+The official rationale: law enforcement needs access to encrypted
+communications.
+
+THE PROBLEM:
+
+1. KEY ESCROW IS STRUCTURALLY BROKEN
+
+The government holding your keys means: the government can read your
+communications whenever it chooses. The question isn't whether they
+will abuse this -- they will, eventually -- it's whether you're okay
+with that by design.
+
+CALEA (1994 target) would mandate that telecom providers build
+wiretap capabilities into their systems. Clipper extends this to
+end-to-end encryption.
+
+2. IT WON'T STOP CRIMINALS
+
+Anyone serious about hiding communications will use non-Clipper
+encryption. PGP already exists. Strong public-key cryptography is
+already published in academic literature. Clipper only burdens
+people who comply voluntarily -- i.e., normal citizens, not targets.
+
+3. THE ALGORITHM IS SECRET
+
+"Skipjack" (the Clipper cipher) has not been publicly reviewed.
+The entire history of cryptography shows that algorithms only become
+trustworthy after extensive public analysis. Secret algorithms have
+hidden weaknesses, intentional or not.
+
+DES survived 20 years of public scrutiny (mostly). Skipjack has had
+none.
+
+WHAT TO DO:
+
+-- Use PGP. Phil Zimmermann released it in 1991. Get version 2.3.
+-- Write to your representative. This is actually a policy fight.
+-- Support EFF. eff.org.
+-- Talk to people. Most don't know this is happening.
+
+The EFF bulletin board is reachable at +1-415-436-9333.
+FTP: ftp.eff.org
+
+-- ConductorX / The Underground Railroad BBS
+"""
+
+[[sections.files]]
+id = 2
+name = "CENSORSHP.TXT"
+size = "11K"
+date = "03/15/93"
+description = "BBS censorship cases 1990-93 -- Operation Sundevil & more"
+kind = "text"
+content = """
+BBS CENSORSHIP AND SEIZURE IN AMERICA: 1990-1993
+Compiled by ConductorX / The Underground Railroad BBS
+
+OPERATION SUNDEVIL (May 1990)
+
+The Secret Service coordinated raids across 14 cities, seizing
+computers, equipment, and data from approximately 40 systems.
+Targets included boards suspected of trafficking in stolen credit
+card numbers and phone access codes.
+
+What made this significant wasn't the targets. It was the method.
+The Secret Service seized entire systems including boards that had
+nothing to do with fraud -- as long as the operator knew someone
+who did. Guilt by association, via property seizure.
+
+Steve Jackson Games in Austin had their computers seized because
+an employee was suspected of having a copy of a 911 document.
+The company nearly went bankrupt. They were never charged. The EFF
+was founded partly in response.
+
+THE HACKER CRACKDOWN (BRUCE STERLING, 1992)
+
+Sterling covered this period as journalism. Freely distributable --
+he released it himself in 1992. Find it on any FTP site.
+
+Read it to understand: the people doing these raids genuinely believed
+they were stopping dangerous criminals. The cultural disconnect between
+how hackers saw themselves (curious, technical, not harmful) and how
+law enforcement saw them (dangerous criminals, organized like the mob)
+produced unnecessary destruction on both sides.
+
+THE LEGAL FRAMEWORK:
+
+The Computer Fraud and Abuse Act (1986) is written broadly enough to
+criminalize a lot of normal technical activity. "Unauthorized access"
+is undefined. Courts have interpreted it expansively.
+
+The Electronic Communications Privacy Act (1986) was written before
+anyone understood email. It gives email stored on a server fewer
+protections than a letter in your house. The EFF's ECPA reform
+project is trying to fix this.
+
+CURRENT SITUATION (1993):
+
+Things have calmed down from the 1990 peak. The successful EFF
+lawsuit against the Secret Service (Jackson Games case) established
+that computer equipment can't be seized without individualized
+probable cause.
+
+But the legal framework is still broken. Any serious operator should
+understand what their exposure is.
+
+-- ConductorX
+"""
+
+[[sections]]
+name = "Shareware"
+
+[[sections.files]]
+id = 3
+name = "PGP23.ZIP"
+size = "260K"
+date = "04/10/93"
+description = "PGP 2.3 -- Pretty Good Privacy, Phil Zimmermann"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 4
+name = "FREEDOS.ZIP"
+size = "780K"
+date = "03/25/93"
+description = "FreeDOS 0.1 -- open source DOS replacement (early)"
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Utils"
+
+[[sections.files]]
+id = 5
+name = "SECUREDEL.ZIP"
+size = "28K"
+date = "02/14/93"
+description = "SecureDel -- DoD 5220.22-M wipe, 7-pass overwrite"
+kind = "binary"
+content = ""

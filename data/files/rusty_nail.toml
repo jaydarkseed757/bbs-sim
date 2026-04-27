@@ -1,0 +1,169 @@
+# The Rusty Nail BBS -- file library
+
+[[sections]]
+name = "Shareware"
+
+[[sections.files]]
+id = 1
+name = "WOLF3D.ZIP"
+size = "1.4M"
+date = "03/12/93"
+description = "Wolfenstein 3D shareware episode 1 -- id Software"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 2
+name = "DOOM_BETA.ZIP"
+size = "2.1M"
+date = "04/18/93"
+description = "Doom alpha preview -- NOT final, internal build"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 3
+name = "PKZIP204G.EXE"
+size = "51K"
+date = "02/28/93"
+description = "PKZIP 2.04g -- the standard. Keep a copy."
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Text Files"
+
+[[sections.files]]
+id = 4
+name = "HACKER_ETHIC.TXT"
+size = "9K"
+date = "01/15/93"
+description = "The Hacker Ethic -- Levy's summary, retyped"
+kind = "text"
+content = """
+THE HACKER ETHIC
+(From Steven Levy's _Hackers: Heroes of the Computer Revolution_, 1984)
+Retyped for distribution by ShadowByte / The Rusty Nail BBS
+
+Access to computers -- and anything which might teach you something about
+the way the world works -- should be unlimited and total.
+
+Always yield to the Hands-On Imperative.
+
+All information should be free.
+
+Mistrust authority -- promote decentralization.
+
+Hackers should be judged by their hacking, not bogus criteria such as
+degrees, age, race, or position.
+
+You can create art and beauty on a computer.
+
+Computers can change your life for the better.
+
+---
+
+These principles weren't written down in 1959, or 1969, or whenever.
+Levy observed them after the fact by talking to the MIT model railroaders
+who migrated to the TX-0 and later the PDP-1. They're descriptive, not
+prescriptive. But they've held up pretty well.
+
+The tension between "information should be free" and "don't damage
+systems" has never been fully resolved. The old MIT crowd would have
+said: breaking things is fine if you fix them afterward and learn from
+it. The cracker mentality of the 1980s didn't share that ethic.
+
+Worth reading the whole Levy book if you haven't. The Greenblatt vs.
+Gosper personality clash alone is worth it.
+
+-- ShadowByte
+"""
+
+[[sections.files]]
+id = 5
+name = "C64_TRICKS.TXT"
+size = "14K"
+date = "03/30/93"
+description = "C64 undocumented opcodes and timing tricks"
+kind = "text"
+content = """
+COMMODORE 64 UNDOCUMENTED OPCODES AND TIMING TRICKS
+Compiled by ShadowByte, The Rusty Nail BBS
+
+The 6510 in the C64 has a number of opcodes that MOS Technology never
+documented. These were discovered by hackers through experimentation in
+the early 1980s and are used heavily in demo and game code.
+
+UNDOCUMENTED OPCODES (selected):
+
+  LAX ($nn,X)  -- Load A and X simultaneously from (zp,X) address
+  SAX $nn      -- Store A AND X to zero page (not A, not X -- the AND)
+  DCP $nnnn    -- DEC memory then CMP A with result
+  ISB $nnnn    -- INC memory then SBC A with result
+  SLO $nnnn    -- ASL memory then ORA A with result
+  RLA $nnnn    -- ROL memory then AND A with result
+
+These are stable on NMOS 6502/6510 but NOT on the CMOS 65C02. Any C64
+code using them will not run on a C128 in native mode.
+
+TIMING TRICKS:
+
+The VIC-II steals cycles from the CPU during bad lines (any raster line
+where the low 3 bits equal the YSCROLL register value). Exactly 40 cycles
+are stolen per bad line for sprite DMA and character fetch.
+
+This makes cycle-exact timing tricky. Demo coders count bad lines and
+compensate. The classic technique is to poll $D012 (raster line register)
+and sync your code to a known raster position.
+
+SPRITE MULTIPLEXING:
+
+The C64 has 8 hardware sprites. To display more, you reassign sprite Y
+coordinates mid-frame using an IRQ triggered at a specific raster line.
+Typical multiplexers handle 24-32 sprites this way.
+
+The trick: sort sprites by Y position before each frame. Update the VIC
+sprite Y registers in the raster IRQ. You have roughly 20 cycles of slack
+per sprite reassignment before the next raster line hits.
+
+MUSIC (SID CHIP):
+
+The SID (6581) has 3 voices, each with its own ADSR envelope, waveform
+selector, and frequency register. Waveforms: triangle, sawtooth, pulse,
+noise. Combining waveforms (ORing the bits) produces additional timbres.
+
+The filter is analog and varies between chips. Songs that sound great on
+one chip may sound different on another. The 8580 (later boards) has a
+different filter characteristic than the 6581.
+
+SID frequency calculation:
+  Fout = (Fn * Clock) / 16777216
+where Clock = 985248 Hz (PAL) or 1022727 Hz (NTSC)
+and Fn is the 16-bit frequency register value.
+
+For A4 (440 Hz) on PAL:
+  Fn = (440 * 16777216) / 985248 = 7486
+
+-- ShadowByte / Rusty Nail BBS, 1993
+"""
+
+[[sections]]
+name = "Utils"
+
+[[sections.files]]
+id = 6
+name = "QMODEM43.ZIP"
+size = "172K"
+date = "01/10/93"
+description = "QModem 4.3 terminal program -- best around"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 7
+name = "4DOS55.ZIP"
+size = "310K"
+date = "03/01/93"
+description = "4DOS 5.5 -- COMMAND.COM replacement, highly recommended"
+kind = "binary"
+content = ""

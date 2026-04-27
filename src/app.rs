@@ -1,13 +1,15 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, MailMessage, Message, Thread};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Thread};
+use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
+use crate::tui::files::{render_file_list, render_view_file};
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
@@ -39,6 +41,7 @@ pub enum Screen {
     ReadMail { id: u32 },
     ComposeMail,
     Files,
+    ViewFile { id: u32 },
     Logout,
 }
 
@@ -219,6 +222,10 @@ pub struct App {
     pub selected_mail_row: usize,
     pub mail_read_scroll: usize,
     pub compose_mail: Option<ComposeMailState>,
+    pub files: Vec<FileSection>,
+    pub selected_file_row: usize,
+    pub file_view_scroll: usize,
+    pub file_download_notice: bool,
 }
 
 impl App {
@@ -241,6 +248,10 @@ impl App {
             selected_mail_row: 0,
             mail_read_scroll: 0,
             compose_mail: None,
+            files: vec![],
+            selected_file_row: 0,
+            file_view_scroll: 0,
+            file_download_notice: false,
         }
     }
 
@@ -260,8 +271,9 @@ impl App {
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
+            Screen::Files         => render_file_list(self),
+            Screen::ViewFile { id } => render_view_file(self, id),
             Screen::Logout        => render_logout(self),
-            Screen::Files         => render_stub(),
         }
     }
 
@@ -281,12 +293,9 @@ impl App {
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
+            Screen::Files         => self.files_input(),
+            Screen::ViewFile { id } => self.view_file_input(id),
             Screen::Logout        => self.logout_input(),
-            Screen::Files => {
-                if is_key_pressed(KeyCode::Escape) {
-                    self.screen = Screen::MainMenu;
-                }
-            }
         }
     }
 
@@ -366,9 +375,11 @@ impl App {
             self.session.login(handle.clone(), bbs_name);
             self.boards = load_boards(&slug);
             self.mail   = load_mail(&slug, &handle);
+            self.files  = load_files(&slug);
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
+            self.selected_file_row   = 0;
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -510,6 +521,8 @@ impl App {
                     self.screen = Screen::Mail;
                 }
                 'f' => {
+                    self.selected_file_row = 0;
+                    self.file_download_notice = false;
                     self.screen = Screen::Files;
                 }
                 'g' | 'l' => {
@@ -798,6 +811,91 @@ impl App {
         }
     }
 
+    // ── Input: files ─────────────────────────────────────────────────────────
+
+    fn files_input(&mut self) {
+        let any_key = is_key_pressed(KeyCode::Up)
+            || is_key_pressed(KeyCode::Down)
+            || is_key_pressed(KeyCode::Escape);
+
+        if self.file_download_notice && any_key {
+            self.file_download_notice = false;
+        }
+
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+
+        let flat_count: usize = self.files.iter().map(|s| s.files.len()).sum();
+
+        if is_key_pressed(KeyCode::Up) {
+            self.selected_file_row =
+                if self.selected_file_row == 0 { flat_count.saturating_sub(1) }
+                else { self.selected_file_row - 1 };
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.selected_file_row =
+                if flat_count == 0 || self.selected_file_row + 1 >= flat_count { 0 }
+                else { self.selected_file_row + 1 };
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            if self.file_download_notice {
+                self.file_download_notice = false;
+                continue;
+            }
+            match ch.to_ascii_lowercase() {
+                'k' => {
+                    self.selected_file_row =
+                        if self.selected_file_row == 0 { flat_count.saturating_sub(1) }
+                        else { self.selected_file_row - 1 };
+                }
+                'j' => {
+                    self.selected_file_row =
+                        if flat_count == 0 || self.selected_file_row + 1 >= flat_count { 0 }
+                        else { self.selected_file_row + 1 };
+                }
+                'v' => {
+                    let file = self.files.iter()
+                        .flat_map(|s| s.files.iter())
+                        .nth(self.selected_file_row)
+                        .cloned();
+                    if let Some(f) = file {
+                        if f.kind == "text" {
+                            self.file_view_scroll = 0;
+                            self.screen = Screen::ViewFile { id: f.id };
+                            return;
+                        }
+                    }
+                }
+                'd' => {
+                    self.file_download_notice = true;
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn view_file_input(&mut self, _id: u32) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::Files;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.file_view_scroll = self.file_view_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.file_view_scroll += 1;
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.file_view_scroll = self.file_view_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.file_view_scroll += 10;
+        }
+    }
+
     // ── Input: inbox ─────────────────────────────────────────────────────────
 
     fn inbox_input(&mut self) {
@@ -1013,21 +1111,6 @@ impl App {
         self.logout = None;
         self.screen = Screen::Dialer;
     }
-}
-
-// ---------------------------------------------------------------------------
-// Placeholder for unimplemented screens
-// ---------------------------------------------------------------------------
-
-fn render_stub() {
-    draw_rectangle_lines(0.0, 0.0, screen_width(), screen_height(), 2.0, DARKGRAY);
-    draw_text(
-        "Screen not yet implemented -- press [Esc] to return.",
-        16.0,
-        32.0,
-        20.0,
-        WHITE,
-    );
 }
 
 // ---------------------------------------------------------------------------
