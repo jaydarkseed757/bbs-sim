@@ -1,0 +1,6 @@
+name     = "The Rusty Nail BBS"
+number   = "555-6502"
+sysop    = "ShadowByte"
+location = "Cincinnati, OH"
+baud     = 2400
+boards   = ["General", "Warez", "C64", "Tech Talk"]

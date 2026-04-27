@@ -1,0 +1,6 @@
+name     = "WARP FACTOR 9"
+number   = "555-1701"
+sysop    = "KirkFan"
+location = "Seattle, WA"
+baud     = 9600
+boards   = ["SciFi", "Gaming", "Anime"]

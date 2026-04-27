@@ -1,0 +1,6 @@
+name     = "The Digital Dungeon"
+number   = "555-4096"
+sysop    = "DungeonMstr"
+location = "Austin, TX"
+baud     = 2400
+boards   = ["RPG", "D&D", "General"]
