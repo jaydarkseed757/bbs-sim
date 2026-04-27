@@ -1,21 +1,33 @@
 /// Emits characters from a queue at a rate approximating `baud` baud,
 /// assuming `tick()` is called at 20 Hz (every 50 ms).
+///
+/// Slow baud (< ~200 baud): multiple ticks per character.
+/// Fast baud (≥ 200 baud):  multiple characters per tick.
 pub struct BaudTyper {
     pub baud: u32,
     buffer: Vec<char>,
     ticks_per_char: u32,
+    chars_per_tick: usize,
     tick_count: u32,
 }
 
 impl BaudTyper {
     pub fn new(baud: u32) -> Self {
-        // chars/sec ≈ baud/10 (8N1).  ticks/char = 20 / (baud/10).
-        let cps = (baud / 10).max(1);
-        let ticks_per_char = (20_u32).div_ceil(cps).max(1);
+        let cps = (baud as f32 / 10.0).max(1.0); // chars per second (8N1)
+        let fps = 20.0_f32;                        // tick rate
+        let ratio = cps / fps;                     // chars per tick (float)
+
+        let (ticks_per_char, chars_per_tick) = if ratio >= 1.0 {
+            (1_u32, ratio as usize) // fast: flush N chars every tick
+        } else {
+            ((1.0 / ratio).round() as u32, 1_usize) // slow: one char every N ticks
+        };
+
         Self {
             baud,
             buffer: vec![],
             ticks_per_char,
+            chars_per_tick,
             tick_count: 0,
         }
     }
@@ -24,17 +36,18 @@ impl BaudTyper {
         self.buffer.extend(s.chars());
     }
 
-    /// Returns the next character to display, if any.
-    pub fn tick(&mut self) -> Option<char> {
+    /// Returns the batch of characters to display this tick (may be empty).
+    pub fn tick(&mut self) -> Vec<char> {
         if self.buffer.is_empty() {
-            return None;
+            return vec![];
         }
         self.tick_count += 1;
-        if self.tick_count >= self.ticks_per_char {
-            self.tick_count = 0;
-            return Some(self.buffer.remove(0));
+        if self.tick_count < self.ticks_per_char {
+            return vec![];
         }
-        None
+        self.tick_count = 0;
+        let n = self.chars_per_tick.min(self.buffer.len());
+        self.buffer.drain(..n).collect()
     }
 
     pub fn is_empty(&self) -> bool {
