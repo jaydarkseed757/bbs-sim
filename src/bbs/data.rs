@@ -10,6 +10,8 @@ pub struct BbsEntry {
     pub boards: Vec<String>,
     #[serde(default)]
     pub last_called: Option<String>,
+    #[serde(default)]
+    pub slug: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

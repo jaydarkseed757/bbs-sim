@@ -1,6 +1,234 @@
-name     = "WARP FACTOR 9"
-number   = "555-1701"
-sysop    = "KirkFan"
-location = "Seattle, WA"
-baud     = 9600
-boards   = ["SciFi", "Gaming", "Anime"]
+# WARP FACTOR 9 BBS — board data
+
+[[boards]]
+id = "scifi"
+name = "SciFi"
+
+[[boards.threads]]
+id = 1
+subject = "DS9 premiere -- best Trek since TOS?"
+
+[[boards.threads.posts]]
+id = 1
+author = "KirkFan"
+subject = "DS9 premiere -- best Trek since TOS?"
+timestamp = "01/04/93 22:00"
+body = """
+Deep Space Nine premiered last night. Blown away.
+A stationary setting felt risky but it totally works.
+Sisko is immediately more interesting than I expected.
+The Cardassian occupation backstory gives it real weight."""
+
+[[boards.threads.posts]]
+id = 2
+author = "Tribble99"
+subject = "Re: DS9 premiere -- best Trek since TOS?"
+timestamp = "01/05/93 08:30"
+body = """
+Hard disagree on Sisko but I think DS9 has serious potential.
+The Bajoran religion angle is bold for Trek -- usually they avoid that stuff.
+Odo is already my favorite character. Rene Auberjonois is perfect."""
+
+[[boards.threads.posts]]
+id = 3
+author = "WarpCore"
+subject = "Re: DS9 premiere -- best Trek since TOS?"
+timestamp = "01/05/93 19:45"
+body = """
+TNG is still king for me but DS9 is off to a strong start.
+The darker tone feels right for a post-Cardassian occupied station.
+Also that runabout design is slick -- hope we see a lot of it."""
+
+[[boards.threads]]
+id = 2
+subject = "Babylon 5 pilot -- worth watching?"
+
+[[boards.threads.posts]]
+id = 1
+author = "SciFiJunky"
+subject = "Babylon 5 pilot -- worth watching?"
+timestamp = "02/23/93 20:15"
+body = """
+The Gathering aired last month. Straczynski wrote the whole thing himself.
+CGI effects instead of models -- controversial but I think it works.
+Feels very different from Trek. More political, more grey-area morality."""
+
+[[boards.threads.posts]]
+id = 2
+author = "KirkFan"
+subject = "Re: Babylon 5 pilot -- worth watching?"
+timestamp = "02/24/93 10:00"
+body = """
+Watched it last week. The CGI is rough but the story is solid.
+Londo and G'Kar are immediately the most interesting alien characters
+I've seen since Spock. The politics between the races feels real.
+If they get a series pickup this could be something special."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NightOwl_TX"
+subject = "Re: Babylon 5 pilot -- worth watching?"
+timestamp = "02/25/93 03:22"
+body = """
+Straczynski has apparently already written out the entire 5-year arc.
+That kind of long-form planning is unheard of in TV sci-fi.
+Either it'll be brilliant or crash hard. My money is on brilliant."""
+
+[[boards.threads]]
+id = 3
+subject = "Jurassic Park -- read the book?"
+
+[[boards.threads.posts]]
+id = 1
+author = "DinoFreak"
+subject = "Jurassic Park -- read the book?"
+timestamp = "04/10/93 16:00"
+body = """
+Movie drops in June. If you haven't read Crichton's novel yet DO IT NOW.
+The science is surprisingly solid -- Crichton actually researched this.
+The chaos theory stuff with Dr. Malcolm is mind-bending.
+Movie is going to be insane based on the trailer."""
+
+[[boards.threads.posts]]
+id = 2
+author = "WarpCore"
+subject = "Re: Jurassic Park -- read the book?"
+timestamp = "04/11/93 12:30"
+body = """
+Read it twice. The book is darker than what the trailer suggests.
+The kids are in way more danger, and the dinosaur attacks are brutal.
+Spielberg will soften it for the rating but the CGI looks photorealistic.
+That T-Rex in the rain from the trailer is going to be iconic."""
+
+# ── Gaming ────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "gaming"
+name = "Gaming"
+
+[[boards.threads]]
+id = 1
+subject = "Ultima VII -- greatest RPG ever made?"
+
+[[boards.threads.posts]]
+id = 1
+author = "AvatarSeeker"
+subject = "Ultima VII -- greatest RPG ever made?"
+timestamp = "03/01/93 14:00"
+body = """
+Finally finished Ultima VII: The Black Gate. What an experience.
+The world simulation is unlike anything I've played. NPCs have schedules.
+You can bake bread. The Fellowship storyline is genuinely unsettling.
+Richard Garriott deserves some kind of award for this one."""
+
+[[boards.threads.posts]]
+id = 2
+author = "QuestMaster"
+subject = "Re: Ultima VII -- greatest RPG ever made?"
+timestamp = "03/02/93 09:15"
+body = """
+100% agree. The Serpent Isle expansion is also incredible.
+The depth of the world simulation embarrasses everything else on the market.
+Only gripe: needs a 486 with 4MB RAM minimum to run well.
+My 386/33 chugs on some of the outdoor areas."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PixelQuest"
+subject = "Re: Ultima VII -- greatest RPG ever made?"
+timestamp = "03/03/93 22:50"
+body = """
+Hard to argue against it. Wizardry 7 is also up there for me.
+The stat tracking and multi-race party system in Wiz7 is deep.
+But Ultima VII wins for world immersion. Nothing else comes close in '93."""
+
+[[boards.threads]]
+id = 2
+subject = "Wing Commander: Privateer -- anyone playing?"
+
+[[boards.threads.posts]]
+id = 1
+author = "StarPilot"
+subject = "Wing Commander: Privateer -- anyone playing?"
+timestamp = "04/01/93 19:00"
+body = """
+Origin just dropped Privateer. Open-world Wing Commander basically.
+You can trade cargo, do missions, buy upgrades. It's addictive as hell.
+Finally a space sim with real freedom. X-Wing is great but too linear."""
+
+[[boards.threads.posts]]
+id = 2
+author = "KirkFan"
+subject = "Re: Wing Commander: Privateer -- anyone playing?"
+timestamp = "04/02/93 08:45"
+body = """
+On my third playthrough. The Righteous Fire expansion is just as good.
+The story missions intersect perfectly with the open-world trading.
+Speech pack with Mark Hamill is absolutely worth it if you haven't got it."""
+
+# ── Anime ─────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "anime"
+name = "Anime"
+
+[[boards.threads]]
+id = 1
+subject = "Akira -- how did you first see it?"
+
+[[boards.threads.posts]]
+id = 1
+author = "KirkFan"
+subject = "Akira -- how did you first see it?"
+timestamp = "02/14/93 20:00"
+body = """
+Started a thread because I think Akira is the most important animated film ever made.
+Caught it on a VHS dub from a friend two years ago and it changed my brain.
+The crowd who wrote it off as "just a cartoon" genuinely don't get it.
+How did everyone else first encounter it?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "MangaFan88"
+subject = "Re: Akira -- how did you first see it?"
+timestamp = "02/15/93 14:20"
+body = """
+Friend had the Streamline dub on tape. Watched it at like 2am.
+The Neo-Tokyo animation quality is still unmatched in '93.
+I tracked down the Kodansha manga after -- the full story is even deeper.
+6 volumes and the ending is completely different from the film."""
+
+[[boards.threads.posts]]
+id = 3
+author = "AnimeExport"
+subject = "Re: Akira -- how did you first see it?"
+timestamp = "02/16/93 10:00"
+body = """
+Import VHS from Japan before it got licensed here. Worth every penny.
+The cel count on the motorcycle chase alone is insane -- hand-drawn fluidity.
+If you can find the Pioneer LaserDisc release the image quality is stunning."""
+
+[[boards.threads]]
+id = 2
+subject = "Ghost in the Shell manga -- reading it?"
+
+[[boards.threads.posts]]
+id = 1
+author = "CyberGhost"
+subject = "Ghost in the Shell manga -- reading it?"
+timestamp = "03/20/93 17:30"
+body = """
+Masamune Shirow's Ghost in the Shell is available in English now from Dark Horse.
+The philosophical depth about identity and consciousness is real literature.
+Heard a film adaptation is in the works at Production I.G.
+If it's half as good as the manga it'll be incredible."""
+
+[[boards.threads.posts]]
+id = 2
+author = "MangaFan88"
+subject = "Re: Ghost in the Shell manga -- reading it?"
+timestamp = "03/21/93 22:00"
+body = """
+On my second read. The footnotes alone are worth the price.
+Shirow explains the tech in detail -- the cyborg augmentation economics are fascinating.
+The Major is such a well-written character. Complex in ways most fiction isn't."""

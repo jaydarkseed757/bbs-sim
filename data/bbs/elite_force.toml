@@ -1,0 +1,234 @@
+# ELITE FORCE BBS — board data
+
+[[boards]]
+id = "warez"
+name = "Warez"
+
+[[boards.threads]]
+id = 1
+subject = "Lemmings 2 -- anyone got it?"
+
+[[boards.threads.posts]]
+id = 1
+author = "SceneKid"
+subject = "Lemmings 2 -- anyone got it?"
+timestamp = "04/02/93 01:30"
+body = """
+Lemmings 2: The Tribes just dropped. 12 tribes, 120 levels.
+Psygnosis outdid themselves. The new skills are insane.
+Anyone have a copy floating around? Still waiting on mine to ship."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ByteRunner"
+subject = "Re: Lemmings 2 -- anyone got it?"
+timestamp = "04/02/93 14:45"
+body = """
+Been playing it all week. The Beach tribe level set is genuinely hard.
+Backflip skill is my new favorite thing. Graphics upgrade from original is noticeable.
+The snowball lemmings in the Arctic tribe are hilarious."""
+
+[[boards.threads.posts]]
+id = 3
+author = "CrackSmith"
+subject = "Re: Lemmings 2 -- anyone got it?"
+timestamp = "04/03/93 03:20"
+body = """
+Space tribe is where the difficulty spikes hard. Fair warning.
+Also: the MIDI soundtrack is excellent on a Sound Blaster 16. Way better than beeper."""
+
+[[boards.threads]]
+id = 2
+subject = "Strike Commander -- resource hog or worth it?"
+
+[[boards.threads.posts]]
+id = 1
+author = "31337"
+subject = "Strike Commander -- resource hog or worth it?"
+timestamp = "03/20/93 22:00"
+body = """
+Strike Commander from Origin requires a 486 and 8MB RAM minimum.
+Most realistic flight sim I've seen -- full texture-mapped cockpit, real physics.
+If your rig can handle it the dogfight mechanics are incredible.
+The mercenary storyline is surprisingly engaging for a flight sim."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AceOfAces"
+subject = "Re: Strike Commander -- resource hog or worth it?"
+timestamp = "03/21/93 10:15"
+body = """
+Running it on a 486/66 with 16MB RAM and it's buttery smooth.
+The speech pack makes a huge difference -- voice acting is solid.
+Tactically it rewards learning formation flying and missile ranges.
+Rowan Software's Red Baron is still better for WWI but for modern jets: this wins."""
+
+[[boards.threads.posts]]
+id = 3
+author = "SceneKid"
+subject = "Re: Strike Commander -- resource hog or worth it?"
+timestamp = "03/22/93 15:00"
+body = """
+Upranged my RAM from 4 to 8MB specifically for this. No regrets.
+The CD version with the full speech is the one to get.
+Origin really does push the hardware envelope every single year."""
+
+# ── Hacking ──────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "hacking"
+name = "Hacking"
+
+[[boards.threads]]
+id = 1
+subject = "Mosaic browser -- the internet just got real"
+
+[[boards.threads.posts]]
+id = 1
+author = "NetSurfer"
+subject = "Mosaic browser -- the internet just got real"
+timestamp = "03/15/93 20:00"
+body = """
+NCSA Mosaic 1.0 just released for X Windows, PC version soon.
+Point-and-click internet navigation with inline images. This changes everything.
+I've been on gopher and FTP for years but this is a different paradigm.
+The web is going to be enormous. Get on it now before the normies find it."""
+
+[[boards.threads.posts]]
+id = 2
+author = "31337"
+subject = "Re: Mosaic browser -- the internet just got real"
+timestamp = "03/16/93 08:30"
+body = """
+Running it on our university's Unix systems. The image rendering is impressive.
+Slow over dial-up but inline images in a document is genuinely revolutionary.
+Tim Berners-Lee's HTTP spec is elegant. Hyperlinks are the right model.
+Gopher is dead and doesn't know it yet."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PacketMonger"
+subject = "Re: Mosaic browser -- the internet just got real"
+timestamp = "03/17/93 11:45"
+body = """
+The protocol stack is simple enough to implement yourself.
+HTTP GET request, parse HTML, done. Beautiful in its simplicity.
+I wrote a basic HTTP fetcher in C over a weekend -- about 300 lines.
+When the Windows version drops this is going to explode in popularity."""
+
+[[boards.threads]]
+id = 2
+subject = "2600 Magazine -- best issues?"
+
+[[boards.threads.posts]]
+id = 1
+author = "Phreaker_X"
+subject = "2600 Magazine -- best issues?"
+timestamp = "02/01/93 19:00"
+body = """
+Been collecting 2600 since the early issues. What are people's favorites?
+The summer '92 issue with the cellular phone analysis was outstanding.
+Emmanuel Goldstein keeps the editorial quality sharp year after year.
+The phone company technical articles are worth the subscription alone."""
+
+[[boards.threads.posts]]
+id = 2
+author = "31337"
+subject = "Re: 2600 Magazine -- best issues?"
+timestamp = "02/02/93 10:20"
+body = """
+The spring '91 issue is a classic -- the PBX systems article is legendary.
+Also the ongoing Unix security series has been invaluable.
+Goldstein's editorials on the hacker ethic are the best writing in tech.
+The Kevin Mitnick coverage has been fascinating to follow."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NetSurfer"
+subject = "Re: 2600 Magazine -- best issues?"
+timestamp = "02/03/93 22:15"
+body = """
+The ARPANET history article in '90 was what got me serious about networking.
+Also the video game security breakdowns are surprisingly deep technically.
+There's a 2600 meeting in NYC every first Friday -- anyone ever gone?
+The local chapters are where the real knowledge sharing happens."""
+
+# ── Music ─────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "music"
+name = "Music"
+
+[[boards.threads]]
+id = 1
+subject = "Scream Tracker 3 -- best tracker out there?"
+
+[[boards.threads.posts]]
+id = 1
+author = "ModMaster"
+subject = "Scream Tracker 3 -- best tracker out there?"
+timestamp = "03/10/93 21:00"
+body = """
+Scream Tracker 3 dropped and it's a serious upgrade from ST2.
+16 channels, stereo panning, full S3M format support. The interface is intuitive.
+Been making mods for two years and this is the best tool I've used.
+Anyone else switching from ProTracker or FastTracker?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "ChipWizard"
+subject = "Re: Scream Tracker 3 -- best tracker out there?"
+timestamp = "03/11/93 14:00"
+body = """
+FastTracker II is still my main tool but ST3 has better sample handling.
+The S3M format files are slightly larger than XM but the player support is better.
+Impulse Tracker is supposedly in development -- rumored to be even more capable.
+The demoscene S3M releases have been incredible quality lately."""
+
+[[boards.threads.posts]]
+id = 3
+author = "SoundHack"
+subject = "Re: Scream Tracker 3 -- best tracker out there?"
+timestamp = "03/12/93 10:30"
+body = """
+Been on FastTracker since 1.0 but ST3 is converting me.
+The envelope editor is more flexible for complex instrument design.
+If you're on Sound Blaster 16 the stereo output is crystal clear.
+Post your best S3M to the board -- I want to hear what people are making."""
+
+[[boards.threads]]
+id = 2
+subject = "Grunge is dead -- discuss"
+
+[[boards.threads.posts]]
+id = 1
+author = "31337"
+subject = "Grunge is dead -- discuss"
+timestamp = "04/08/93 18:00"
+body = """
+Nirvana's on the charts, Pearl Jam is selling out arenas, Alice in Chains everywhere.
+The moment mainstream radio found grunge it became something else entirely.
+The authentic Seattle scene from '89-'91 is already gone.
+Change my mind."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AudioFreak"
+subject = "Re: Grunge is dead -- discuss"
+timestamp = "04/09/93 09:45"
+body = """
+Hot take but I think In Utero is better than Nevermind.
+Albini's production is rawer and angrier which is how Nirvana should sound.
+If Cobain can resist the commercial pressure there might be life in this yet.
+The sellout accusations are getting tired -- the music still matters."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ModMaster"
+subject = "Re: Grunge is dead -- discuss"
+timestamp = "04/10/93 01:15"
+body = """
+Purely from a production standpoint In Utero is a masterpiece.
+The guitar tones Albini got are unlike anything on a major label record.
+Grunge as a cultural moment: probably over. The music itself: still has legs.
+Meanwhile the underground is already moving to post-rock and noise pop."""

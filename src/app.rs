@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
 
-use crate::bbs::boards::hardcoded_boards;
+use crate::bbs::boards::{hardcoded_boards, load_boards};
 use crate::bbs::data::{BbsEntry, Board, Message, Thread};
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
@@ -281,7 +281,7 @@ impl App {
     // ── Tick: login ──────────────────────────────────────────────────────────
 
     fn tick_login(&mut self) {
-        let mut transition: Option<(String, String)> = None;
+        let mut transition: Option<(String, String, String)> = None;
 
         if let Some(ref mut d) = self.login {
             // Drain the baud typer into the buffer.
@@ -314,14 +314,21 @@ impl App {
                     d.step = LoginStep::Done;
                 }
                 LoginStep::Done => {
-                    transition = Some((d.user_handle.clone(), d.bbs.name.clone()));
+                    transition = Some((
+                        d.user_handle.clone(),
+                        d.bbs.name.clone(),
+                        d.bbs.slug.clone(),
+                    ));
                 }
                 _ => {}
             }
         }
 
-        if let Some((handle, bbs_name)) = transition {
+        if let Some((handle, bbs_name, slug)) = transition {
             self.session.login(handle, bbs_name);
+            self.boards = load_boards(&slug);
+            self.selected_board_row  = 0;
+            self.selected_thread_row = 0;
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -823,6 +830,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 2400,
             boards: vec!["General".into(), "Warez".into(), "C64".into(), "Tech Talk".into()],
             last_called: Some("04/22/93".into()),
+            slug: "rusty_nail".into(),
         },
         BbsEntry {
             name: "WARP FACTOR 9".into(),
@@ -832,6 +840,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 9600,
             boards: vec!["SciFi".into(), "Gaming".into(), "Anime".into()],
             last_called: Some("04/15/93".into()),
+            slug: "warp_factor_9".into(),
         },
         BbsEntry {
             name: "The Digital Dungeon".into(),
@@ -841,6 +850,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 2400,
             boards: vec!["RPG".into(), "D&D".into(), "General".into()],
             last_called: None,
+            slug: "digital_dungeon".into(),
         },
         BbsEntry {
             name: "ELITE FORCE BBS".into(),
@@ -850,6 +860,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 14400,
             boards: vec!["Warez".into(), "Hacking".into(), "Music".into()],
             last_called: Some("04/01/93".into()),
+            slug: "elite_force".into(),
         },
         BbsEntry {
             name: "The Underground Railroad".into(),
@@ -859,6 +870,7 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             baud: 2400,
             boards: vec!["Politics".into(), "News".into(), "General".into()],
             last_called: Some("03/28/93".into()),
+            slug: "underground_railroad".into(),
         },
         BbsEntry {
             name: "Midnight Rendezvous".into(),
@@ -866,8 +878,9 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             sysop: "Pr0phet".into(),
             location: "New York, NY".into(),
             baud: 9600,
-            boards: vec!["Phreaking".into(), "Anarchy".into(), "Carding".into()],
+            boards: vec!["Phreaking".into(), "Underground".into(), "Lounge".into()],
             last_called: Some("03/14/93".into()),
+            slug: "midnight_rendezvous".into(),
         },
     ]
 }

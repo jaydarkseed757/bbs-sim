@@ -1,0 +1,264 @@
+# Midnight Rendezvous BBS — board data
+
+[[boards]]
+id = "phreaking"
+name = "Phreaking"
+
+[[boards.threads]]
+id = 1
+subject = "SS7 signaling -- the basics"
+
+[[boards.threads.posts]]
+id = 1
+author = "Pr0phet"
+subject = "SS7 signaling -- the basics"
+timestamp = "03/01/93 01:00"
+body = """
+SS7 (Signaling System 7) is how the phone network actually routes calls.
+It's a separate packet-switched network running alongside the voice circuits.
+All those 800 numbers, caller ID, call forwarding -- SS7 does the bookkeeping.
+Understanding it is understanding how the PSTN actually works under the hood."""
+
+[[boards.threads.posts]]
+id = 2
+author = "TelcoGhost"
+subject = "Re: SS7 signaling -- the basics"
+timestamp = "03/02/93 10:30"
+body = """
+Good intro. The STPs (Signal Transfer Points) are the routing nodes.
+SSPs are the switches that connect to SS7. SCPs are the databases.
+800 number portability is an SCP function -- that's why it works across carriers.
+The 2600 magazine has had some good technical breakdowns of the architecture."""
+
+[[boards.threads.posts]]
+id = 3
+author = "RingMaster"
+subject = "Re: SS7 signaling -- the basics"
+timestamp = "03/03/93 23:15"
+body = """
+The CAP (CAMEL Application Part) extensions are interesting for international calls.
+The GSM networks coming online are hooking into SS7 for roaming.
+Wireless is going to change everything about how we think about the PSTN.
+The Bellcore documentation is worth tracking down if you can find it."""
+
+[[boards.threads]]
+id = 2
+subject = "COCOT phones -- a comprehensive guide"
+
+[[boards.threads.posts]]
+id = 1
+author = "CoinOp"
+subject = "COCOT phones -- a comprehensive guide"
+timestamp = "02/10/93 20:00"
+body = """
+COCOTs (Customer-Owned Coin-Operated Telephones) are the private payphones.
+Unlike RBOC payphones they're not regulated the same way.
+The programming interfaces vary wildly by manufacturer.
+Worth studying purely from an engineering curiosity standpoint."""
+
+[[boards.threads.posts]]
+id = 2
+author = "Pr0phet"
+subject = "Re: COCOT phones -- a comprehensive guide"
+timestamp = "02/11/93 08:45"
+body = """
+The Elcotel and Pacific Bell COCOT models are the most common in NYC.
+The coin processing logic is surprisingly simple -- just voltage sensing.
+The 2600 Hz tone that gives the magazine its name: still relevant on analog trunks.
+Old analog switching gear is being phased out fast though. Get the knowledge now."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TelcoGhost"
+subject = "Re: COCOT phones -- a comprehensive guide"
+timestamp = "02/12/93 14:00"
+body = """
+A lot of this hardware knowledge becomes museum-piece in 5-10 years.
+Digital switching is replacing the old electromechanical stuff rapidly.
+Documenting it now while it's still in use is genuinely valuable.
+The engineering elegance of analog telephony is real -- a beautiful system."""
+
+[[boards.threads]]
+id = 3
+subject = "Best resources for learning telecom from scratch"
+
+[[boards.threads.posts]]
+id = 1
+author = "NewToTelco"
+subject = "Best resources for learning telecom from scratch"
+timestamp = "04/05/93 19:00"
+body = """
+Just getting into this. Where do I start to understand how the phone network works?
+I've read some 2600 issues but the technical depth is hard to follow without background.
+Any books, documents, or BBSes you'd recommend for a beginner?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "Pr0phet"
+subject = "Re: Best resources for learning telecom from scratch"
+timestamp = "04/06/93 00:30"
+body = """
+Start with: "The Hacker Crackdown" by Bruce Sterling. Free on the internet.
+Then: Bellcore technical documents -- some are publicly available.
+The TAP newsletter archives are worth reading for history context.
+And obviously 2600 back issues. Start from 1984 and work forward."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TelcoGhost"
+subject = "Re: Best resources for learning telecom from scratch"
+timestamp = "04/06/93 11:15"
+body = """
+The classic "Understanding Telephone Electronics" by Texas Instruments is solid.
+Also "The Telephone System" by AT&T -- older but the fundamentals haven't changed.
+For digital: any ISDN primer will teach you the modern architecture.
+The real learning is tinkering. Get an old 2500 set and trace what happens when you dial."""
+
+# ── Underground ───────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "underground"
+name = "Underground"
+
+[[boards.threads]]
+id = 1
+subject = "The Hacker Crackdown -- required reading"
+
+[[boards.threads.posts]]
+id = 1
+author = "Pr0phet"
+subject = "The Hacker Crackdown -- required reading"
+timestamp = "01/20/93 22:00"
+body = """
+Bruce Sterling put The Hacker Crackdown online for free distribution.
+If you haven't read it you're missing the best account of Operation Sundevil
+and the formation of the EFF. Sterling's journalism is exceptional.
+Mandatory reading for anyone who cares about digital rights."""
+
+[[boards.threads.posts]]
+id = 2
+author = "CyberLiberty"
+subject = "Re: The Hacker Crackdown -- required reading"
+timestamp = "01/21/93 10:00"
+body = """
+Read it twice. The Steve Jackson Games raid chapter is infuriating.
+The Secret Service seized a game book thinking it was a hacking manual.
+The EFF was founded partly in response to that specific incident.
+Kapor and Barlow deserve enormous credit for organizing the legal defense."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TelcoGhost"
+subject = "Re: The Hacker Crackdown -- required reading"
+timestamp = "01/22/93 15:30"
+body = """
+The long-term effect of that wave of raids was chilling for legitimate research.
+Security through obscurity protects no one -- sunlight is the best disinfectant.
+Sterling understood that instinctively. The book holds up.
+The EFF's work on ECPA reform is the practical follow-through."""
+
+[[boards.threads]]
+id = 2
+subject = "Cyberpunk -- Neuromancer vs Snow Crash"
+
+[[boards.threads.posts]]
+id = 1
+author = "Pr0phet"
+subject = "Cyberpunk -- Neuromancer vs Snow Crash"
+timestamp = "03/10/93 20:00"
+body = """
+Two giants of the genre. Which holds up better in '93?
+Neuromancer invented the vocabulary. Snow Crash is funnier and more prescient
+about where computing is actually heading -- the Metaverse idea is inevitable.
+Gibson's prose style is unmatched but Stephenson's ideas are more actionable."""
+
+[[boards.threads.posts]]
+id = 2
+author = "DataJockey"
+subject = "Re: Cyberpunk -- Neuromancer vs Snow Crash"
+timestamp = "03/11/93 08:30"
+body = """
+This is a false choice. Read Stephenson for the ideas, Gibson for the language.
+Neuromancer's cyberspace metaphor -- while dated in implementation -- captures
+something real about how information feels to move through.
+Snow Crash's pizza delivery economics is the funniest opening chapter in SF."""
+
+[[boards.threads.posts]]
+id = 3
+author = "CyberLiberty"
+subject = "Re: Cyberpunk -- Neuromancer vs Snow Crash"
+timestamp = "03/12/93 14:15"
+body = """
+Hot take: Vernor Vinge's "True Names" (1981) predates both and is still the best.
+Online identity and virtual reality handled with more precision than either.
+Available as shareware from several archives. Track it down.
+Also: Count Zero is underrated. The Virek storyline is Gibson at his best."""
+
+# ── Lounge ────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "lounge"
+name = "Lounge"
+
+[[boards.threads]]
+id = 1
+subject = "Welcome to Midnight Rendezvous"
+
+[[boards.threads.posts]]
+id = 1
+author = "Pr0phet"
+subject = "Welcome to Midnight Rendezvous"
+timestamp = "06/15/92 00:00"
+body = """
+Welcome to Midnight Rendezvous, New York's late-night BBS.
+Three boards: Phreaking for telecom, Underground for tech culture and rights,
+and this lounge for everything else.
+We keep it intellectual. The flamers and skript kiddies can find another board.
+Online midnight to 6am EST most nights."""
+
+[[boards.threads.posts]]
+id = 2
+author = "NightOwl_NYC"
+subject = "Re: Welcome to Midnight Rendezvous"
+timestamp = "06/16/92 01:30"
+body = """
+Finally a NYC BBS with quality discussion. Been looking for weeks.
+The phreaking board already has more depth than anything else I've found.
+Late-night hours are perfect for those of us with day jobs."""
+
+[[boards.threads]]
+id = 2
+subject = "NYC underground -- events, meetups, happenings"
+
+[[boards.threads.posts]]
+id = 1
+author = "CityExplorer"
+subject = "NYC underground -- events, meetups, happenings"
+timestamp = "04/01/93 22:00"
+body = """
+Anyone hitting the 2600 meeting this Friday at the World Trade Center?
+First Friday of every month, Citibank lobby at 5pm.
+Good mix of people -- more social than technical but worth going.
+The WTC location has extra irony after the bombing last month."""
+
+[[boards.threads.posts]]
+id = 2
+author = "Pr0phet"
+subject = "Re: NYC underground -- events, meetups, happenings"
+timestamp = "04/02/93 00:15"
+body = """
+Security is tighter at WTC post-bombing. Bring ID.
+The meeting still happened last month -- about 40 people showed.
+Good conversations, nobody gets harassed, cops leave us alone.
+Come out. The in-person connections are worth more than a year of BBS messages."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TelcoGhost"
+subject = "Re: NYC underground -- events, meetups, happenings"
+timestamp = "04/02/93 10:30"
+body = """
+I'll be there. Look for the guy with the Amiga and the Terminal window open.
+Bring something interesting to show or talk about and people will find you.
+The parking lot of 1 Police Plaza across the street is a good backup spot
+if they actually do lock down the WTC lobby permanently."""
