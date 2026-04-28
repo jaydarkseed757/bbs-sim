@@ -11,3 +11,4 @@ pub mod mail;
 pub mod menus;
 pub mod sysop;
 pub mod terminal;
+pub mod top10;

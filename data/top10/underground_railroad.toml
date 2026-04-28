@@ -1,0 +1,149 @@
+[[callers]]
+handle = "ConductorX"
+calls = 1876
+location = "Chicago, IL"
+
+[[callers]]
+handle = "FreeAgent"
+calls = 1543
+location = "Milwaukee, WI"
+
+[[callers]]
+handle = "RadLib"
+calls = 1287
+location = "Chicago, IL"
+
+[[callers]]
+handle = "DataMule"
+calls = 1098
+location = "Evanston, IL"
+
+[[callers]]
+handle = "NightOwl_C"
+calls = 876
+location = "Rockford, IL"
+
+[[callers]]
+handle = "CipherPunk"
+calls = 743
+location = "Madison, WI"
+
+[[callers]]
+handle = "OpenMind"
+calls = 612
+location = "Chicago, IL"
+
+[[callers]]
+handle = "TruthSeekr"
+calls = 489
+location = "Gary, IN"
+
+[[callers]]
+handle = "FreeSpeech"
+calls = 367
+location = "Champaign, IL"
+
+[[callers]]
+handle = "DarkLight"
+calls = 241
+location = "Springfield, IL"
+
+[[files]]
+name = "EFF_ALERT.TXT"
+downloads = 1543
+description = "EFF Clipper Chip action alert"
+
+[[files]]
+name = "CENSORSHP.TXT"
+downloads = 1287
+description = "BBS censorship cases 1990-93"
+
+[[files]]
+name = "PGP23.ZIP"
+downloads = 1098
+description = "PGP 2.3 encryption"
+
+[[files]]
+name = "SECUREDEL.ZIP"
+downloads = 876
+description = "DoD-grade secure delete"
+
+[[files]]
+name = "FREEDOS.ZIP"
+downloads = 743
+description = "FreeDOS 0.1 open source DOS"
+
+[[files]]
+name = "PKZIP204G.EXE"
+downloads = 534
+description = "PKZIP 2.04g archiver"
+
+[[files]]
+name = "QMODEM43.ZIP"
+downloads = 421
+description = "QModem 4.3 terminal"
+
+[[files]]
+name = "HACKCRCK.TXT"
+downloads = 389
+description = "Hacker Crackdown excerpt"
+
+[[files]]
+name = "WOLF3D.ZIP"
+downloads = 234
+description = "Wolfenstein 3D shareware"
+
+[[files]]
+name = "TELIX351.ZIP"
+downloads = 198
+description = "Telix 3.51 terminal"
+
+[[posters]]
+handle = "ConductorX"
+posts = 1543
+board = "Politics"
+
+[[posters]]
+handle = "FreeAgent"
+posts = 1287
+board = "News"
+
+[[posters]]
+handle = "RadLib"
+posts = 1098
+board = "Politics"
+
+[[posters]]
+handle = "DataMule"
+posts = 876
+board = "News"
+
+[[posters]]
+handle = "NightOwl_C"
+posts = 743
+board = "General"
+
+[[posters]]
+handle = "CipherPunk"
+posts = 612
+board = "Politics"
+
+[[posters]]
+handle = "OpenMind"
+posts = 489
+board = "News"
+
+[[posters]]
+handle = "TruthSeekr"
+posts = 367
+board = "General"
+
+[[posters]]
+handle = "FreeSpeech"
+posts = 241
+board = "Politics"
+
+[[posters]]
+handle = "DarkLight"
+posts = 167
+board = "General"

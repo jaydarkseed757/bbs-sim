@@ -68,6 +68,34 @@ pub struct Oneliner {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopCaller {
+    pub handle: String,
+    pub calls: u32,
+    pub location: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopFile {
+    pub name: String,
+    pub downloads: u32,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopPoster {
+    pub handle: String,
+    pub posts: u32,
+    pub board: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TopLists {
+    #[serde(default)] pub callers: Vec<TopCaller>,
+    #[serde(default)] pub files:   Vec<TopFile>,
+    #[serde(default)] pub posters: Vec<TopPoster>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BbsFile {
     pub id: u32,
     pub name: String,

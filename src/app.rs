@@ -1,11 +1,12 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread, TopLists};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
 use crate::bbs::oneliners::load_oneliners;
 use crate::bbs::session::Session;
+use crate::bbs::top10::load_top10;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
@@ -13,6 +14,7 @@ use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
 use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
+use crate::tui::top10::render_top10;
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
@@ -46,6 +48,7 @@ pub enum Screen {
     Files,
     ViewFile { id: u32 },
     GraffitiWall,
+    TopTen,
     SysopChat,
     Logout,
 }
@@ -285,6 +288,8 @@ pub struct App {
     pub oneliners: Vec<Oneliner>,
     pub graffiti_scroll: usize,
     pub graffiti_input: Option<String>,
+    pub top_lists: TopLists,
+    pub top_list_tab: usize,
 }
 
 impl App {
@@ -316,6 +321,8 @@ impl App {
             oneliners: vec![],
             graffiti_scroll: 0,
             graffiti_input: None,
+            top_lists: TopLists::default(),
+            top_list_tab: 0,
         }
     }
 
@@ -338,6 +345,7 @@ impl App {
             Screen::Files           => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
             Screen::GraffitiWall    => render_graffiti_wall(self),
+            Screen::TopTen          => render_top10(self),
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
@@ -362,6 +370,7 @@ impl App {
             Screen::Files           => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
+            Screen::TopTen          => self.top10_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
@@ -451,6 +460,8 @@ impl App {
             self.files      = load_files(&slug);
             self.oneliners  = load_oneliners(&slug);
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+            self.top_lists  = load_top10(&slug);
+            self.top_list_tab = 0;
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
@@ -662,6 +673,10 @@ impl App {
                 'o' => {
                     self.graffiti_input = None;
                     self.screen = Screen::GraffitiWall;
+                }
+                't' => {
+                    self.top_list_tab = 0;
+                    self.screen = Screen::TopTen;
                 }
                 'c' => {
                     self.begin_sysop_chat();
@@ -1264,6 +1279,26 @@ impl App {
                 'k' => { self.graffiti_scroll = self.graffiti_scroll.saturating_sub(1); }
                 'j' => { self.graffiti_scroll = (self.graffiti_scroll + 1).min(total.saturating_sub(1)); }
                 'a' => { self.graffiti_input = Some(String::new()); }
+                _ => {}
+            }
+        }
+    }
+
+    // ── Input: top 10 lists ──────────────────────────────────────────────────
+
+    fn top10_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        if is_key_pressed(KeyCode::Tab) {
+            self.top_list_tab = (self.top_list_tab + 1) % 3;
+        }
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                '1' => { self.top_list_tab = 0; }
+                '2' => { self.top_list_tab = 1; }
+                '3' => { self.top_list_tab = 2; }
                 _ => {}
             }
         }
