@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use macroquad::texture::FilterMode;
 
 mod app;
 mod bbs;
@@ -18,6 +19,8 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    set_default_filter_mode(FilterMode::Nearest);
+
     let mut app = App::new();
     let mut tick_accum = 0.0_f32;
 
