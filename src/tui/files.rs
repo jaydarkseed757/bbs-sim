@@ -103,30 +103,21 @@ pub fn render_file_list(app: &App) {
     let selected_file = flat.get(app.selected_file_row);
     let can_view = selected_file.map(|f| f.kind == "text").unwrap_or(false);
 
-    if app.file_download_notice {
-        draw_text_ex(
-            "  Initiating ZMODEM transfer...  (stub)",
-            8.0, footer_y + CHAR_H * 1.2,
-            TextParams { font_size: FONT_SIZE, color: YELLOW, ..Default::default() },
-        );
-    } else {
-        let view_hint = if can_view { ("[V]", " View  ") } else { ("[V]", " View  ") };
-        let view_color = if can_view { YELLOW } else { DIM_GRAY };
-        let mut hx = 8.0;
-        let hints: &[(&str, &str, Color)] = &[
-            ("[↑↓/jk]", " Navigate  ", YELLOW),
-            (view_hint.0, view_hint.1, view_color),
-            ("[D]", " Download  ", YELLOW),
-            ("[Esc]", " Main Menu", YELLOW),
-        ];
-        for (key, desc, kc) in hints {
-            draw_text_ex(key, hx, footer_y + CHAR_H * 1.2,
-                TextParams { font_size: FONT_SIZE, color: *kc, ..Default::default() });
-            hx += measure_text(key, None, FONT_SIZE, 1.0).width;
-            draw_text_ex(desc, hx, footer_y + CHAR_H * 1.2,
-                TextParams { font_size: FONT_SIZE, color: DARKGRAY, ..Default::default() });
-            hx += measure_text(desc, None, FONT_SIZE, 1.0).width;
-        }
+    let view_color = if can_view { YELLOW } else { DIM_GRAY };
+    let mut hx = 8.0;
+    let hints: &[(&str, &str, Color)] = &[
+        ("[↑↓/jk]", " Navigate  ", YELLOW),
+        ("[V]", " View  ", view_color),
+        ("[D]", " Download  ", YELLOW),
+        ("[Esc]", " Main Menu", YELLOW),
+    ];
+    for (key, desc, kc) in hints {
+        draw_text_ex(key, hx, footer_y + CHAR_H * 1.2,
+            TextParams { font_size: FONT_SIZE, color: *kc, ..Default::default() });
+        hx += measure_text(key, None, FONT_SIZE, 1.0).width;
+        draw_text_ex(desc, hx, footer_y + CHAR_H * 1.2,
+            TextParams { font_size: FONT_SIZE, color: DARKGRAY, ..Default::default() });
+        hx += measure_text(desc, None, FONT_SIZE, 1.0).width;
     }
 }
 
