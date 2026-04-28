@@ -1,0 +1,54 @@
+[[lines]]
+handle = "ConductorX"
+message = "the railroad is open. speak freely, think clearly"
+date = "01/06/93"
+
+[[lines]]
+handle = "FreeAgent"
+message = "clipper chip proposal is confirmed. this is not a drill. read the EFF alert"
+date = "01/20/93"
+
+[[lines]]
+handle = "RadLib"
+message = "FreeAgent -- already got PGP running. everyone needs to do this now"
+date = "01/20/93"
+
+[[lines]]
+handle = "ConductorX"
+message = "EFF action alert uploaded to files section. distribute widely"
+date = "02/03/93"
+
+[[lines]]
+handle = "DataMule"
+message = "clinton administration pushing clipper like it's a good thing. it is not a good thing"
+date = "02/17/93"
+
+[[lines]]
+handle = "FreeAgent"
+message = "surveillance infrastructure being built while everyone watches MTV. classic"
+date = "03/03/93"
+
+[[lines]]
+handle = "NightOwl_C"
+message = "just finished sterling's hacker crackdown. everyone on this board should read it"
+date = "03/17/93"
+
+[[lines]]
+handle = "RadLib"
+message = "NightOwl_C -- been saying this for months. it's on ftp.eff.org"
+date = "03/17/93"
+
+[[lines]]
+handle = "ConductorX"
+message = "the argument that 'if you have nothing to hide you have nothing to fear' is wrong in every possible way"
+date = "03/31/93"
+
+[[lines]]
+handle = "DataMule"
+message = "PGP 2.3 is in the files section. use it for everything"
+date = "04/14/93"
+
+[[lines]]
+handle = "FreeAgent"
+message = "privacy is not a crime. encryption is not a weapon. say it until people believe it"
+date = "04/28/93"

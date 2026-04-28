@@ -1,15 +1,17 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Thread};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
+use crate::bbs::oneliners::load_oneliners;
 use crate::bbs::session::Session;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
+use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
@@ -43,6 +45,7 @@ pub enum Screen {
     ComposeMail,
     Files,
     ViewFile { id: u32 },
+    GraffitiWall,
     SysopChat,
     Logout,
 }
@@ -279,6 +282,9 @@ pub struct App {
     pub file_view_scroll: usize,
     pub file_download_notice: bool,
     pub manual_dial_input: Option<String>,
+    pub oneliners: Vec<Oneliner>,
+    pub graffiti_scroll: usize,
+    pub graffiti_input: Option<String>,
 }
 
 impl App {
@@ -307,6 +313,9 @@ impl App {
             file_view_scroll: 0,
             file_download_notice: false,
             manual_dial_input: None,
+            oneliners: vec![],
+            graffiti_scroll: 0,
+            graffiti_input: None,
         }
     }
 
@@ -326,9 +335,10 @@ impl App {
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
-            Screen::Files         => render_file_list(self),
+            Screen::Files           => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
-            Screen::SysopChat     => render_sysop_chat(self),
+            Screen::GraffitiWall    => render_graffiti_wall(self),
+            Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
     }
@@ -349,9 +359,10 @@ impl App {
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
-            Screen::Files         => self.files_input(),
+            Screen::Files           => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
-            Screen::SysopChat     => self.sysop_chat_input(),
+            Screen::GraffitiWall    => self.graffiti_wall_input(),
+            Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
     }
@@ -435,9 +446,11 @@ impl App {
 
         if let Some((handle, bbs_name, slug)) = transition {
             self.session.login(handle.clone(), bbs_name.clone());
-            self.boards = load_boards(&slug);
-            self.mail   = load_mail(&slug, &handle);
-            self.files  = load_files(&slug);
+            self.boards     = load_boards(&slug);
+            self.mail       = load_mail(&slug, &handle);
+            self.files      = load_files(&slug);
+            self.oneliners  = load_oneliners(&slug);
+            self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
@@ -645,6 +658,10 @@ impl App {
                     self.selected_file_row = 0;
                     self.file_download_notice = false;
                     self.screen = Screen::Files;
+                }
+                'o' => {
+                    self.graffiti_input = None;
+                    self.screen = Screen::GraffitiWall;
                 }
                 'c' => {
                     self.begin_sysop_chat();
@@ -1188,6 +1205,68 @@ impl App {
         self.mail.push(sent);
         self.compose_mail = None;
         self.screen = Screen::Mail;
+    }
+
+    // ── Input: graffiti wall ─────────────────────────────────────────────────
+
+    fn graffiti_wall_input(&mut self) {
+        let total = self.oneliners.len();
+
+        // Input mode
+        if self.graffiti_input.is_some() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.graffiti_input = None;
+                return;
+            }
+            if is_key_pressed(KeyCode::Enter) {
+                let text = self.graffiti_input.take().unwrap_or_default();
+                let trimmed = text.trim().to_string();
+                if !trimmed.is_empty() {
+                    let handle = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
+                    self.oneliners.push(Oneliner { handle, message: trimmed, date: "04/28/93".into() });
+                    self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+                }
+                return;
+            }
+            if is_key_pressed(KeyCode::Backspace) {
+                if let Some(ref mut s) = self.graffiti_input { s.pop(); }
+                return;
+            }
+            while let Some(ch) = get_char_pressed() {
+                if ch.is_ascii() && !ch.is_control() {
+                    if let Some(ref mut s) = self.graffiti_input {
+                        if s.len() < 60 { s.push(ch); }
+                    }
+                }
+            }
+            return;
+        }
+
+        // Normal navigation
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.graffiti_scroll = self.graffiti_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.graffiti_scroll = (self.graffiti_scroll + 1).min(total.saturating_sub(1));
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.graffiti_scroll = self.graffiti_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.graffiti_scroll = (self.graffiti_scroll + 10).min(total.saturating_sub(1));
+        }
+        while let Some(ch) = get_char_pressed() {
+            match ch.to_ascii_lowercase() {
+                'k' => { self.graffiti_scroll = self.graffiti_scroll.saturating_sub(1); }
+                'j' => { self.graffiti_scroll = (self.graffiti_scroll + 1).min(total.saturating_sub(1)); }
+                'a' => { self.graffiti_input = Some(String::new()); }
+                _ => {}
+            }
+        }
     }
 
     // ── Input / tick: sysop chat ─────────────────────────────────────────────

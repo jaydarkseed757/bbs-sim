@@ -61,6 +61,13 @@ pub struct MailMessage {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Oneliner {
+    pub handle: String,
+    pub message: String,
+    pub date: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BbsFile {
     pub id: u32,
     pub name: String,
