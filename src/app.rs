@@ -16,6 +16,7 @@ use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
+use crate::tui::sysop::render_sysop_chat;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
 // Palette constants reused across tick methods.
@@ -42,6 +43,7 @@ pub enum Screen {
     ComposeMail,
     Files,
     ViewFile { id: u32 },
+    SysopChat,
     Logout,
 }
 
@@ -112,6 +114,36 @@ impl LogoutState {
             buffer: TerminalBuffer::new(80, 100),
             done: false,
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// SysopChatState
+// ---------------------------------------------------------------------------
+
+pub struct SysopChatState {
+    pub bbs_name: String,
+    pub typer: BaudTyper,
+    pub buffer: TerminalBuffer,
+    pub done: bool,
+}
+
+impl SysopChatState {
+    fn new(bbs_name: String, sysop: &str, baud: u32) -> Self {
+        let mut typer = BaudTyper::new(baud);
+        let msg = format!(
+            "\r\nPaging sysop: {} ...\r\n\
+             \r\n\
+             *BEEP* *BEEP* *BEEP*\r\n\
+             \r\n\
+             No response.\r\n\
+             \r\n\
+             The sysop is not available right now.\r\n\
+             Please leave a message in the mail system.\r\n",
+            sysop
+        );
+        typer.enqueue(&msg);
+        Self { bbs_name, typer, buffer: TerminalBuffer::new(80, 100), done: false }
     }
 }
 
@@ -235,6 +267,7 @@ pub struct App {
     pub read_scroll: usize,
     pub compose: Option<ComposeState>,
     pub logout: Option<LogoutState>,
+    pub sysop_chat: Option<SysopChatState>,
     pub mail: Vec<MailMessage>,
     pub selected_mail_row: usize,
     pub mail_read_scroll: usize,
@@ -262,6 +295,7 @@ impl App {
             read_scroll: 0,
             compose: None,
             logout: None,
+            sysop_chat: None,
             mail: vec![],
             selected_mail_row: 0,
             mail_read_scroll: 0,
@@ -292,6 +326,7 @@ impl App {
             Screen::ComposeMail   => render_compose_mail(self),
             Screen::Files         => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
+            Screen::SysopChat     => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
     }
@@ -314,16 +349,18 @@ impl App {
             Screen::ComposeMail   => self.compose_mail_input(),
             Screen::Files         => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
+            Screen::SysopChat     => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
     }
 
     pub fn tick(&mut self) {
         match self.screen.clone() {
-            Screen::Dialing => self.tick_dialing(),
-            Screen::Login   => self.tick_login(),
-            Screen::Logout  => self.tick_logout(),
-            _               => {}
+            Screen::Dialing   => self.tick_dialing(),
+            Screen::Login     => self.tick_login(),
+            Screen::Logout    => self.tick_logout(),
+            Screen::SysopChat => self.tick_sysop_chat(),
+            _                 => {}
         }
     }
 
@@ -588,6 +625,9 @@ impl App {
                     self.selected_file_row = 0;
                     self.file_download_notice = false;
                     self.screen = Screen::Files;
+                }
+                'c' => {
+                    self.begin_sysop_chat();
                 }
                 'g' | 'l' => {
                     self.begin_logout();
@@ -1128,6 +1168,44 @@ impl App {
         self.mail.push(sent);
         self.compose_mail = None;
         self.screen = Screen::Mail;
+    }
+
+    // ── Input / tick: sysop chat ─────────────────────────────────────────────
+
+    fn begin_sysop_chat(&mut self) {
+        let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
+        let sysop = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.sysop.clone())
+            .unwrap_or_else(|| "Sysop".into());
+        let baud = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.baud)
+            .unwrap_or(2400);
+        self.sysop_chat = Some(SysopChatState::new(bbs_name, &sysop, baud));
+        self.screen = Screen::SysopChat;
+    }
+
+    fn tick_sysop_chat(&mut self) {
+        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        if let Some(ref mut state) = self.sysop_chat {
+            for ch in state.typer.tick() {
+                state.buffer.push_char(ch, CellStyle::fg(green));
+            }
+            if state.typer.is_empty() {
+                state.done = true;
+            }
+        }
+    }
+
+    fn sysop_chat_input(&mut self) {
+        let done = self.sysop_chat.as_ref().map(|s| s.done).unwrap_or(false);
+        if is_key_pressed(KeyCode::Escape)
+            || (done && (is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some()))
+        {
+            self.sysop_chat = None;
+            self.screen = Screen::MainMenu;
+        }
     }
 
     // ── Input / tick: logout ─────────────────────────────────────────────────

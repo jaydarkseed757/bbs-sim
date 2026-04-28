@@ -42,6 +42,7 @@ pub fn render_main_menu(app: &App) {
         ("[B]", "oards",    "Read and post on message boards"),
         ("[M]", "ail",      "Read and send private mail"),
         ("[F]", "iles",     "Browse & download files"),
+        ("[C]", "hat",      "Chat with the sysop"),
         ("[G]", "oodbye",   "Logoff the system"),
     ];
 

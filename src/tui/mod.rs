@@ -8,4 +8,5 @@ pub mod login;
 pub mod logout;
 pub mod mail;
 pub mod menus;
+pub mod sysop;
 pub mod terminal;
