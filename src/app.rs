@@ -42,13 +42,13 @@ pub enum Screen {
     MessageBoards,
     ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
-    ComposeMessage { board_id: String, thread_id: Option<u32> },
+    ComposeMessage,
     Mail,
     ReadMail { id: u32 },
     ComposeMail,
     Files,
     ViewFile { id: u32 },
-    Downloading { file_id: u32 },
+    Downloading,
     GraffitiWall,
     TopTen,
     SysopChat,
@@ -834,10 +834,7 @@ impl App {
                             body: String::new(),
                             field: ComposeField::Subject,
                         });
-                        self.screen = Screen::ComposeMessage {
-                            board_id,
-                            thread_id: None,
-                        };
+                        self.screen = Screen::ComposeMessage;
                         return;
                     }
                 }
@@ -896,10 +893,7 @@ impl App {
                     body: String::new(),
                     field: ComposeField::Body,
                 });
-                self.screen = Screen::ComposeMessage {
-                    board_id,
-                    thread_id: Some(thread_id),
-                };
+                self.screen = Screen::ComposeMessage;
                 return;
             }
         }
@@ -1445,7 +1439,7 @@ impl App {
             .cloned();
         if let Some(f) = file {
             self.download = Some(DownloadState::new(f.name, &f.size, baud));
-            self.screen = Screen::Downloading { file_id };
+            self.screen = Screen::Downloading;
         }
     }
 

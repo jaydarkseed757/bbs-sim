@@ -19,12 +19,6 @@ pub struct BbsEntry {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct User {
-    pub handle: String,
-    pub password: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Message {
     pub id: u32,
     pub author: String,

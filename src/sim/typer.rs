@@ -4,7 +4,6 @@
 /// Slow baud (< ~200 baud): multiple ticks per character.
 /// Fast baud (≥ 200 baud):  multiple characters per tick.
 pub struct BaudTyper {
-    pub baud: u32,
     buffer: Vec<char>,
     ticks_per_char: u32,
     chars_per_tick: usize,
@@ -24,7 +23,6 @@ impl BaudTyper {
         };
 
         Self {
-            baud,
             buffer: vec![],
             ticks_per_char,
             chars_per_tick,
