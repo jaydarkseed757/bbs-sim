@@ -4,6 +4,7 @@ pub mod graffiti;
 pub mod compose;
 pub mod dialer;
 pub mod dialing;
+pub mod download;
 pub mod files;
 pub mod login;
 pub mod logout;

@@ -20,6 +20,7 @@ use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
+use crate::tui::download::render_download;
 use crate::tui::sysop::render_sysop_chat;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
@@ -47,6 +48,7 @@ pub enum Screen {
     ComposeMail,
     Files,
     ViewFile { id: u32 },
+    Downloading { file_id: u32 },
     GraffitiWall,
     TopTen,
     SysopChat,
@@ -150,6 +152,50 @@ impl SysopChatState {
         );
         typer.enqueue(&msg);
         Self { bbs_name, typer, buffer: TerminalBuffer::new(80, 100), done: false }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DownloadState
+// ---------------------------------------------------------------------------
+
+fn parse_size(s: &str) -> u64 {
+    let s = s.trim();
+    if let Some(n) = s.strip_suffix("MB").or_else(|| s.strip_suffix('M')) {
+        (n.trim().parse::<f64>().unwrap_or(0.0) * 1_048_576.0) as u64
+    } else if let Some(n) = s.strip_suffix("KB").or_else(|| s.strip_suffix('K')) {
+        (n.trim().parse::<f64>().unwrap_or(0.0) * 1_024.0) as u64
+    } else {
+        s.parse::<u64>().unwrap_or(10_240)
+    }
+}
+
+pub struct DownloadState {
+    pub file_name: String,
+    pub total_bytes: u64,
+    pub transferred: u64,
+    pub baud: u32,
+    pub elapsed_ticks: u64,
+    pub packet_count: u64,
+    pub bytes_per_tick: u64,
+    pub done: bool,
+}
+
+impl DownloadState {
+    fn new(file_name: String, size_str: &str, baud: u32) -> Self {
+        let total_bytes = parse_size(size_str).max(1);
+        // Target ~15 seconds at 20 ticks/sec = 300 ticks
+        let bytes_per_tick = (total_bytes / 300).max(1);
+        Self {
+            file_name,
+            total_bytes,
+            transferred: 0,
+            baud,
+            elapsed_ticks: 0,
+            packet_count: 0,
+            bytes_per_tick,
+            done: false,
+        }
     }
 }
 
@@ -283,7 +329,7 @@ pub struct App {
     pub files: Vec<FileSection>,
     pub selected_file_row: usize,
     pub file_view_scroll: usize,
-    pub file_download_notice: bool,
+    pub download: Option<DownloadState>,
     pub manual_dial_input: Option<String>,
     pub oneliners: Vec<Oneliner>,
     pub graffiti_scroll: usize,
@@ -316,7 +362,7 @@ impl App {
             files: vec![],
             selected_file_row: 0,
             file_view_scroll: 0,
-            file_download_notice: false,
+            download: None,
             manual_dial_input: None,
             oneliners: vec![],
             graffiti_scroll: 0,
@@ -344,6 +390,7 @@ impl App {
             Screen::ComposeMail   => render_compose_mail(self),
             Screen::Files           => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
+            Screen::Downloading { .. } => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
             Screen::SysopChat       => render_sysop_chat(self),
@@ -369,6 +416,7 @@ impl App {
             Screen::ComposeMail   => self.compose_mail_input(),
             Screen::Files           => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
+            Screen::Downloading { .. } => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
@@ -378,11 +426,12 @@ impl App {
 
     pub fn tick(&mut self) {
         match self.screen.clone() {
-            Screen::Dialing   => self.tick_dialing(),
-            Screen::Login     => self.tick_login(),
-            Screen::Logout    => self.tick_logout(),
-            Screen::SysopChat => self.tick_sysop_chat(),
-            _                 => {}
+            Screen::Dialing        => self.tick_dialing(),
+            Screen::Login          => self.tick_login(),
+            Screen::Logout         => self.tick_logout(),
+            Screen::SysopChat      => self.tick_sysop_chat(),
+            Screen::Downloading { .. } => self.tick_download(),
+            _                      => {}
         }
     }
 
@@ -667,7 +716,6 @@ impl App {
                 }
                 'f' => {
                     self.selected_file_row = 0;
-                    self.file_download_notice = false;
                     self.screen = Screen::Files;
                 }
                 'o' => {
@@ -970,14 +1018,6 @@ impl App {
     // ── Input: files ─────────────────────────────────────────────────────────
 
     fn files_input(&mut self) {
-        let any_key = is_key_pressed(KeyCode::Up)
-            || is_key_pressed(KeyCode::Down)
-            || is_key_pressed(KeyCode::Escape);
-
-        if self.file_download_notice && any_key {
-            self.file_download_notice = false;
-        }
-
         if is_key_pressed(KeyCode::Escape) {
             self.screen = Screen::MainMenu;
             return;
@@ -997,10 +1037,6 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            if self.file_download_notice {
-                self.file_download_notice = false;
-                continue;
-            }
             match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_file_row =
@@ -1026,7 +1062,15 @@ impl App {
                     }
                 }
                 'd' => {
-                    self.file_download_notice = true;
+                    let file = self.files.iter()
+                        .flat_map(|s| s.files.iter())
+                        .nth(self.selected_file_row)
+                        .cloned();
+                    if let Some(f) = file {
+                        let id = f.id;
+                        self.begin_download(id);
+                        return;
+                    }
                 }
                 _ => {}
             }
@@ -1386,6 +1430,47 @@ impl App {
         self.session.logout();
         self.logout = None;
         self.screen = Screen::Dialer;
+    }
+
+    // ── Download ─────────────────────────────────────────────────────────────
+
+    fn begin_download(&mut self, file_id: u32) {
+        let baud = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.baud)
+            .unwrap_or(2400);
+        let file = self.files.iter()
+            .flat_map(|s| s.files.iter())
+            .find(|f| f.id == file_id)
+            .cloned();
+        if let Some(f) = file {
+            self.download = Some(DownloadState::new(f.name, &f.size, baud));
+            self.screen = Screen::Downloading { file_id };
+        }
+    }
+
+    fn tick_download(&mut self) {
+        let Some(ref mut dl) = self.download else { return };
+        if dl.done { return; }
+        dl.elapsed_ticks += 1;
+        dl.transferred = (dl.transferred + dl.bytes_per_tick).min(dl.total_bytes);
+        dl.packet_count = dl.transferred / 128;
+        if dl.transferred >= dl.total_bytes {
+            dl.done = true;
+        }
+    }
+
+    fn download_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.download = None;
+            self.screen = Screen::Files;
+            return;
+        }
+        let done = self.download.as_ref().map(|d| d.done).unwrap_or(false);
+        if done && (is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some()) {
+            self.download = None;
+            self.screen = Screen::Files;
+        }
     }
 }
 
