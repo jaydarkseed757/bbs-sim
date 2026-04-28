@@ -44,6 +44,7 @@ pub fn render_main_menu(app: &App) {
         ("[F]", "iles",       "Browse & download files"),
         ("[O]", "ne-liners",  "Graffiti wall -- leave your mark"),
         ("[T]", "op 10",      "Top callers, downloads, and posters"),
+        ("[V]", "oting",      "Yes/No polls -- cast your vote"),
         ("[C]", "hat",        "Chat with the sysop"),
         ("[G]", "oodbye",     "Logoff the system"),
     ];

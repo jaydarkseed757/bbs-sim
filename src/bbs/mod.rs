@@ -5,3 +5,4 @@ pub mod mail;
 pub mod oneliners;
 pub mod session;
 pub mod top10;
+pub mod voting;

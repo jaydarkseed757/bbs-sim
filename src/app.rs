@@ -1,12 +1,13 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread, TopLists};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
 use crate::bbs::oneliners::load_oneliners;
 use crate::bbs::session::Session;
 use crate::bbs::top10::load_top10;
+use crate::bbs::voting::load_polls;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
@@ -21,6 +22,7 @@ use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
 use crate::tui::download::render_download;
+use crate::tui::voting::render_voting;
 use crate::tui::sysop::render_sysop_chat;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
@@ -51,6 +53,7 @@ pub enum Screen {
     Downloading,
     GraffitiWall,
     TopTen,
+    Voting,
     SysopChat,
     Logout,
 }
@@ -336,6 +339,10 @@ pub struct App {
     pub graffiti_input: Option<String>,
     pub top_lists: TopLists,
     pub top_list_tab: usize,
+    pub polls: Vec<Poll>,
+    pub selected_poll_row: usize,
+    pub voting_scroll: usize,
+    pub voted_polls: std::collections::HashSet<u32>,
 }
 
 impl App {
@@ -369,6 +376,10 @@ impl App {
             graffiti_input: None,
             top_lists: TopLists::default(),
             top_list_tab: 0,
+            polls: vec![],
+            selected_poll_row: 0,
+            voting_scroll: 0,
+            voted_polls: std::collections::HashSet::new(),
         }
     }
 
@@ -393,6 +404,7 @@ impl App {
             Screen::Downloading { .. } => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
+            Screen::Voting          => render_voting(self),
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
@@ -419,6 +431,7 @@ impl App {
             Screen::Downloading { .. } => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
+            Screen::Voting          => self.voting_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
@@ -511,6 +524,10 @@ impl App {
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
             self.top_lists  = load_top10(&slug);
             self.top_list_tab = 0;
+            self.polls = load_polls(&slug);
+            self.selected_poll_row = 0;
+            self.voting_scroll = 0;
+            self.voted_polls.clear();
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
@@ -725,6 +742,11 @@ impl App {
                 't' => {
                     self.top_list_tab = 0;
                     self.screen = Screen::TopTen;
+                }
+                'v' => {
+                    self.selected_poll_row = 0;
+                    self.voting_scroll = 0;
+                    self.screen = Screen::Voting;
                 }
                 'c' => {
                     self.begin_sysop_chat();
@@ -1339,6 +1361,64 @@ impl App {
                 '3' => { self.top_list_tab = 2; }
                 _ => {}
             }
+        }
+    }
+
+    // ── Input: voting booth ──────────────────────────────────────────────────
+
+    fn voting_input(&mut self) {
+        let len = self.polls.len();
+
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            if self.selected_poll_row > 0 {
+                self.selected_poll_row -= 1;
+                self.scroll_voting_to_selected();
+            }
+        }
+        if is_key_pressed(KeyCode::Down) {
+            if self.selected_poll_row + 1 < len {
+                self.selected_poll_row += 1;
+                self.scroll_voting_to_selected();
+            }
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch.to_ascii_lowercase() {
+                'k' if self.selected_poll_row > 0 => {
+                    self.selected_poll_row -= 1;
+                    self.scroll_voting_to_selected();
+                }
+                'j' if self.selected_poll_row + 1 < len => {
+                    self.selected_poll_row += 1;
+                    self.scroll_voting_to_selected();
+                }
+                'y' | 'n' => {
+                    if let Some(poll) = self.polls.get_mut(self.selected_poll_row) {
+                        if !self.voted_polls.contains(&poll.id) {
+                            let id = poll.id;
+                            if ch == 'y' { poll.yes_votes += 1; } else { poll.no_votes += 1; }
+                            self.voted_polls.insert(id);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn scroll_voting_to_selected(&mut self) {
+        // Keep voting_scroll <= selected_poll_row (don't scroll past selection).
+        if self.selected_poll_row < self.voting_scroll {
+            self.voting_scroll = self.selected_poll_row;
+        }
+        // Scroll forward if needed — approximate: show at least 2 items below.
+        // Exact clipping happens in render; here we nudge the scroll to follow selection.
+        if self.selected_poll_row >= self.voting_scroll + 4 {
+            self.voting_scroll = self.selected_poll_row.saturating_sub(1);
         }
     }
 

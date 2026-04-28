@@ -106,3 +106,13 @@ pub struct FileSection {
     pub name: String,
     pub files: Vec<BbsFile>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Poll {
+    pub id: u32,
+    pub question: String,
+    #[serde(default)]
+    pub yes_votes: u32,
+    #[serde(default)]
+    pub no_votes: u32,
+}

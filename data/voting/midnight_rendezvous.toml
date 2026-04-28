@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Should SS7 security vulnerabilities be publicly disclosed?"
+yes_votes = 278
+no_votes = 89
+
+[[polls]]
+id = 2
+question = "Is 9600 baud fast enough for serious BBS use in 1993?"
+yes_votes = 34
+no_votes = 312
+
+[[polls]]
+id = 3
+question = "Should ISDN be priced affordably for home users?"
+yes_votes = 401
+no_votes = 22
+
+[[polls]]
+id = 4
+question = "Will the regional Bell monopolies ever truly break up?"
+yes_votes = 156
+no_votes = 234
+
+[[polls]]
+id = 5
+question = "Is the FCC justified in regulating BBS content?"
+yes_votes = 31
+no_votes = 389

@@ -13,3 +13,4 @@ pub mod menus;
 pub mod sysop;
 pub mod terminal;
 pub mod top10;
+pub mod voting;
