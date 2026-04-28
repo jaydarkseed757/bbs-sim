@@ -1,0 +1,149 @@
+[[callers]]
+handle = "KirkFan"
+calls = 1203
+location = "Seattle, WA"
+
+[[callers]]
+handle = "DataJockey"
+calls = 987
+location = "Portland, OR"
+
+[[callers]]
+handle = "NovaDriftr"
+calls = 834
+location = "Vancouver, BC"
+
+[[callers]]
+handle = "WarpCore"
+calls = 701
+location = "Seattle, WA"
+
+[[callers]]
+handle = "StarMapper"
+calls = 612
+location = "Tacoma, WA"
+
+[[callers]]
+handle = "HyperStar"
+calls = 534
+location = "Olympia, WA"
+
+[[callers]]
+handle = "GalactiQ"
+calls = 421
+location = "Eugene, OR"
+
+[[callers]]
+handle = "PhaseShift"
+calls = 388
+location = "Spokane, WA"
+
+[[callers]]
+handle = "NightMode"
+calls = 276
+location = "Boise, ID"
+
+[[callers]]
+handle = "SolarWind"
+calls = 201
+location = "Portland, OR"
+
+[[files]]
+name = "SNOW_CRASH.TXT"
+downloads = 534
+description = "Snow Crash discussion notes"
+
+[[files]]
+name = "TREK_TNG_S6.TXT"
+downloads = 489
+description = "TNG season 6 episode guide"
+
+[[files]]
+name = "XTREK.ZIP"
+downloads = 401
+description = "X-Trek multiplayer space game"
+
+[[files]]
+name = "TRADWARS2.ZIP"
+downloads = 367
+description = "Trade Wars 2002 BBS door"
+
+[[files]]
+name = "TELIX351.ZIP"
+downloads = 312
+description = "Telix 3.51 terminal emulator"
+
+[[files]]
+name = "MODFILES.ZIP"
+downloads = 198
+description = "Best-of MOD/S3M collection"
+
+[[files]]
+name = "PKZIP204G.EXE"
+downloads = 187
+description = "PKZIP 2.04g archiver"
+
+[[files]]
+name = "WOLF3D.ZIP"
+downloads = 143
+description = "Wolfenstein 3D shareware"
+
+[[files]]
+name = "DOOM_BETA.ZIP"
+downloads = 121
+description = "Doom alpha preview build"
+
+[[files]]
+name = "UUENCODE.ZIP"
+downloads = 89
+description = "UUENCODE/DECODE for DOS"
+
+[[posters]]
+handle = "KirkFan"
+posts = 891
+board = "SciFi"
+
+[[posters]]
+handle = "DataJockey"
+posts = 743
+board = "SciFi"
+
+[[posters]]
+handle = "NovaDriftr"
+posts = 612
+board = "Gaming"
+
+[[posters]]
+handle = "WarpCore"
+posts = 534
+board = "Anime"
+
+[[posters]]
+handle = "StarMapper"
+posts = 421
+board = "Gaming"
+
+[[posters]]
+handle = "HyperStar"
+posts = 367
+board = "SciFi"
+
+[[posters]]
+handle = "GalactiQ"
+posts = 298
+board = "Anime"
+
+[[posters]]
+handle = "PhaseShift"
+posts = 187
+board = "Gaming"
+
+[[posters]]
+handle = "NightMode"
+posts = 143
+board = "SciFi"
+
+[[posters]]
+handle = "SolarWind"
+posts = 98
+board = "Anime"

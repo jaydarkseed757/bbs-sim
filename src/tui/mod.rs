@@ -1,5 +1,6 @@
 pub mod ansi;
 pub mod boards;
+pub mod graffiti;
 pub mod compose;
 pub mod dialer;
 pub mod dialing;
@@ -8,4 +9,6 @@ pub mod login;
 pub mod logout;
 pub mod mail;
 pub mod menus;
+pub mod sysop;
 pub mod terminal;
+pub mod top10;

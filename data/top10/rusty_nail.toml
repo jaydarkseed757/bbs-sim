@@ -1,0 +1,149 @@
+[[callers]]
+handle = "ShadowByte"
+calls = 847
+location = "Cincinnati, OH"
+
+[[callers]]
+handle = "WireHedd"
+calls = 634
+location = "Columbus, OH"
+
+[[callers]]
+handle = "PixelPushr"
+calls = 521
+location = "Dayton, OH"
+
+[[callers]]
+handle = "NullPtr"
+calls = 488
+location = "Cleveland, OH"
+
+[[callers]]
+handle = "TurboGal"
+calls = 401
+location = "Louisville, KY"
+
+[[callers]]
+handle = "HexWitch"
+calls = 376
+location = "Indianapolis, IN"
+
+[[callers]]
+handle = "Cracker_J"
+calls = 312
+location = "Detroit, MI"
+
+[[callers]]
+handle = "SegFault"
+calls = 287
+location = "Pittsburgh, PA"
+
+[[callers]]
+handle = "MegaHz"
+calls = 241
+location = "Columbus, OH"
+
+[[callers]]
+handle = "ByteShift"
+calls = 198
+location = "Cincinnati, OH"
+
+[[files]]
+name = "WOLF3D.ZIP"
+downloads = 312
+description = "Wolfenstein 3D shareware ep.1"
+
+[[files]]
+name = "PKZIP204G.EXE"
+downloads = 287
+description = "PKZIP 2.04g archiver"
+
+[[files]]
+name = "QMODEM43.ZIP"
+downloads = 241
+description = "QModem 4.3 terminal"
+
+[[files]]
+name = "4DOS55.ZIP"
+downloads = 198
+description = "4DOS 5.5 shell replacement"
+
+[[files]]
+name = "C64_TRICKS.TXT"
+downloads = 167
+description = "C64 undocumented opcodes"
+
+[[files]]
+name = "HACKER_ETHIC.TXT"
+downloads = 134
+description = "The Hacker Ethic -- Levy"
+
+[[files]]
+name = "DOOM_BETA.ZIP"
+downloads = 98
+description = "Doom alpha preview build"
+
+[[files]]
+name = "REALMGEN.ZIP"
+downloads = 76
+description = "Random realm/map generator"
+
+[[files]]
+name = "UUENCODE.ZIP"
+downloads = 54
+description = "UUENCODE/DECODE for DOS"
+
+[[files]]
+name = "PHOTOSHP.ZIP"
+downloads = 41
+description = "Adobe Photoshop 2.5"
+
+[[posters]]
+handle = "ShadowByte"
+posts = 423
+board = "General"
+
+[[posters]]
+handle = "WireHedd"
+posts = 318
+board = "C64"
+
+[[posters]]
+handle = "PixelPushr"
+posts = 276
+board = "Tech Talk"
+
+[[posters]]
+handle = "NullPtr"
+posts = 201
+board = "Warez"
+
+[[posters]]
+handle = "HexWitch"
+posts = 187
+board = "General"
+
+[[posters]]
+handle = "TurboGal"
+posts = 143
+board = "Tech Talk"
+
+[[posters]]
+handle = "Cracker_J"
+posts = 129
+board = "Warez"
+
+[[posters]]
+handle = "SegFault"
+posts = 98
+board = "Tech Talk"
+
+[[posters]]
+handle = "MegaHz"
+posts = 74
+board = "C64"
+
+[[posters]]
+handle = "ByteShift"
+posts = 61
+board = "General"

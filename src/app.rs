@@ -1,21 +1,26 @@
 use macroquad::prelude::*;
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Thread};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread, TopLists};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
+use crate::bbs::oneliners::load_oneliners;
 use crate::bbs::session::Session;
+use crate::bbs::top10::load_top10;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
+use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
+use crate::tui::top10::render_top10;
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
+use crate::tui::sysop::render_sysop_chat;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
 // Palette constants reused across tick methods.
@@ -42,6 +47,9 @@ pub enum Screen {
     ComposeMail,
     Files,
     ViewFile { id: u32 },
+    GraffitiWall,
+    TopTen,
+    SysopChat,
     Logout,
 }
 
@@ -116,6 +124,36 @@ impl LogoutState {
 }
 
 // ---------------------------------------------------------------------------
+// SysopChatState
+// ---------------------------------------------------------------------------
+
+pub struct SysopChatState {
+    pub bbs_name: String,
+    pub typer: BaudTyper,
+    pub buffer: TerminalBuffer,
+    pub done: bool,
+}
+
+impl SysopChatState {
+    fn new(bbs_name: String, sysop: &str, baud: u32) -> Self {
+        let mut typer = BaudTyper::new(baud);
+        let msg = format!(
+            "\r\nPaging sysop: {} ...\r\n\
+             \r\n\
+             *BEEP* *BEEP* *BEEP*\r\n\
+             \r\n\
+             No response.\r\n\
+             \r\n\
+             The sysop is not available right now.\r\n\
+             Please leave a message in the mail system.\r\n",
+            sysop
+        );
+        typer.enqueue(&msg);
+        Self { bbs_name, typer, buffer: TerminalBuffer::new(80, 100), done: false }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Login step sub-state
 // ---------------------------------------------------------------------------
 
@@ -140,13 +178,32 @@ pub struct DialingState {
     pub typer: BaudTyper,
     pub buffer: TerminalBuffer,
     pub awaiting_keypress: bool,
+    pub no_answer: bool,
 }
 
 impl DialingState {
     fn new(bbs: BbsEntry) -> Self {
         let modem = ModemSim::new(&bbs.number);
         let typer = BaudTyper::new(bbs.baud);
-        Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false }
+        Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: false }
+    }
+
+    fn new_manual(number: String) -> Self {
+        let modem = ModemSim::new_no_answer(&number);
+        let typer = BaudTyper::new(2400);
+        let bbs = BbsEntry {
+            name: String::new(),
+            number,
+            sysop: String::new(),
+            location: String::new(),
+            baud: 2400,
+            boards: vec![],
+            last_called: None,
+            slug: String::new(),
+            total_callers: 0,
+            call_count: 0,
+        };
+        Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: true }
     }
 }
 
@@ -218,6 +275,7 @@ pub struct App {
     pub read_scroll: usize,
     pub compose: Option<ComposeState>,
     pub logout: Option<LogoutState>,
+    pub sysop_chat: Option<SysopChatState>,
     pub mail: Vec<MailMessage>,
     pub selected_mail_row: usize,
     pub mail_read_scroll: usize,
@@ -226,6 +284,12 @@ pub struct App {
     pub selected_file_row: usize,
     pub file_view_scroll: usize,
     pub file_download_notice: bool,
+    pub manual_dial_input: Option<String>,
+    pub oneliners: Vec<Oneliner>,
+    pub graffiti_scroll: usize,
+    pub graffiti_input: Option<String>,
+    pub top_lists: TopLists,
+    pub top_list_tab: usize,
 }
 
 impl App {
@@ -244,6 +308,7 @@ impl App {
             read_scroll: 0,
             compose: None,
             logout: None,
+            sysop_chat: None,
             mail: vec![],
             selected_mail_row: 0,
             mail_read_scroll: 0,
@@ -252,6 +317,12 @@ impl App {
             selected_file_row: 0,
             file_view_scroll: 0,
             file_download_notice: false,
+            manual_dial_input: None,
+            oneliners: vec![],
+            graffiti_scroll: 0,
+            graffiti_input: None,
+            top_lists: TopLists::default(),
+            top_list_tab: 0,
         }
     }
 
@@ -271,8 +342,11 @@ impl App {
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
-            Screen::Files         => render_file_list(self),
+            Screen::Files           => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
+            Screen::GraffitiWall    => render_graffiti_wall(self),
+            Screen::TopTen          => render_top10(self),
+            Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
     }
@@ -293,18 +367,22 @@ impl App {
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
-            Screen::Files         => self.files_input(),
+            Screen::Files           => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
+            Screen::GraffitiWall    => self.graffiti_wall_input(),
+            Screen::TopTen          => self.top10_input(),
+            Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
     }
 
     pub fn tick(&mut self) {
         match self.screen.clone() {
-            Screen::Dialing => self.tick_dialing(),
-            Screen::Login   => self.tick_login(),
-            Screen::Logout  => self.tick_logout(),
-            _               => {}
+            Screen::Dialing   => self.tick_dialing(),
+            Screen::Login     => self.tick_login(),
+            Screen::Logout    => self.tick_logout(),
+            Screen::SysopChat => self.tick_sysop_chat(),
+            _                 => {}
         }
     }
 
@@ -321,6 +399,10 @@ impl App {
         }
         if d.modem.phase == DialPhase::Connected && d.typer.is_empty() && !d.awaiting_keypress {
             d.buffer.push_str("\r\n\r\nPress [Enter] to log in...\r\n", CellStyle::fg(YELLOW));
+            d.awaiting_keypress = true;
+        }
+        if d.no_answer && d.modem.phase == DialPhase::NoAnswer && d.typer.is_empty() && !d.awaiting_keypress {
+            d.buffer.push_str("\r\nPress any key to return...\r\n", CellStyle::fg(YELLOW));
             d.awaiting_keypress = true;
         }
     }
@@ -372,14 +454,22 @@ impl App {
         }
 
         if let Some((handle, bbs_name, slug)) = transition {
-            self.session.login(handle.clone(), bbs_name);
-            self.boards = load_boards(&slug);
-            self.mail   = load_mail(&slug, &handle);
-            self.files  = load_files(&slug);
+            self.session.login(handle.clone(), bbs_name.clone());
+            self.boards     = load_boards(&slug);
+            self.mail       = load_mail(&slug, &handle);
+            self.files      = load_files(&slug);
+            self.oneliners  = load_oneliners(&slug);
+            self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+            self.top_lists  = load_top10(&slug);
+            self.top_list_tab = 0;
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
             self.selected_file_row   = 0;
+            if let Some(entry) = self.phonebook.iter_mut().find(|e| e.name == bbs_name) {
+                entry.call_count  += 1;
+                entry.last_called  = Some("04/28/93".into());
+            }
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -388,6 +478,37 @@ impl App {
     // ── Input: dialer ────────────────────────────────────────────────────────
 
     fn dialer_input(&mut self) {
+        // ── Manual dial overlay input ─────────────────────────────────────────
+        if self.manual_dial_input.is_some() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.manual_dial_input = None;
+                return;
+            }
+            if is_key_pressed(KeyCode::Backspace) {
+                if let Some(ref mut s) = self.manual_dial_input {
+                    s.pop();
+                }
+                return;
+            }
+            if is_key_pressed(KeyCode::Enter) {
+                let number = self.manual_dial_input.take().unwrap_or_default();
+                if !number.trim().is_empty() {
+                    self.dial = Some(DialingState::new_manual(number));
+                    self.screen = Screen::Dialing;
+                }
+                return;
+            }
+            while let Some(ch) = get_char_pressed() {
+                if let Some(ref mut s) = self.manual_dial_input {
+                    if s.len() < 20 && (ch.is_ascii_digit() || matches!(ch, '-' | '+' | ' ' | '(' | ')')) {
+                        s.push(ch);
+                    }
+                }
+            }
+            return;
+        }
+
+        // ── Normal phonebook input ────────────────────────────────────────────
         let len = self.phonebook.len();
 
         if is_key_pressed(KeyCode::Up) {
@@ -419,6 +540,9 @@ impl App {
                         self.screen = Screen::Dialing;
                     }
                 }
+                'm' | 'M' => {
+                    self.manual_dial_input = Some(String::new());
+                }
                 _ => {}
             }
         }
@@ -433,8 +557,15 @@ impl App {
             return;
         }
 
-        let awaiting = self.dial.as_ref().map(|d| d.awaiting_keypress).unwrap_or(false);
-        if awaiting && is_key_pressed(KeyCode::Enter) {
+        let awaiting   = self.dial.as_ref().map(|d| d.awaiting_keypress).unwrap_or(false);
+        let no_answer  = self.dial.as_ref().map(|d| d.no_answer).unwrap_or(false);
+
+        if awaiting && no_answer {
+            if is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some() {
+                self.dial = None;
+                self.screen = Screen::Dialer;
+            }
+        } else if awaiting && is_key_pressed(KeyCode::Enter) {
             if let Some(d) = self.dial.take() {
                 self.login = Some(LoginState::new(d.bbs));
                 self.screen = Screen::Login;
@@ -484,9 +615,23 @@ impl App {
                 }
                 LoginStep::Password => {
                     d.input.clear();
+                    let this_call = d.bbs.call_count + 1;
+                    let times_str = if this_call == 1 {
+                        "1 time".to_string()
+                    } else {
+                        format!("{} times", this_call)
+                    };
+                    let last_on = match d.bbs.last_called.as_deref() {
+                        Some(date) => format!("Last on: {}.", date),
+                        None       => "First call!".to_string(),
+                    };
                     let msg = format!(
-                        "\r\n\r\nAccess granted!  Welcome, {}!\r\n\r\n",
-                        d.user_handle
+                        "\r\n\r\nAccess granted!  Welcome, {}!\r\n\r\n\
+                         You are caller #{}.  You have called {}.  {}\r\n\r\n",
+                        d.user_handle,
+                        d.bbs.total_callers + this_call,
+                        times_str,
+                        last_on,
                     );
                     d.buffer.push_str("\r\n", CellStyle::fg(WHITE_BBS));
                     d.typer.enqueue(&msg);
@@ -524,6 +669,17 @@ impl App {
                     self.selected_file_row = 0;
                     self.file_download_notice = false;
                     self.screen = Screen::Files;
+                }
+                'o' => {
+                    self.graffiti_input = None;
+                    self.screen = Screen::GraffitiWall;
+                }
+                't' => {
+                    self.top_list_tab = 0;
+                    self.screen = Screen::TopTen;
+                }
+                'c' => {
+                    self.begin_sysop_chat();
                 }
                 'g' | 'l' => {
                     self.begin_logout();
@@ -1066,6 +1222,126 @@ impl App {
         self.screen = Screen::Mail;
     }
 
+    // ── Input: graffiti wall ─────────────────────────────────────────────────
+
+    fn graffiti_wall_input(&mut self) {
+        let total = self.oneliners.len();
+
+        // Input mode
+        if self.graffiti_input.is_some() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.graffiti_input = None;
+                return;
+            }
+            if is_key_pressed(KeyCode::Enter) {
+                let text = self.graffiti_input.take().unwrap_or_default();
+                let trimmed = text.trim().to_string();
+                if !trimmed.is_empty() {
+                    let handle = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
+                    self.oneliners.push(Oneliner { handle, message: trimmed, date: "04/28/93".into() });
+                    self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+                }
+                return;
+            }
+            if is_key_pressed(KeyCode::Backspace) {
+                if let Some(ref mut s) = self.graffiti_input { s.pop(); }
+                return;
+            }
+            while let Some(ch) = get_char_pressed() {
+                if ch.is_ascii() && !ch.is_control() {
+                    if let Some(ref mut s) = self.graffiti_input {
+                        if s.len() < 60 { s.push(ch); }
+                    }
+                }
+            }
+            return;
+        }
+
+        // Normal navigation
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) {
+            self.graffiti_scroll = self.graffiti_scroll.saturating_sub(1);
+        }
+        if is_key_pressed(KeyCode::Down) {
+            self.graffiti_scroll = (self.graffiti_scroll + 1).min(total.saturating_sub(1));
+        }
+        if is_key_pressed(KeyCode::PageUp) {
+            self.graffiti_scroll = self.graffiti_scroll.saturating_sub(10);
+        }
+        if is_key_pressed(KeyCode::PageDown) {
+            self.graffiti_scroll = (self.graffiti_scroll + 10).min(total.saturating_sub(1));
+        }
+        while let Some(ch) = get_char_pressed() {
+            match ch.to_ascii_lowercase() {
+                'k' => { self.graffiti_scroll = self.graffiti_scroll.saturating_sub(1); }
+                'j' => { self.graffiti_scroll = (self.graffiti_scroll + 1).min(total.saturating_sub(1)); }
+                'a' => { self.graffiti_input = Some(String::new()); }
+                _ => {}
+            }
+        }
+    }
+
+    // ── Input: top 10 lists ──────────────────────────────────────────────────
+
+    fn top10_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        if is_key_pressed(KeyCode::Tab) {
+            self.top_list_tab = (self.top_list_tab + 1) % 3;
+        }
+        while let Some(ch) = get_char_pressed() {
+            match ch {
+                '1' => { self.top_list_tab = 0; }
+                '2' => { self.top_list_tab = 1; }
+                '3' => { self.top_list_tab = 2; }
+                _ => {}
+            }
+        }
+    }
+
+    // ── Input / tick: sysop chat ─────────────────────────────────────────────
+
+    fn begin_sysop_chat(&mut self) {
+        let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
+        let sysop = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.sysop.clone())
+            .unwrap_or_else(|| "Sysop".into());
+        let baud = self.phonebook.iter()
+            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+            .map(|e| e.baud)
+            .unwrap_or(2400);
+        self.sysop_chat = Some(SysopChatState::new(bbs_name, &sysop, baud));
+        self.screen = Screen::SysopChat;
+    }
+
+    fn tick_sysop_chat(&mut self) {
+        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        if let Some(ref mut state) = self.sysop_chat {
+            for ch in state.typer.tick() {
+                state.buffer.push_char(ch, CellStyle::fg(green));
+            }
+            if state.typer.is_empty() {
+                state.done = true;
+            }
+        }
+    }
+
+    fn sysop_chat_input(&mut self) {
+        let done = self.sysop_chat.as_ref().map(|s| s.done).unwrap_or(false);
+        if is_key_pressed(KeyCode::Escape)
+            || (done && (is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some()))
+        {
+            self.sysop_chat = None;
+            self.screen = Screen::MainMenu;
+        }
+    }
+
     // ── Input / tick: logout ─────────────────────────────────────────────────
 
     fn logout_input(&mut self) {
@@ -1128,6 +1404,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["General".into(), "Warez".into(), "C64".into(), "Tech Talk".into()],
             last_called: Some("04/22/93".into()),
             slug: "rusty_nail".into(),
+            total_callers: 2_341,
+            call_count: 14,
         },
         BbsEntry {
             name: "WARP FACTOR 9".into(),
@@ -1138,6 +1416,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["SciFi".into(), "Gaming".into(), "Anime".into()],
             last_called: Some("04/15/93".into()),
             slug: "warp_factor_9".into(),
+            total_callers: 1_108,
+            call_count: 7,
         },
         BbsEntry {
             name: "The Digital Dungeon".into(),
@@ -1148,6 +1428,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["RPG".into(), "D&D".into(), "General".into()],
             last_called: None,
             slug: "digital_dungeon".into(),
+            total_callers: 894,
+            call_count: 0,
         },
         BbsEntry {
             name: "ELITE FORCE BBS".into(),
@@ -1158,6 +1440,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["Warez".into(), "Hacking".into(), "Music".into()],
             last_called: Some("04/01/93".into()),
             slug: "elite_force".into(),
+            total_callers: 3_872,
+            call_count: 31,
         },
         BbsEntry {
             name: "The Underground Railroad".into(),
@@ -1168,6 +1452,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["Politics".into(), "News".into(), "General".into()],
             last_called: Some("03/28/93".into()),
             slug: "underground_railroad".into(),
+            total_callers: 1_560,
+            call_count: 5,
         },
         BbsEntry {
             name: "Midnight Rendezvous".into(),
@@ -1178,6 +1464,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["Phreaking".into(), "Underground".into(), "Lounge".into()],
             last_called: Some("03/14/93".into()),
             slug: "midnight_rendezvous".into(),
+            total_callers: 2_047,
+            call_count: 3,
         },
     ]
 }

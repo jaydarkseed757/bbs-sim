@@ -1,0 +1,149 @@
+[[callers]]
+handle = "DungeonMstr"
+calls = 2104
+location = "Austin, TX"
+
+[[callers]]
+handle = "Thiefling"
+calls = 1876
+location = "Dallas, TX"
+
+[[callers]]
+handle = "PaladinX"
+calls = 1543
+location = "Houston, TX"
+
+[[callers]]
+handle = "RollMaster"
+calls = 1287
+location = "San Antonio, TX"
+
+[[callers]]
+handle = "IceWizard"
+calls = 1098
+location = "Austin, TX"
+
+[[callers]]
+handle = "NecroMage"
+calls = 876
+location = "Lubbock, TX"
+
+[[callers]]
+handle = "DruidSage"
+calls = 743
+location = "Austin, TX"
+
+[[callers]]
+handle = "RogueX"
+calls = 612
+location = "El Paso, TX"
+
+[[callers]]
+handle = "BardSong"
+calls = 487
+location = "Amarillo, TX"
+
+[[callers]]
+handle = "ClericBot"
+calls = 321
+location = "Waco, TX"
+
+[[files]]
+name = "DD_MAPS_V3.ZIP"
+downloads = 876
+description = "40 dungeon design maps"
+
+[[files]]
+name = "ANGBAND.ZIP"
+downloads = 743
+description = "Angband 2.4 roguelike"
+
+[[files]]
+name = "NETHACK3.ZIP"
+downloads = 698
+description = "NetHack 3.1.3 with tiles"
+
+[[files]]
+name = "ADND_SPELLS.TXT"
+downloads = 612
+description = "AD&D 2nd Ed spell reference"
+
+[[files]]
+name = "REALMGEN.ZIP"
+downloads = 534
+description = "Random realm generator"
+
+[[files]]
+name = "DUNGEON_GM.TXT"
+downloads = 489
+description = "Running better dungeons"
+
+[[files]]
+name = "PKZIP204G.EXE"
+downloads = 321
+description = "PKZIP 2.04g archiver"
+
+[[files]]
+name = "WOLF3D.ZIP"
+downloads = 198
+description = "Wolfenstein 3D shareware"
+
+[[files]]
+name = "TRADWARS2.ZIP"
+downloads = 167
+description = "Trade Wars 2002 BBS door"
+
+[[files]]
+name = "QMODEM43.ZIP"
+downloads = 143
+description = "QModem 4.3 terminal"
+
+[[posters]]
+handle = "DungeonMstr"
+posts = 1543
+board = "D&D"
+
+[[posters]]
+handle = "Thiefling"
+posts = 1287
+board = "RPG"
+
+[[posters]]
+handle = "PaladinX"
+posts = 1098
+board = "D&D"
+
+[[posters]]
+handle = "RollMaster"
+posts = 876
+board = "General"
+
+[[posters]]
+handle = "IceWizard"
+posts = 743
+board = "RPG"
+
+[[posters]]
+handle = "NecroMage"
+posts = 612
+board = "D&D"
+
+[[posters]]
+handle = "DruidSage"
+posts = 487
+board = "RPG"
+
+[[posters]]
+handle = "RogueX"
+posts = 321
+board = "General"
+
+[[posters]]
+handle = "BardSong"
+posts = 198
+board = "D&D"
+
+[[posters]]
+handle = "ClericBot"
+posts = 143
+board = "General"

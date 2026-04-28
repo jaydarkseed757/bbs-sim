@@ -12,6 +12,10 @@ pub struct BbsEntry {
     pub last_called: Option<String>,
     #[serde(default)]
     pub slug: String,
+    #[serde(default)]
+    pub total_callers: u32,
+    #[serde(default)]
+    pub call_count: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -54,6 +58,41 @@ pub struct MailMessage {
     pub timestamp: String,
     #[serde(default)]
     pub read: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Oneliner {
+    pub handle: String,
+    pub message: String,
+    pub date: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopCaller {
+    pub handle: String,
+    pub calls: u32,
+    pub location: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopFile {
+    pub name: String,
+    pub downloads: u32,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TopPoster {
+    pub handle: String,
+    pub posts: u32,
+    pub board: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct TopLists {
+    #[serde(default)] pub callers: Vec<TopCaller>,
+    #[serde(default)] pub files:   Vec<TopFile>,
+    #[serde(default)] pub posters: Vec<TopPoster>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,0 +1,59 @@
+[[lines]]
+handle = "ShadowByte"
+message = "64KB ought to be enough for anyone -- wait, wrong era"
+date = "01/04/93"
+
+[[lines]]
+handle = "WireHedd"
+message = "greets to all C64 heads -- still the best machine ever made"
+date = "01/11/93"
+
+[[lines]]
+handle = "PixelPushr"
+message = "got wolf3d running at 30fps on my 486. life is good."
+date = "01/18/93"
+
+[[lines]]
+handle = "NullPtr"
+message = "anyone got a working PKZIP 2.04g? my copy keeps erroring out"
+date = "01/25/93"
+
+[[lines]]
+handle = "ShadowByte"
+message = "NullPtr -- check the files section, just uploaded it"
+date = "01/25/93"
+
+[[lines]]
+handle = "HexWitch"
+message = "first time caller, long time lurker. great board ShadowByte"
+date = "02/01/93"
+
+[[lines]]
+handle = "Cracker_J"
+message = "doom is real and it's coming. id software dont miss"
+date = "02/14/93"
+
+[[lines]]
+handle = "SegFault"
+message = "C is not hard. people who say C is hard just haven't suffered enough yet"
+date = "02/28/93"
+
+[[lines]]
+handle = "WireHedd"
+message = "SegFault -- truer words etc"
+date = "03/02/93"
+
+[[lines]]
+handle = "TurboGal"
+message = "just got a 14.4 modem. this board flies now. highly recommend"
+date = "03/15/93"
+
+[[lines]]
+handle = "NullPtr"
+message = "Borland C++ 3.1 is genuinely excellent. fight me"
+date = "03/28/93"
+
+[[lines]]
+handle = "PixelPushr"
+message = "working on a VGA mode13h demo. will upload when done"
+date = "04/10/93"

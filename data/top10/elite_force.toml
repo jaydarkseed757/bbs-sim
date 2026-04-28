@@ -1,0 +1,149 @@
+[[callers]]
+handle = "31337"
+calls = 3421
+location = "Boston, MA"
+
+[[callers]]
+handle = "NukeCrew"
+calls = 2987
+location = "Cambridge, MA"
+
+[[callers]]
+handle = "PhreakStar"
+calls = 2543
+location = "Providence, RI"
+
+[[callers]]
+handle = "V0id"
+calls = 2198
+location = "Hartford, CT"
+
+[[callers]]
+handle = "BinHex"
+calls = 1876
+location = "Worcester, MA"
+
+[[callers]]
+handle = "ZeroDay"
+calls = 1543
+location = "Boston, MA"
+
+[[callers]]
+handle = "ByteCode"
+calls = 1287
+location = "New Haven, CT"
+
+[[callers]]
+handle = "H4xMode"
+calls = 1098
+location = "Springfield, MA"
+
+[[callers]]
+handle = "NullByte"
+calls = 876
+location = "Lowell, MA"
+
+[[callers]]
+handle = "RootKit"
+calls = 654
+location = "Portland, ME"
+
+[[files]]
+name = "COCOT_GDE.TXT"
+downloads = 1876
+description = "COCOT payphone guide"
+
+[[files]]
+name = "BOXING_93.TXT"
+downloads = 1543
+description = "Blue boxing history & tech"
+
+[[files]]
+name = "PHOTOSHP.ZIP"
+downloads = 1287
+description = "Adobe Photoshop 2.5"
+
+[[files]]
+name = "WPWIN60.ZIP"
+downloads = 1098
+description = "WordPerfect 6.0 Windows"
+
+[[files]]
+name = "MSWORKS3.ZIP"
+downloads = 876
+description = "Microsoft Works 3.0"
+
+[[files]]
+name = "MODFILES.ZIP"
+downloads = 743
+description = "Best-of MOD/S3M collection"
+
+[[files]]
+name = "PKZIP204G.EXE"
+downloads = 612
+description = "PKZIP 2.04g archiver"
+
+[[files]]
+name = "PHREAK_BK.ZIP"
+downloads = 534
+description = "Classic phreaking text files"
+
+[[files]]
+name = "QMODEM43.ZIP"
+downloads = 421
+description = "QModem 4.3 terminal"
+
+[[files]]
+name = "2600_BACK.ZIP"
+downloads = 389
+description = "2600 magazine back issues"
+
+[[posters]]
+handle = "31337"
+posts = 2876
+board = "Hacking"
+
+[[posters]]
+handle = "PhreakStar"
+posts = 2341
+board = "Hacking"
+
+[[posters]]
+handle = "NukeCrew"
+posts = 1987
+board = "Warez"
+
+[[posters]]
+handle = "V0id"
+posts = 1654
+board = "Hacking"
+
+[[posters]]
+handle = "BinHex"
+posts = 1321
+board = "Music"
+
+[[posters]]
+handle = "ZeroDay"
+posts = 1098
+board = "Warez"
+
+[[posters]]
+handle = "ByteCode"
+posts = 876
+board = "Hacking"
+
+[[posters]]
+handle = "H4xMode"
+posts = 654
+board = "Music"
+
+[[posters]]
+handle = "NullByte"
+posts = 432
+board = "Warez"
+
+[[posters]]
+handle = "RootKit"
+posts = 287
+board = "Hacking"
