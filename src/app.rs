@@ -22,6 +22,7 @@ use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
 use crate::tui::download::render_download;
+use crate::tui::theme::Theme;
 use crate::tui::voting::render_voting;
 use crate::tui::sysop::render_sysop_chat;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
@@ -337,6 +338,7 @@ pub struct App {
     pub oneliners: Vec<Oneliner>,
     pub graffiti_scroll: usize,
     pub graffiti_input: Option<String>,
+    pub theme: Theme,
     pub top_lists: TopLists,
     pub top_list_tab: usize,
     pub polls: Vec<Poll>,
@@ -374,6 +376,7 @@ impl App {
             oneliners: vec![],
             graffiti_scroll: 0,
             graffiti_input: None,
+            theme: Theme::for_slug(""),
             top_lists: TopLists::default(),
             top_list_tab: 0,
             polls: vec![],
@@ -522,6 +525,7 @@ impl App {
             self.files      = load_files(&slug);
             self.oneliners  = load_oneliners(&slug);
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+            self.theme      = Theme::for_slug(&slug);
             self.top_lists  = load_top10(&slug);
             self.top_list_tab = 0;
             self.polls = load_polls(&slug);
