@@ -5,6 +5,7 @@ pub enum DialPhase {
     Connecting,
     Handshaking,
     Connected,
+    NoAnswer,
 }
 
 pub struct ModemSim {
@@ -12,6 +13,7 @@ pub struct ModemSim {
     phase_ticks: u32,
     number: String,
     noise_seed: u64,
+    no_answer: bool,
 }
 
 impl ModemSim {
@@ -21,6 +23,14 @@ impl ModemSim {
             phase_ticks: 0,
             number: number.to_string(),
             noise_seed: 0xdeadbeef_cafebabe,
+            no_answer: false,
+        }
+    }
+
+    pub fn new_no_answer(number: &str) -> Self {
+        Self {
+            no_answer: true,
+            ..Self::new(number)
         }
     }
 
@@ -42,7 +52,16 @@ impl ModemSim {
                     return Some(format!("ATDT{}\r\n", self.number));
                 }
                 if self.phase_ticks >= 25 {
-                    self.advance(DialPhase::Connecting);
+                    if self.no_answer {
+                        self.advance(DialPhase::NoAnswer);
+                    } else {
+                        self.advance(DialPhase::Connecting);
+                    }
+                }
+            }
+            DialPhase::NoAnswer => {
+                if self.phase_ticks == 1 {
+                    return Some("NO ANSWER\r\n".into());
                 }
             }
             DialPhase::Connecting => {

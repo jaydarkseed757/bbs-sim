@@ -78,6 +78,7 @@ pub fn render_dialing(app: &App) {
         crate::sim::modem::DialPhase::Connecting    => "Connecting...",
         crate::sim::modem::DialPhase::Handshaking   => "Handshaking...",
         crate::sim::modem::DialPhase::Connected     => "Connected!",
+        crate::sim::modem::DialPhase::NoAnswer      => "No answer.",
     };
 
     draw_text_ex(

@@ -140,13 +140,30 @@ pub struct DialingState {
     pub typer: BaudTyper,
     pub buffer: TerminalBuffer,
     pub awaiting_keypress: bool,
+    pub no_answer: bool,
 }
 
 impl DialingState {
     fn new(bbs: BbsEntry) -> Self {
         let modem = ModemSim::new(&bbs.number);
         let typer = BaudTyper::new(bbs.baud);
-        Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false }
+        Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: false }
+    }
+
+    fn new_manual(number: String) -> Self {
+        let modem = ModemSim::new_no_answer(&number);
+        let typer = BaudTyper::new(2400);
+        let bbs = BbsEntry {
+            name: String::new(),
+            number,
+            sysop: String::new(),
+            location: String::new(),
+            baud: 2400,
+            boards: vec![],
+            last_called: None,
+            slug: String::new(),
+        };
+        Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: true }
     }
 }
 
@@ -226,6 +243,7 @@ pub struct App {
     pub selected_file_row: usize,
     pub file_view_scroll: usize,
     pub file_download_notice: bool,
+    pub manual_dial_input: Option<String>,
 }
 
 impl App {
@@ -252,6 +270,7 @@ impl App {
             selected_file_row: 0,
             file_view_scroll: 0,
             file_download_notice: false,
+            manual_dial_input: None,
         }
     }
 
@@ -323,6 +342,10 @@ impl App {
             d.buffer.push_str("\r\n\r\nPress [Enter] to log in...\r\n", CellStyle::fg(YELLOW));
             d.awaiting_keypress = true;
         }
+        if d.no_answer && d.modem.phase == DialPhase::NoAnswer && d.typer.is_empty() && !d.awaiting_keypress {
+            d.buffer.push_str("\r\nPress any key to return...\r\n", CellStyle::fg(YELLOW));
+            d.awaiting_keypress = true;
+        }
     }
 
     // ── Tick: login ──────────────────────────────────────────────────────────
@@ -388,6 +411,37 @@ impl App {
     // ── Input: dialer ────────────────────────────────────────────────────────
 
     fn dialer_input(&mut self) {
+        // ── Manual dial overlay input ─────────────────────────────────────────
+        if self.manual_dial_input.is_some() {
+            if is_key_pressed(KeyCode::Escape) {
+                self.manual_dial_input = None;
+                return;
+            }
+            if is_key_pressed(KeyCode::Backspace) {
+                if let Some(ref mut s) = self.manual_dial_input {
+                    s.pop();
+                }
+                return;
+            }
+            if is_key_pressed(KeyCode::Enter) {
+                let number = self.manual_dial_input.take().unwrap_or_default();
+                if !number.trim().is_empty() {
+                    self.dial = Some(DialingState::new_manual(number));
+                    self.screen = Screen::Dialing;
+                }
+                return;
+            }
+            while let Some(ch) = get_char_pressed() {
+                if let Some(ref mut s) = self.manual_dial_input {
+                    if s.len() < 20 && (ch.is_ascii_digit() || matches!(ch, '-' | '+' | ' ' | '(' | ')')) {
+                        s.push(ch);
+                    }
+                }
+            }
+            return;
+        }
+
+        // ── Normal phonebook input ────────────────────────────────────────────
         let len = self.phonebook.len();
 
         if is_key_pressed(KeyCode::Up) {
@@ -419,6 +473,9 @@ impl App {
                         self.screen = Screen::Dialing;
                     }
                 }
+                'm' | 'M' => {
+                    self.manual_dial_input = Some(String::new());
+                }
                 _ => {}
             }
         }
@@ -433,8 +490,15 @@ impl App {
             return;
         }
 
-        let awaiting = self.dial.as_ref().map(|d| d.awaiting_keypress).unwrap_or(false);
-        if awaiting && is_key_pressed(KeyCode::Enter) {
+        let awaiting   = self.dial.as_ref().map(|d| d.awaiting_keypress).unwrap_or(false);
+        let no_answer  = self.dial.as_ref().map(|d| d.no_answer).unwrap_or(false);
+
+        if awaiting && no_answer {
+            if is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some() {
+                self.dial = None;
+                self.screen = Screen::Dialer;
+            }
+        } else if awaiting && is_key_pressed(KeyCode::Enter) {
             if let Some(d) = self.dial.take() {
                 self.login = Some(LoginState::new(d.bbs));
                 self.screen = Screen::Login;

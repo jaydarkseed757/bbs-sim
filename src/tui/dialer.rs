@@ -127,8 +127,7 @@ pub fn render_dialer(app: &App) {
     let hints: &[(&str, &str)] = &[
         ("[↑↓/jk]", " Navigate  "),
         ("[D]", " Dial  "),
-        ("[A]", " Add  "),
-        ("[Del]", " Remove  "),
+        ("[M]", " Manual Dial  "),
         ("[Q/Esc]", " Quit"),
     ];
 
@@ -149,5 +148,49 @@ pub fn render_dialer(app: &App) {
             TextParams { font_size: FONT_SIZE as u16, color: DARKGRAY, ..Default::default() },
         );
         hx += measure_text(desc, None, FONT_SIZE as u16, 1.0).width;
+    }
+
+    // ── Manual dial overlay ───────────────────────────────────────────────────
+    if let Some(ref number) = app.manual_dial_input {
+        let box_w = sw * 0.42;
+        let box_h = CHAR_H * 5.0;
+        let box_x = (sw - box_w) * 0.5;
+        let box_y = (sh - box_h) * 0.5;
+
+        draw_rectangle(box_x, box_y, box_w, box_h, Color::new(0.0, 0.0, 0.0, 0.92));
+        draw_rectangle_lines(box_x, box_y, box_w, box_h, 1.5, CYAN);
+
+        draw_text_ex(
+            "  Manual Dial",
+            box_x + 8.0, box_y + CHAR_H * 1.1,
+            TextParams { font_size: FONT_SIZE as u16, color: YELLOW, ..Default::default() },
+        );
+
+        let label = "  Number: ";
+        draw_text_ex(
+            label,
+            box_x + 8.0, box_y + CHAR_H * 2.4,
+            TextParams { font_size: FONT_SIZE as u16, color: CYAN, ..Default::default() },
+        );
+        let lw = measure_text(label, None, FONT_SIZE as u16, 1.0).width;
+        draw_text_ex(
+            number,
+            box_x + 8.0 + lw, box_y + CHAR_H * 2.4,
+            TextParams { font_size: FONT_SIZE as u16, color: GREEN, ..Default::default() },
+        );
+        // Cursor
+        let nw = measure_text(number, None, FONT_SIZE as u16, 1.0).width;
+        let cw = FONT_SIZE * 0.55;
+        draw_rectangle(
+            box_x + 8.0 + lw + nw, box_y + CHAR_H * 2.4 - CHAR_H + 4.0,
+            cw, CHAR_H - 2.0,
+            Color::new(0.0, 0.75, 0.0, 0.8),
+        );
+
+        draw_text_ex(
+            "  [Enter] Dial   [Esc] Cancel",
+            box_x + 8.0, box_y + CHAR_H * 3.8,
+            TextParams { font_size: FONT_SIZE as u16, color: DARKGRAY, ..Default::default() },
+        );
     }
 }
