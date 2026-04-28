@@ -12,6 +12,10 @@ pub struct BbsEntry {
     pub last_called: Option<String>,
     #[serde(default)]
     pub slug: String,
+    #[serde(default)]
+    pub total_callers: u32,
+    #[serde(default)]
+    pub call_count: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

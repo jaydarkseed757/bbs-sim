@@ -194,6 +194,8 @@ impl DialingState {
             boards: vec![],
             last_called: None,
             slug: String::new(),
+            total_callers: 0,
+            call_count: 0,
         };
         Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: true }
     }
@@ -432,7 +434,7 @@ impl App {
         }
 
         if let Some((handle, bbs_name, slug)) = transition {
-            self.session.login(handle.clone(), bbs_name);
+            self.session.login(handle.clone(), bbs_name.clone());
             self.boards = load_boards(&slug);
             self.mail   = load_mail(&slug, &handle);
             self.files  = load_files(&slug);
@@ -440,6 +442,10 @@ impl App {
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
             self.selected_file_row   = 0;
+            if let Some(entry) = self.phonebook.iter_mut().find(|e| e.name == bbs_name) {
+                entry.call_count  += 1;
+                entry.last_called  = Some("04/28/93".into());
+            }
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -585,9 +591,23 @@ impl App {
                 }
                 LoginStep::Password => {
                     d.input.clear();
+                    let this_call = d.bbs.call_count + 1;
+                    let times_str = if this_call == 1 {
+                        "1 time".to_string()
+                    } else {
+                        format!("{} times", this_call)
+                    };
+                    let last_on = match d.bbs.last_called.as_deref() {
+                        Some(date) => format!("Last on: {}.", date),
+                        None       => "First call!".to_string(),
+                    };
                     let msg = format!(
-                        "\r\n\r\nAccess granted!  Welcome, {}!\r\n\r\n",
-                        d.user_handle
+                        "\r\n\r\nAccess granted!  Welcome, {}!\r\n\r\n\
+                         You are caller #{}.  You have called {}.  {}\r\n\r\n",
+                        d.user_handle,
+                        d.bbs.total_callers + this_call,
+                        times_str,
+                        last_on,
                     );
                     d.buffer.push_str("\r\n", CellStyle::fg(WHITE_BBS));
                     d.typer.enqueue(&msg);
@@ -1270,6 +1290,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["General".into(), "Warez".into(), "C64".into(), "Tech Talk".into()],
             last_called: Some("04/22/93".into()),
             slug: "rusty_nail".into(),
+            total_callers: 2_341,
+            call_count: 14,
         },
         BbsEntry {
             name: "WARP FACTOR 9".into(),
@@ -1280,6 +1302,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["SciFi".into(), "Gaming".into(), "Anime".into()],
             last_called: Some("04/15/93".into()),
             slug: "warp_factor_9".into(),
+            total_callers: 1_108,
+            call_count: 7,
         },
         BbsEntry {
             name: "The Digital Dungeon".into(),
@@ -1290,6 +1314,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["RPG".into(), "D&D".into(), "General".into()],
             last_called: None,
             slug: "digital_dungeon".into(),
+            total_callers: 894,
+            call_count: 0,
         },
         BbsEntry {
             name: "ELITE FORCE BBS".into(),
@@ -1300,6 +1326,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["Warez".into(), "Hacking".into(), "Music".into()],
             last_called: Some("04/01/93".into()),
             slug: "elite_force".into(),
+            total_callers: 3_872,
+            call_count: 31,
         },
         BbsEntry {
             name: "The Underground Railroad".into(),
@@ -1310,6 +1338,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["Politics".into(), "News".into(), "General".into()],
             last_called: Some("03/28/93".into()),
             slug: "underground_railroad".into(),
+            total_callers: 1_560,
+            call_count: 5,
         },
         BbsEntry {
             name: "Midnight Rendezvous".into(),
@@ -1320,6 +1350,8 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             boards: vec!["Phreaking".into(), "Underground".into(), "Lounge".into()],
             last_called: Some("03/14/93".into()),
             slug: "midnight_rendezvous".into(),
+            total_callers: 2_047,
+            call_count: 3,
         },
     ]
 }
