@@ -32,6 +32,11 @@ const GREEN_BBS: Color    = Color::new(0.0,  0.85, 0.0,  1.0); // modem / dialin
 const WHITE_BBS: Color    = Color::new(0.85, 0.85, 0.85, 1.0); // login system text
 const INPUT_GREEN: Color  = Color::new(0.0,  0.90, 0.0,  1.0); // user-typed chars
 
+// Voting scroll helpers — mirror tui/voting.rs POLL_H_VOTED / POLL_H_UNVOTED.
+const VOTE_H_VOTED:   f32 = 18.0 * 1.35 * 3.8;
+const VOTE_H_UNVOTED: f32 = 18.0 * 1.35 * 2.8;
+const VOTE_VIEWPORT:  f32 = 450.0; // conservative body-height budget (px)
+
 // ---------------------------------------------------------------------------
 // Screen state machine
 // ---------------------------------------------------------------------------
@@ -520,12 +525,12 @@ impl App {
 
         if let Some((handle, bbs_name, slug)) = transition {
             self.session.login(handle.clone(), bbs_name.clone());
+            self.theme      = Theme::for_slug(&slug);
             self.boards     = load_boards(&slug);
             self.mail       = load_mail(&slug, &handle);
             self.files      = load_files(&slug);
             self.oneliners  = load_oneliners(&slug);
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
-            self.theme      = Theme::for_slug(&slug);
             self.top_lists  = load_top10(&slug);
             self.top_list_tab = 0;
             self.polls = load_polls(&slug);
@@ -1415,13 +1420,17 @@ impl App {
     }
 
     fn scroll_voting_to_selected(&mut self) {
-        // Keep voting_scroll <= selected_poll_row (don't scroll past selection).
         if self.selected_poll_row < self.voting_scroll {
             self.voting_scroll = self.selected_poll_row;
+            return;
         }
-        // Scroll forward if needed — approximate: show at least 2 items below.
-        // Exact clipping happens in render; here we nudge the scroll to follow selection.
-        if self.selected_poll_row >= self.voting_scroll + 4 {
+        // Sum pixel heights of items between the scroll offset and the selection.
+        // Voted items are taller than unvoted, so a count-based threshold is inaccurate.
+        let pixel_offset: f32 = self.polls[self.voting_scroll..self.selected_poll_row]
+            .iter()
+            .map(|p| if self.voted_polls.contains(&p.id) { VOTE_H_VOTED } else { VOTE_H_UNVOTED })
+            .sum();
+        if pixel_offset >= VOTE_VIEWPORT {
             self.voting_scroll = self.selected_poll_row.saturating_sub(1);
         }
     }
