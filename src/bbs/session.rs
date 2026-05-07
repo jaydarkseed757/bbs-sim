@@ -19,7 +19,4 @@ impl Session {
         self.bbs_name = None;
     }
 
-    pub fn is_logged_in(&self) -> bool {
-        self.user_handle.is_some()
-    }
 }

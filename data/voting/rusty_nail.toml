@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Should BBS sysops be allowed to charge monthly fees?"
+yes_votes = 143
+no_votes = 89
+
+[[polls]]
+id = 2
+question = "Is DOS dead now that Windows is taking over?"
+yes_votes = 67
+no_votes = 201
+
+[[polls]]
+id = 3
+question = "Does the FBI have the right to monitor BBS traffic?"
+yes_votes = 22
+no_votes = 287
+
+[[polls]]
+id = 4
+question = "Will the internet replace bulletin boards within 5 years?"
+yes_votes = 112
+no_votes = 134
+
+[[polls]]
+id = 5
+question = "Should software source code always be freely available?"
+yes_votes = 198
+no_votes = 54

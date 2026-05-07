@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Is AD&D 2nd Edition better than 1st Edition?"
+yes_votes = 203
+no_votes = 156
+
+[[polls]]
+id = 2
+question = "Should the DM always play strictly by the rules?"
+yes_votes = 78
+no_votes = 334
+
+[[polls]]
+id = 3
+question = "Is NetHack the greatest roguelike ever made?"
+yes_votes = 187
+no_votes = 92
+
+[[polls]]
+id = 4
+question = "Will CD-ROM RPGs ever match the depth of tabletop?"
+yes_votes = 44
+no_votes = 289
+
+[[polls]]
+id = 5
+question = "Should magic items be rare and hard to find?"
+yes_votes = 245
+no_votes = 103

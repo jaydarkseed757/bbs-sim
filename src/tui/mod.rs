@@ -12,4 +12,6 @@ pub mod mail;
 pub mod menus;
 pub mod sysop;
 pub mod terminal;
+pub mod theme;
 pub mod top10;
+pub mod voting;

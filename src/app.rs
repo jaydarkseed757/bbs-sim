@@ -1,14 +1,17 @@
 use macroquad::prelude::*;
 
+use crate::bbs::banner::load_banner;
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread, TopLists};
+use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
 use crate::bbs::oneliners::load_oneliners;
 use crate::bbs::session::Session;
 use crate::bbs::top10::load_top10;
+use crate::bbs::voting::load_polls;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
+use crate::tui::ansi::AnsiParser;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
@@ -21,6 +24,8 @@ use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
 use crate::tui::download::render_download;
+use crate::tui::theme::Theme;
+use crate::tui::voting::render_voting;
 use crate::tui::sysop::render_sysop_chat;
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
 
@@ -28,6 +33,11 @@ use crate::tui::terminal::{CellStyle, TerminalBuffer};
 const GREEN_BBS: Color    = Color::new(0.0,  0.85, 0.0,  1.0); // modem / dialing output
 const WHITE_BBS: Color    = Color::new(0.85, 0.85, 0.85, 1.0); // login system text
 const INPUT_GREEN: Color  = Color::new(0.0,  0.90, 0.0,  1.0); // user-typed chars
+
+// Voting scroll helpers — mirror tui/voting.rs POLL_H_VOTED / POLL_H_UNVOTED.
+const VOTE_H_VOTED:   f32 = 18.0 * 1.35 * 3.8;
+const VOTE_H_UNVOTED: f32 = 18.0 * 1.35 * 2.8;
+const VOTE_VIEWPORT:  f32 = 450.0; // conservative body-height budget (px)
 
 // ---------------------------------------------------------------------------
 // Screen state machine
@@ -42,15 +52,16 @@ pub enum Screen {
     MessageBoards,
     ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
-    ComposeMessage { board_id: String, thread_id: Option<u32> },
+    ComposeMessage,
     Mail,
     ReadMail { id: u32 },
     ComposeMail,
     Files,
     ViewFile { id: u32 },
-    Downloading { file_id: u32 },
+    Downloading,
     GraffitiWall,
     TopTen,
+    Voting,
     SysopChat,
     Logout,
 }
@@ -272,27 +283,34 @@ pub struct LoginState {
 
 impl LoginState {
     fn new(bbs: BbsEntry) -> Self {
-        let mut typer = BaudTyper::new(bbs.baud);
+        let typer = BaudTyper::new(bbs.baud);
+        let mut buffer = TerminalBuffer::new(80, 500);
 
-        let boards = bbs.boards.join("  ");
-        let sep = "-".repeat(42);
-        let banner = format!(
-            "\r\n{sep}\r\n  {name}\r\n{sep}\r\n\r\n\
-             Sysop:    {sysop}\r\n\
-             Location: {location}\r\n\
-             Boards:   {boards}\r\n\r\n",
-            sep = sep,
-            name = bbs.name,
-            sysop = bbs.sysop,
-            location = bbs.location,
-            boards = boards,
-        );
-        typer.enqueue(&banner);
+        if let Some(art) = load_banner(&bbs.slug) {
+            // Paint ANSI art instantly into the buffer (no baud delay for the banner).
+            let mut parser = AnsiParser::new();
+            for (ch, style) in parser.parse(&art) {
+                buffer.push_char(ch, style);
+            }
+        } else {
+            // Fallback plain-text header for unknown/manual-dial slugs.
+            let boards = bbs.boards.join("  ");
+            let sep    = "-".repeat(42);
+            let text   = format!(
+                "\r\n{sep}\r\n  {name}\r\n{sep}\r\n\r\n\
+                 Sysop:    {sysop}\r\n\
+                 Location: {location}\r\n\
+                 Boards:   {boards}\r\n\r\n",
+                sep = sep, name = bbs.name,
+                sysop = bbs.sysop, location = bbs.location, boards = boards,
+            );
+            buffer.push_str(&text, CellStyle::fg(WHITE_BBS));
+        }
 
         Self {
             bbs,
             typer,
-            buffer: TerminalBuffer::new(80, 500),
+            buffer,
             input: String::new(),
             step: LoginStep::Banner,
             user_handle: String::new(),
@@ -334,8 +352,13 @@ pub struct App {
     pub oneliners: Vec<Oneliner>,
     pub graffiti_scroll: usize,
     pub graffiti_input: Option<String>,
+    pub theme: Theme,
     pub top_lists: TopLists,
     pub top_list_tab: usize,
+    pub polls: Vec<Poll>,
+    pub selected_poll_row: usize,
+    pub voting_scroll: usize,
+    pub voted_polls: std::collections::HashSet<u32>,
 }
 
 impl App {
@@ -367,8 +390,13 @@ impl App {
             oneliners: vec![],
             graffiti_scroll: 0,
             graffiti_input: None,
+            theme: Theme::for_slug(""),
             top_lists: TopLists::default(),
             top_list_tab: 0,
+            polls: vec![],
+            selected_poll_row: 0,
+            voting_scroll: 0,
+            voted_polls: std::collections::HashSet::new(),
         }
     }
 
@@ -384,15 +412,16 @@ impl App {
             Screen::ReadThread { ref board_id, thread_id } => {
                 render_read_thread(self, board_id, thread_id)
             }
-            Screen::ComposeMessage { .. } => render_compose(self),
+            Screen::ComposeMessage => render_compose(self),
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
             Screen::Files           => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
-            Screen::Downloading { .. } => render_download(self),
+            Screen::Downloading => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
+            Screen::Voting          => render_voting(self),
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
@@ -410,15 +439,16 @@ impl App {
             Screen::ReadThread { board_id, thread_id } => {
                 self.read_thread_input(board_id, thread_id)
             }
-            Screen::ComposeMessage { .. } => self.compose_input(),
+            Screen::ComposeMessage => self.compose_input(),
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
             Screen::Files           => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
-            Screen::Downloading { .. } => self.download_input(),
+            Screen::Downloading => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
+            Screen::Voting          => self.voting_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
@@ -430,7 +460,7 @@ impl App {
             Screen::Login          => self.tick_login(),
             Screen::Logout         => self.tick_logout(),
             Screen::SysopChat      => self.tick_sysop_chat(),
-            Screen::Downloading { .. } => self.tick_download(),
+            Screen::Downloading => self.tick_download(),
             _                      => {}
         }
     }
@@ -504,6 +534,7 @@ impl App {
 
         if let Some((handle, bbs_name, slug)) = transition {
             self.session.login(handle.clone(), bbs_name.clone());
+            self.theme      = Theme::for_slug(&slug);
             self.boards     = load_boards(&slug);
             self.mail       = load_mail(&slug, &handle);
             self.files      = load_files(&slug);
@@ -511,6 +542,10 @@ impl App {
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
             self.top_lists  = load_top10(&slug);
             self.top_list_tab = 0;
+            self.polls = load_polls(&slug);
+            self.selected_poll_row = 0;
+            self.voting_scroll = 0;
+            self.voted_polls.clear();
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
@@ -726,6 +761,11 @@ impl App {
                     self.top_list_tab = 0;
                     self.screen = Screen::TopTen;
                 }
+                'v' => {
+                    self.selected_poll_row = 0;
+                    self.voting_scroll = 0;
+                    self.screen = Screen::Voting;
+                }
                 'c' => {
                     self.begin_sysop_chat();
                 }
@@ -834,10 +874,7 @@ impl App {
                             body: String::new(),
                             field: ComposeField::Subject,
                         });
-                        self.screen = Screen::ComposeMessage {
-                            board_id,
-                            thread_id: None,
-                        };
+                        self.screen = Screen::ComposeMessage;
                         return;
                     }
                 }
@@ -896,10 +933,7 @@ impl App {
                     body: String::new(),
                     field: ComposeField::Body,
                 });
-                self.screen = Screen::ComposeMessage {
-                    board_id,
-                    thread_id: Some(thread_id),
-                };
+                self.screen = Screen::ComposeMessage;
                 return;
             }
         }
@@ -1007,7 +1041,7 @@ impl App {
                         timestamp,
                     }],
                 });
-                let last = board.threads.len() - 1;
+                let last = board.threads.len().saturating_sub(1);
                 self.compose             = None;
                 self.selected_thread_row = last;
                 self.screen = Screen::ThreadList { board_id };
@@ -1348,6 +1382,64 @@ impl App {
         }
     }
 
+    // ── Input: voting booth ──────────────────────────────────────────────────
+
+    fn voting_input(&mut self) {
+        let len = self.polls.len();
+
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        if is_key_pressed(KeyCode::Up) && self.selected_poll_row > 0 {
+            self.selected_poll_row -= 1;
+            self.scroll_voting_to_selected();
+        }
+        if is_key_pressed(KeyCode::Down) && self.selected_poll_row + 1 < len {
+            self.selected_poll_row += 1;
+            self.scroll_voting_to_selected();
+        }
+
+        while let Some(ch) = get_char_pressed() {
+            match ch.to_ascii_lowercase() {
+                'k' if self.selected_poll_row > 0 => {
+                    self.selected_poll_row -= 1;
+                    self.scroll_voting_to_selected();
+                }
+                'j' if self.selected_poll_row + 1 < len => {
+                    self.selected_poll_row += 1;
+                    self.scroll_voting_to_selected();
+                }
+                'y' | 'n' => {
+                    if let Some(poll) = self.polls.get_mut(self.selected_poll_row) {
+                        if !self.voted_polls.contains(&poll.id) {
+                            let id = poll.id;
+                            if ch == 'y' { poll.yes_votes += 1; } else { poll.no_votes += 1; }
+                            self.voted_polls.insert(id);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    fn scroll_voting_to_selected(&mut self) {
+        if self.selected_poll_row < self.voting_scroll {
+            self.voting_scroll = self.selected_poll_row;
+            return;
+        }
+        // Sum pixel heights of items between the scroll offset and the selection.
+        // Voted items are taller than unvoted, so a count-based threshold is inaccurate.
+        let pixel_offset: f32 = self.polls[self.voting_scroll..self.selected_poll_row]
+            .iter()
+            .map(|p| if self.voted_polls.contains(&p.id) { VOTE_H_VOTED } else { VOTE_H_UNVOTED })
+            .sum();
+        if pixel_offset >= VOTE_VIEWPORT {
+            self.voting_scroll = self.selected_poll_row.saturating_sub(1);
+        }
+    }
+
     // ── Input / tick: sysop chat ─────────────────────────────────────────────
 
     fn begin_sysop_chat(&mut self) {
@@ -1445,7 +1537,7 @@ impl App {
             .cloned();
         if let Some(f) = file {
             self.download = Some(DownloadState::new(f.name, &f.size, baud));
-            self.screen = Screen::Downloading { file_id };
+            self.screen = Screen::Downloading;
         }
     }
 
