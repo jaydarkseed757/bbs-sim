@@ -403,13 +403,13 @@ impl App {
             Screen::ReadThread { ref board_id, thread_id } => {
                 render_read_thread(self, board_id, thread_id)
             }
-            Screen::ComposeMessage { .. } => render_compose(self),
+            Screen::ComposeMessage => render_compose(self),
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
             Screen::Files           => render_file_list(self),
             Screen::ViewFile { id } => render_view_file(self, id),
-            Screen::Downloading { .. } => render_download(self),
+            Screen::Downloading => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
             Screen::Voting          => render_voting(self),
@@ -430,13 +430,13 @@ impl App {
             Screen::ReadThread { board_id, thread_id } => {
                 self.read_thread_input(board_id, thread_id)
             }
-            Screen::ComposeMessage { .. } => self.compose_input(),
+            Screen::ComposeMessage => self.compose_input(),
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
             Screen::Files           => self.files_input(),
             Screen::ViewFile { id } => self.view_file_input(id),
-            Screen::Downloading { .. } => self.download_input(),
+            Screen::Downloading => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
             Screen::Voting          => self.voting_input(),
@@ -451,7 +451,7 @@ impl App {
             Screen::Login          => self.tick_login(),
             Screen::Logout         => self.tick_logout(),
             Screen::SysopChat      => self.tick_sysop_chat(),
-            Screen::Downloading { .. } => self.tick_download(),
+            Screen::Downloading => self.tick_download(),
             _                      => {}
         }
     }
@@ -1032,7 +1032,7 @@ impl App {
                         timestamp,
                     }],
                 });
-                let last = board.threads.len() - 1;
+                let last = board.threads.len().saturating_sub(1);
                 self.compose             = None;
                 self.selected_thread_row = last;
                 self.screen = Screen::ThreadList { board_id };
@@ -1382,17 +1382,13 @@ impl App {
             self.screen = Screen::MainMenu;
             return;
         }
-        if is_key_pressed(KeyCode::Up) {
-            if self.selected_poll_row > 0 {
-                self.selected_poll_row -= 1;
-                self.scroll_voting_to_selected();
-            }
+        if is_key_pressed(KeyCode::Up) && self.selected_poll_row > 0 {
+            self.selected_poll_row -= 1;
+            self.scroll_voting_to_selected();
         }
-        if is_key_pressed(KeyCode::Down) {
-            if self.selected_poll_row + 1 < len {
-                self.selected_poll_row += 1;
-                self.scroll_voting_to_selected();
-            }
+        if is_key_pressed(KeyCode::Down) && self.selected_poll_row + 1 < len {
+            self.selected_poll_row += 1;
+            self.scroll_voting_to_selected();
         }
 
         while let Some(ch) = get_char_pressed() {

@@ -99,8 +99,8 @@ pub fn render_thread_list(app: &App, board_id: &str) {
         }
         let fg     = if selected { t.primary } else { t.secondary };
         let prefix = if selected { "►" } else { " " };
-        let first   = &thread.posts[0];
-        let replies = thread.posts.len() - 1;
+        let Some(first) = thread.posts.first() else { continue };
+        let replies = thread.posts.len().saturating_sub(1);
         let date    = if first.timestamp.len() >= 8 { &first.timestamp[..8] } else { &first.timestamp };
         let line    = format!(
             "  {} {:2}  {:<44}  {:<12}  {}  {}",
