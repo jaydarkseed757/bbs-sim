@@ -1,5 +1,6 @@
 use macroquad::prelude::*;
 
+use crate::bbs::banner::load_banner;
 use crate::bbs::boards::{hardcoded_boards, load_boards};
 use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
 use crate::bbs::files::load_files;
@@ -10,6 +11,7 @@ use crate::bbs::top10::load_top10;
 use crate::bbs::voting::load_polls;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
+use crate::tui::ansi::AnsiParser;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
@@ -281,27 +283,34 @@ pub struct LoginState {
 
 impl LoginState {
     fn new(bbs: BbsEntry) -> Self {
-        let mut typer = BaudTyper::new(bbs.baud);
+        let typer = BaudTyper::new(bbs.baud);
+        let mut buffer = TerminalBuffer::new(80, 500);
 
-        let boards = bbs.boards.join("  ");
-        let sep = "-".repeat(42);
-        let banner = format!(
-            "\r\n{sep}\r\n  {name}\r\n{sep}\r\n\r\n\
-             Sysop:    {sysop}\r\n\
-             Location: {location}\r\n\
-             Boards:   {boards}\r\n\r\n",
-            sep = sep,
-            name = bbs.name,
-            sysop = bbs.sysop,
-            location = bbs.location,
-            boards = boards,
-        );
-        typer.enqueue(&banner);
+        if let Some(art) = load_banner(&bbs.slug) {
+            // Paint ANSI art instantly into the buffer (no baud delay for the banner).
+            let mut parser = AnsiParser::new();
+            for (ch, style) in parser.parse(&art) {
+                buffer.push_char(ch, style);
+            }
+        } else {
+            // Fallback plain-text header for unknown/manual-dial slugs.
+            let boards = bbs.boards.join("  ");
+            let sep    = "-".repeat(42);
+            let text   = format!(
+                "\r\n{sep}\r\n  {name}\r\n{sep}\r\n\r\n\
+                 Sysop:    {sysop}\r\n\
+                 Location: {location}\r\n\
+                 Boards:   {boards}\r\n\r\n",
+                sep = sep, name = bbs.name,
+                sysop = bbs.sysop, location = bbs.location, boards = boards,
+            );
+            buffer.push_str(&text, CellStyle::fg(WHITE_BBS));
+        }
 
         Self {
             bbs,
             typer,
-            buffer: TerminalBuffer::new(80, 500),
+            buffer,
             input: String::new(),
             step: LoginStep::Banner,
             user_handle: String::new(),

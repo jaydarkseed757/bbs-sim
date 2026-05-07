@@ -1,3 +1,4 @@
+pub mod banner;
 pub mod boards;
 pub mod data;
 pub mod files;
