@@ -1,0 +1,89 @@
+[[callers]]
+handle = "OpenRoute"
+location = "Minneapolis, MN"
+time_on = "01:33"
+date = "04/28/93"
+
+[[callers]]
+handle = "FreeRadcl"
+location = "Madison, WI"
+time_on = "00:47"
+date = "04/28/93"
+
+[[callers]]
+handle = "ClearPath"
+location = "Ann Arbor, MI"
+time_on = "02:04"
+date = "04/27/93"
+
+[[callers]]
+handle = "SignalFire"
+location = "Bloomington, IN"
+time_on = "01:12"
+date = "04/27/93"
+
+[[callers]]
+handle = "LibreNode"
+location = "Iowa City, IA"
+time_on = "00:38"
+date = "04/27/93"
+
+[[callers]]
+handle = "PressPass"
+location = "St. Paul, MN"
+time_on = "01:51"
+date = "04/26/93"
+
+[[callers]]
+handle = "WhistlR"
+location = "Lawrence, KS"
+time_on = "00:24"
+date = "04/26/93"
+
+[[callers]]
+handle = "TruthBeam"
+location = "Champaign, IL"
+time_on = "01:09"
+date = "04/25/93"
+
+[[callers]]
+handle = "OpenMesh"
+location = "Milwaukee, WI"
+time_on = "02:17"
+date = "04/25/93"
+
+[[callers]]
+handle = "ForkBomb"
+location = "Des Moines, IA"
+time_on = "00:56"
+date = "04/24/93"
+
+[[callers]]
+handle = "PublicKey"
+location = "Lincoln, NE"
+time_on = "01:41"
+date = "04/24/93"
+
+[[callers]]
+handle = "RawSocket"
+location = "Kansas City, MO"
+time_on = "00:31"
+date = "04/23/93"
+
+[[callers]]
+handle = "CommonGnd"
+location = "Springfield, IL"
+time_on = "01:58"
+date = "04/23/93"
+
+[[callers]]
+handle = "BitBridge"
+location = "Green Bay, WI"
+time_on = "00:43"
+date = "04/22/93"
+
+[[callers]]
+handle = "OpenWire"
+location = "Fargo, ND"
+time_on = "01:22"
+date = "04/22/93"

@@ -2,7 +2,8 @@ use macroquad::prelude::*;
 
 use crate::bbs::banner::load_banner;
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
+use crate::bbs::callers::load_callers;
+use crate::bbs::data::{BbsEntry, Board, Caller, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
 use crate::bbs::oneliners::load_oneliners;
@@ -17,6 +18,7 @@ use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
 use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
+use crate::tui::callers::render_last_callers;
 use crate::tui::top10::render_top10;
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
@@ -62,6 +64,7 @@ pub enum Screen {
     GraffitiWall,
     TopTen,
     Voting,
+    LastCallers,
     SysopChat,
     Logout,
 }
@@ -359,6 +362,8 @@ pub struct App {
     pub selected_poll_row: usize,
     pub voting_scroll: usize,
     pub voted_polls: std::collections::HashSet<u32>,
+    pub last_callers: Vec<Caller>,
+    pub callers_scroll: usize,
 }
 
 impl App {
@@ -397,6 +402,8 @@ impl App {
             selected_poll_row: 0,
             voting_scroll: 0,
             voted_polls: std::collections::HashSet::new(),
+            last_callers: vec![],
+            callers_scroll: 0,
         }
     }
 
@@ -422,6 +429,7 @@ impl App {
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
             Screen::Voting          => render_voting(self),
+            Screen::LastCallers     => render_last_callers(self),
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
@@ -449,6 +457,7 @@ impl App {
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
             Screen::Voting          => self.voting_input(),
+            Screen::LastCallers     => self.last_callers_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
@@ -543,6 +552,8 @@ impl App {
             self.top_lists  = load_top10(&slug);
             self.top_list_tab = 0;
             self.polls = load_polls(&slug);
+            self.last_callers = load_callers(&slug);
+            self.callers_scroll = 0;
             self.selected_poll_row = 0;
             self.voting_scroll = 0;
             self.voted_polls.clear();
@@ -765,6 +776,10 @@ impl App {
                     self.selected_poll_row = 0;
                     self.voting_scroll = 0;
                     self.screen = Screen::Voting;
+                }
+                'w' => {
+                    self.callers_scroll = 0;
+                    self.screen = Screen::LastCallers;
                 }
                 'c' => {
                     self.begin_sysop_chat();
@@ -1379,6 +1394,26 @@ impl App {
                 '3' => { self.top_list_tab = 2; }
                 _ => {}
             }
+        }
+    }
+
+    // ── Input: last callers ──────────────────────────────────────────────────
+
+    fn last_callers_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        let max_scroll = self.last_callers.len().saturating_sub(1);
+        if (is_key_pressed(KeyCode::Up) || get_char_pressed() == Some('k'))
+            && self.callers_scroll > 0
+        {
+            self.callers_scroll -= 1;
+        }
+        if (is_key_pressed(KeyCode::Down) || get_char_pressed() == Some('j'))
+            && self.callers_scroll < max_scroll
+        {
+            self.callers_scroll += 1;
         }
     }
 
