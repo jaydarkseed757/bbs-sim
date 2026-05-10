@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use macroquad::rand::gen_range;
 
 use crate::bbs::banner::load_banner;
 use crate::bbs::boards::{hardcoded_boards, load_boards};
@@ -19,6 +20,7 @@ use crate::tui::files::{render_file_list, render_view_file};
 use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
 use crate::tui::callers::render_last_callers;
+use crate::tui::door::render_door_game;
 use crate::tui::top10::render_top10;
 use crate::tui::dialer::render_dialer;
 use crate::tui::dialing::render_dialing;
@@ -65,8 +67,90 @@ pub enum Screen {
     TopTen,
     Voting,
     LastCallers,
+    DoorGame,
     SysopChat,
     Logout,
+}
+
+// ---------------------------------------------------------------------------
+// Door game — The Gauntlet
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DoorPhase {
+    ClassSelect,
+    Combat,
+    BetweenRounds,
+    Dead,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PlayerClass {
+    Warrior,
+    Mage,
+    Rogue,
+}
+
+impl PlayerClass {
+    pub fn name(&self) -> &str {
+        match self { Self::Warrior => "WARRIOR", Self::Mage => "MAGE", Self::Rogue => "ROGUE" }
+    }
+    pub fn max_hp(&self)  -> i32 { match self { Self::Warrior => 30, Self::Mage => 20, Self::Rogue => 25 } }
+    pub fn atk_min(&self) -> i32 { match self { Self::Warrior => 3,  Self::Mage => 6,  Self::Rogue => 4  } }
+    pub fn atk_max(&self) -> i32 { match self { Self::Warrior => 8,  Self::Mage => 14, Self::Rogue => 11 } }
+}
+
+#[derive(Debug, Clone)]
+pub struct DoorEnemy {
+    pub name: String,
+    pub hp: i32,
+    pub max_hp: i32,
+    pub atk_min: i32,
+    pub atk_max: i32,
+}
+
+#[derive(Debug, Clone)]
+pub struct DoorGameState {
+    pub phase: DoorPhase,
+    pub class: Option<PlayerClass>,
+    pub hp: i32,
+    pub round: u32,
+    pub score: u32,
+    pub enemy: Option<DoorEnemy>,
+    pub log: Vec<String>,
+    pub slain_by: String,
+}
+
+impl DoorGameState {
+    pub fn new() -> Self {
+        Self {
+            phase: DoorPhase::ClassSelect,
+            class: None,
+            hp: 0,
+            round: 0,
+            score: 0,
+            enemy: None,
+            log: vec![],
+            slain_by: String::new(),
+        }
+    }
+
+    pub fn player_max_hp(&self) -> i32 {
+        self.class.as_ref().map(|c| c.max_hp()).unwrap_or(25)
+    }
+}
+
+fn spawn_enemy(round: u32) -> DoorEnemy {
+    let (name, hp, atk_min, atk_max) = match round {
+        1 => ("Kobold",       12,  1,  3),
+        2 => ("Goblin",       20,  2,  5),
+        3 => ("Orc Warrior",  30,  4,  8),
+        4 => ("Cave Troll",   44,  5, 10),
+        5 => ("Dark Knight",  58,  7, 13),
+        6 => ("Lich",         74,  9, 15),
+        n => ("Ancient Dragon", 80 + (n as i32 - 6) * 12, 11, 18 + (n as i32 - 6)),
+    };
+    DoorEnemy { name: name.into(), hp, max_hp: hp, atk_min, atk_max }
 }
 
 // ---------------------------------------------------------------------------
@@ -364,6 +448,7 @@ pub struct App {
     pub voted_polls: std::collections::HashSet<u32>,
     pub last_callers: Vec<Caller>,
     pub callers_scroll: usize,
+    pub door_game: Option<DoorGameState>,
 }
 
 impl App {
@@ -404,6 +489,7 @@ impl App {
             voted_polls: std::collections::HashSet::new(),
             last_callers: vec![],
             callers_scroll: 0,
+            door_game: None,
         }
     }
 
@@ -430,6 +516,7 @@ impl App {
             Screen::TopTen          => render_top10(self),
             Screen::Voting          => render_voting(self),
             Screen::LastCallers     => render_last_callers(self),
+            Screen::DoorGame        => render_door_game(self),
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
@@ -458,6 +545,7 @@ impl App {
             Screen::TopTen          => self.top10_input(),
             Screen::Voting          => self.voting_input(),
             Screen::LastCallers     => self.last_callers_input(),
+            Screen::DoorGame        => self.door_game_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
@@ -780,6 +868,10 @@ impl App {
                 'w' => {
                     self.callers_scroll = 0;
                     self.screen = Screen::LastCallers;
+                }
+                'd' => {
+                    self.door_game = Some(DoorGameState::new());
+                    self.screen = Screen::DoorGame;
                 }
                 'c' => {
                     self.begin_sysop_chat();
@@ -1414,6 +1506,108 @@ impl App {
             && self.callers_scroll < max_scroll
         {
             self.callers_scroll += 1;
+        }
+    }
+
+    // ── Input / logic: door game ─────────────────────────────────────────────
+
+    fn door_game_input(&mut self) {
+        let Some(ref mut g) = self.door_game else { return };
+        let ch = get_char_pressed();
+
+        match g.phase.clone() {
+            DoorPhase::ClassSelect => {
+                let class = match ch {
+                    Some('1') => Some(PlayerClass::Warrior),
+                    Some('2') => Some(PlayerClass::Mage),
+                    Some('3') => Some(PlayerClass::Rogue),
+                    _ => None,
+                };
+                if let Some(c) = class {
+                    let hp = c.max_hp();
+                    g.class = Some(c);
+                    g.hp    = hp;
+                    g.round = 1;
+                    g.score = 0;
+                    g.log   = vec!["The Gauntlet begins! Fight for your life!".into()];
+                    g.enemy = Some(spawn_enemy(1));
+                    g.phase = DoorPhase::Combat;
+                } else if ch == Some('\x1b') || is_key_pressed(KeyCode::Escape) {
+                    self.door_game = None;
+                    self.screen = Screen::MainMenu;
+                }
+            }
+            DoorPhase::Combat => {
+                if ch == Some('\x1b') || is_key_pressed(KeyCode::Escape) {
+                    self.door_game = None;
+                    self.screen = Screen::MainMenu;
+                    return;
+                }
+                if ch != Some('a') && ch != Some('A') { return; }
+
+                let Some(ref mut g) = self.door_game else { return };
+                let Some(ref c) = g.class.clone() else { return };
+                let Some(ref mut enemy) = g.enemy else { return };
+
+                // Player attacks
+                let p_dmg = gen_range(c.atk_min(), c.atk_max() + 1);
+                enemy.hp -= p_dmg;
+                let enemy_name = enemy.name.clone();
+                let enemy_hp   = enemy.hp;
+                let enemy_mhp  = enemy.max_hp;
+
+                if enemy.hp <= 0 {
+                    let xp = g.round * 50;
+                    g.score += xp;
+                    g.log.push(format!(
+                        "> You deal {} dmg — {} is slain! (+{} pts)",
+                        p_dmg, enemy_name, xp
+                    ));
+                    g.enemy = None;
+                    g.phase = DoorPhase::BetweenRounds;
+                } else {
+                    g.log.push(format!(
+                        "> You deal {} dmg to {}. ({}/{})",
+                        p_dmg, enemy_name, enemy_hp.max(0), enemy_mhp
+                    ));
+                    // Enemy counter-attacks
+                    let e_dmg = gen_range(enemy.atk_min, enemy.atk_max + 1);
+                    g.hp -= e_dmg;
+                    let player_hp = g.hp;
+                    let player_mhp = g.player_max_hp();
+                    g.log.push(format!(
+                        "> {} strikes you for {} dmg. ({}/{})",
+                        enemy_name, e_dmg, player_hp.max(0), player_mhp
+                    ));
+                    if g.hp <= 0 {
+                        g.slain_by = enemy_name;
+                        g.phase = DoorPhase::Dead;
+                    }
+                }
+                // Keep log at most 8 lines
+                while g.log.len() > 8 {
+                    g.log.remove(0);
+                }
+            }
+            DoorPhase::BetweenRounds => {
+                if ch.is_some() || is_key_pressed(KeyCode::Enter) {
+                    let Some(ref mut g) = self.door_game else { return };
+                    g.round += 1;
+                    g.enemy  = Some(spawn_enemy(g.round));
+                    g.log.push(format!("--- Round {} begins! ---", g.round));
+                    while g.log.len() > 8 { g.log.remove(0); }
+                    g.phase  = DoorPhase::Combat;
+                }
+            }
+            DoorPhase::Dead => {
+                if ch == Some('r') || ch == Some('R') {
+                    let Some(ref mut g) = self.door_game else { return };
+                    *g = DoorGameState::new();
+                } else if ch == Some('\x1b') || is_key_pressed(KeyCode::Escape) {
+                    self.door_game = None;
+                    self.screen = Screen::MainMenu;
+                }
+            }
         }
     }
 
