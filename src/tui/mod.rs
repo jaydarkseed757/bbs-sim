@@ -1,6 +1,7 @@
 pub mod ansi;
 pub mod boards;
 pub mod callers;
+pub mod door;
 pub mod graffiti;
 pub mod compose;
 pub mod dialer;

@@ -41,6 +41,7 @@ pub fn render_main_menu(app: &App) {
         ("[O]", "ne-liners",  "Graffiti wall -- leave your mark"),
         ("[T]", "op 10",      "Top callers, downloads, and posters"),
         ("[V]", "oting",      "Yes/No polls -- cast your vote"),
+        ("[D]", "oor Game",   "The Gauntlet -- arena combat door game"),
         ("[W]", "ho's on",    "Last callers log"),
         ("[C]", "hat",        "Chat with the sysop"),
         ("[G]", "oodbye",     "Logoff the system"),
