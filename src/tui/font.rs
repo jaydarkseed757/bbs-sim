@@ -12,17 +12,17 @@ pub fn set_bbs_font(font: Font) {
     BBS_FONT.with(|f| *f.borrow_mut() = Some(font));
 }
 
-/// Scaled font size in physical pixels.
-#[inline] pub fn fs() -> u16 { (BASE_FS * screen_dpi_scale()) as u16 }
+/// Font size in logical pixels (macroquad's coordinate space).
+#[inline] pub fn fs() -> u16 { BASE_FS as u16 }
 
-/// Scaled line height.
-#[inline] pub fn ch() -> f32 { BASE_FS * screen_dpi_scale() * 1.35 }
+/// Line height in logical pixels.
+#[inline] pub fn ch() -> f32 { BASE_FS * 1.35 }
 
-/// Scaled approximate character width (Monaco is ~0.60 of height).
-#[inline] pub fn cw() -> f32 { BASE_FS * screen_dpi_scale() * 0.60 }
+/// Approximate character width for Monaco (~0.60 of height).
+#[inline] pub fn cw() -> f32 { BASE_FS * 0.60 }
 
-/// Scale an absolute pixel value to physical pixels.
-#[inline] pub fn s(px: f32) -> f32 { px * screen_dpi_scale() }
+/// Pass-through; callers use s() so switching DPI models only needs this one change.
+#[inline] pub fn s(px: f32) -> f32 { px }
 
 /// Draw text with the BBS font at the standard size.
 pub fn txt(text: &str, x: f32, y: f32, color: Color) {
