@@ -154,7 +154,8 @@ pub fn render_read_thread(app: &App, board_id: &str, thread_id: u32) {
     }
 
     if lines.len() > rows_vis {
-        let pct = (scroll as f32 / max_scroll as f32 * 100.0) as u32;
+        let pct = if max_scroll == 0 { 100 }
+                  else { (scroll as f32 / max_scroll as f32 * 100.0) as u32 };
         txt(&format!("{:3}%", pct), sw - s(55.0), body_y + ch(), DIM_GRAY);
     }
 

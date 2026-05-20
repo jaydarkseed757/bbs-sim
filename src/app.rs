@@ -565,11 +565,14 @@ impl App {
             self.oneliners  = load_oneliners(&slug);
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
             self.top_lists  = load_top10(&slug);
-            self.top_list_tab = 0;
+            self.top_list_tab        = 0;
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
             self.selected_file_row   = 0;
+            self.read_scroll         = 0;
+            self.mail_read_scroll    = 0;
+            self.file_view_scroll    = 0;
             if let Some(entry) = self.phonebook.iter_mut().find(|e| e.name == bbs_name) {
                 entry.call_count  += 1;
                 entry.last_called  = Some("04/28/93".into());
@@ -1612,7 +1615,29 @@ impl App {
             }
         }
         self.session.logout();
-        self.logout = None;
+        self.logout   = None;
+
+        // Clear all per-session data so nothing leaks into the next dial.
+        self.boards              = vec![];
+        self.mail                = vec![];
+        self.files               = vec![];
+        self.oneliners           = vec![];
+        self.top_lists           = TopLists::default();
+        self.compose             = None;
+        self.compose_mail        = None;
+        self.download            = None;
+        self.graffiti_input      = None;
+        self.selected_board_row  = 0;
+        self.selected_thread_row = 0;
+        self.selected_mail_row   = 0;
+        self.selected_file_row   = 0;
+        self.read_scroll         = 0;
+        self.mail_read_scroll    = 0;
+        self.file_view_scroll    = 0;
+        self.graffiti_scroll     = 0;
+        self.top_list_tab        = 0;
+        self.file_download_notice = false;
+
         self.screen = Screen::Dialer;
     }
 }
