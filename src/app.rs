@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use macroquad::audio::{play_sound, play_sound_once, Sound, PlaySoundParams};
 
+use crate::bbs::banners::bbs_banner;
 use crate::bbs::boards::{hardcoded_boards, load_boards};
 use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread, TopLists};
 use crate::bbs::files::load_files;
@@ -304,19 +305,7 @@ impl LoginState {
     fn new(bbs: BbsEntry) -> Self {
         let mut typer = BaudTyper::new(bbs.baud);
 
-        let boards = bbs.boards.join("  ");
-        let sep = "-".repeat(42);
-        let banner = format!(
-            "\r\n{sep}\r\n  {name}\r\n{sep}\r\n\r\n\
-             Sysop:    {sysop}\r\n\
-             Location: {location}\r\n\
-             Boards:   {boards}\r\n\r\n",
-            sep = sep,
-            name = bbs.name,
-            sysop = bbs.sysop,
-            location = bbs.location,
-            boards = boards,
-        );
+        let banner = bbs_banner(&bbs);
         typer.enqueue(&banner);
 
         Self {
