@@ -34,8 +34,8 @@ pub fn render_download(app: &App) {
     // ── Body ──────────────────────────────────────────────────────────────────
     draw_rectangle_lines(s(1.0), body_y, sw - s(2.0), body_h, s(1.5), DARKGRAY);
 
-    let lx = s(16.0);
-    let vx = s(140.0);
+    let lx  = s(16.0);
+    let vx  = s(185.0);   // wide enough for "  Transferred :" at 18px Monaco
     let mut cy = body_y + ch() * 1.4;
 
     // File info block
