@@ -312,3 +312,363 @@ body = """
 Running a Cirrus Logic 512KB card at 800x600 right now.
 Windows 3.1 is a whole different experience at higher res.
 Still use 320x200 for gaming though -- the dithered palette tricks are art."""
+
+[[boards.threads]]
+id = 3
+subject = "Jurassic Park -- who's seeing it opening weekend?"
+
+[[boards.threads.posts]]
+id = 1
+author = "CineFan"
+subject = "Jurassic Park -- who's seeing it opening weekend?"
+timestamp = "06/09/93 18:30"
+body = """
+Jurassic Park opens Friday. I have tickets for the midnight show.
+The CGI from the trailer is beyond anything I've ever seen.
+Spielberg directing, John Williams score, practical + CG effects.
+I don't think people are ready for how good this is going to look."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ShadowByte"
+subject = "Re: Jurassic Park -- who's seeing it opening weekend?"
+timestamp = "06/10/93 09:15"
+body = """
+Saw it last night. DO NOT read further if you haven't gone yet.
+The T-Rex sequence in the rain is everything. Physically shaking in my seat.
+The raptors in the kitchen is scarier than any horror movie I've seen this year.
+Crichton's chaos theory stuff didn't make it in much but it doesn't matter."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PhreakMaster"
+subject = "Re: Jurassic Park -- who's seeing it opening weekend?"
+timestamp = "06/10/93 22:00"
+body = """
+Saw the 7pm showing. That T-Rex is going to give me nightmares.
+ILM outdid themselves -- the animals move like real animals, not animations.
+The animatronic stuff combined with the CGI is seamless. Film history was made.
+Already planning to see it again Saturday. Bring popcorn."""
+
+[[boards.threads.posts]]
+id = 4
+author = "DataSurfer"
+subject = "Re: Jurassic Park -- who's seeing it opening weekend?"
+timestamp = "06/11/93 14:30"
+body = """
+Three times this weekend. Each time caught something new.
+The computer scene where the girl says "It's a Unix system! I know this!"
+made me laugh out loud. That's actually IRIX with a real file manager.
+The rest of the tech is mostly nonsense but that one detail is real."""
+
+[[boards.threads]]
+id = 4
+subject = "Pentium -- worth the upgrade from 486?"
+
+[[boards.threads.posts]]
+id = 1
+author = "TechWiz"
+subject = "Pentium -- worth the upgrade from 486?"
+timestamp = "05/22/93 21:00"
+body = """
+Intel's Pentium is out. 60 and 66MHz variants. Starting at $878 for the chip alone.
+Performance on integer workloads is roughly 2x a 486/66.
+But the motherboard situation is a mess -- expensive and limited.
+Anyone jumping in early or waiting for prices to drop?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "DataSurfer"
+subject = "Re: Pentium -- worth the upgrade from 486?"
+timestamp = "05/23/93 11:30"
+body = """
+Waiting. The 60MHz Pentium runs HOT and the 66 runs hotter.
+The 486 DX4/100 coming later this year will match it for less money.
+Early adopter tax is real with Intel. Let the OEMs work out the board kinks.
+The floating point performance is genuinely impressive though. CAD users: go now."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NeonByte"
+subject = "Re: Pentium -- worth the upgrade from 486?"
+timestamp = "05/24/93 02:45"
+body = """
+My 486/66 handles everything I throw at it. Strike Commander, Ultima VII, no sweat.
+The Pentium is for workstations not gaming rigs. Not yet anyway.
+Intel's naming change from numbers to brand names is suspicious -- trademark games.
+486 headroom is not exhausted. Hold off at least until the 90MHz revision."""
+
+[[boards.threads]]
+id = 5
+subject = "Night owls -- who else is on at 3am?"
+
+[[boards.threads.posts]]
+id = 1
+author = "NightCrawler"
+subject = "Night owls -- who else is on at 3am?"
+timestamp = "05/03/93 03:10"
+body = """
+It's 3:10am and I'm arguing about modems with strangers. Perfect evening.
+There's something about the late-night BBS that the daytime crowd doesn't get.
+The line noise drops, the calls are shorter, the conversation is sharper.
+Who's in the 3am club?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "PhreakMaster"
+subject = "Re: Night owls -- who else is on at 3am?"
+timestamp = "05/03/93 03:44"
+body = """
+Right here. Usually on from midnight til 5 if the lines aren't jammed.
+Long distance rates drop at 11pm -- that's when you call the out-of-state boards.
+The West Coast boards are peak activity when we're winding down here. Perfect timing.
+Sleep is overrated when there are BBSes to dial."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ShadowByte"
+subject = "Re: Night owls -- who else is on at 3am?"
+timestamp = "05/03/93 04:28"
+body = """
+Parents think I'm asleep. Classic.
+The silence of the house + green text on black screen is my natural state.
+Download the big archives while everyone's asleep -- phone line is free.
+We are the last generation that will remember what dial-up silence sounds like."""
+
+# ── Warez additions ────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Day of the Tentacle -- LucasArts peaked here"
+
+[[boards.threads.posts]]
+id = 1
+author = "PointNClick"
+subject = "Day of the Tentacle -- LucasArts peaked here"
+timestamp = "06/25/93 20:00"
+body = """
+Day of the Tentacle dropped this month. It's perfect. I said what I said.
+The time travel puzzle design where solutions in the past affect the present is genius.
+Bernard, Hoagie, and Laverne are better characters than most movies this year.
+The hand-painted backgrounds look like living cartoons."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ByteWrangler"
+subject = "Re: Day of the Tentacle -- LucasArts peaked here"
+timestamp = "06/26/93 12:15"
+body = """
+I laughed out loud approximately forty times. Forty.
+The Benjamin Franklin hamster wheel puzzle is one of the best adventure game moments ever.
+LucasArts never punishes you for failure -- every puzzle is fair and logical in retrospect.
+Monkey Island 2 was my previous high watermark. This surpasses it."""
+
+[[boards.threads.posts]]
+id = 3
+author = "RipTide"
+subject = "Re: Day of the Tentacle -- LucasArts peaked here"
+timestamp = "06/27/93 03:30"
+body = """
+The CD version has full voice acting and it's great. Bernard sounds exactly right.
+Also the full Maniac Mansion is playable on one of the in-game computers.
+That kind of Easter egg is why we love LucasArts. Absolutely no cynicism in this game.
+Comparing it to Sierra: no deaths, no dead ends, pure puzzle joy."""
+
+[[boards.threads]]
+id = 4
+subject = "Syndicate -- anyone else morally troubled?"
+
+[[boards.threads.posts]]
+id = 1
+author = "NeonByte"
+subject = "Syndicate -- anyone else morally troubled?"
+timestamp = "04/28/93 19:00"
+body = """
+Syndicate from Bullfrog is evil and I cannot stop playing it.
+You control corporate mercenaries who minigun civilians in future cities.
+The isometric engine is silky smooth. The persuadertron mechanic is twisted.
+Is this the first game where you're unambiguously the bad guys?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "ArcadeKing"
+subject = "Re: Syndicate -- anyone else morally troubled?"
+timestamp = "04/29/93 10:00"
+body = """
+The troubling thing is how satisfying it is. The minigun sound effect alone.
+Persuadertron is the best weapon in games since the Portal Gun (someday).
+Bullfrog does a thing where the world feels alive enough that wrecking it means something.
+Theme Park next from them apparently. Going from massacre to theme parks."""
+
+[[boards.threads.posts]]
+id = 3
+author = "H4x0rZone"
+subject = "Re: Syndicate -- anyone else morally troubled?"
+timestamp = "04/30/93 01:00"
+body = """
+Not troubled at all. The cyberpunk aesthetic justifies every IHC agent you mow down.
+The research tree is the hook that keeps you in. Always one upgrade away from godmode.
+The network play over modem is reportedly coming in a patch. Deathmatch Syndicate."""
+
+# ── C64 additions ─────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "GEOS on the C64 -- anyone still running it?"
+
+[[boards.threads.posts]]
+id = 1
+author = "GeoWriter"
+subject = "GEOS on the C64 -- anyone still running it?"
+timestamp = "05/12/93 16:00"
+body = """
+Still running GEOS 2.0 on my 128. geoWrite for word processing, geoPaint for graphics.
+It's a real GUI on an 8-bit machine. Still impresses people who see it running.
+The RAM expansion with a 1750 makes it dramatically snappier.
+Anyone else or am I the last one?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "8BitWitch"
+subject = "Re: GEOS on the C64 -- anyone still running it?"
+timestamp = "05/13/93 09:30"
+body = """
+Still here! GEOS on my 64 with a 1581 drive. Load times are bearable.
+Berkeley Softworks really pulled off something remarkable.
+geoBASIC is genuinely useful for quick scripts.
+I use it for band flyers -- geoPaint output to my Okidata printer looks professional."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PhreakMaster"
+subject = "Re: GEOS on the C64 -- anyone still running it?"
+timestamp = "05/14/93 00:15"
+body = """
+GEOS with the RAM1764 expander is a different machine entirely.
+geoDex for contacts, geoCalc for simple spreadsheets -- it's a real productivity suite.
+Laughed when my cousin showed me Windows 3.1 and said it was revolutionary.
+We've had a GUI on C64 since 1986. Try keeping up, IBM PC."""
+
+[[boards.threads]]
+id = 4
+subject = "Emulator talk -- can a C64 ever be emulated properly?"
+
+[[boards.threads.posts]]
+id = 1
+author = "SidHead"
+subject = "Emulator talk -- can a C64 ever be emulated properly?"
+timestamp = "06/01/93 22:00"
+body = """
+Seen a few C64 emulators floating around for DOS. None of them sound right.
+The SID chip has analog quirks that pure digital emulation can't capture.
+The 6510 timing relative to the VIC-II is also incredibly precise.
+I don't think software will ever fully replicate what the hardware does."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ModemWrangler"
+subject = "Re: Emulator talk -- can a C64 ever be emulated properly?"
+timestamp = "06/02/93 11:00"
+body = """
+Frodo and C64S are the best I've tried. Both are usable but neither is perfect.
+The VIC-II border tricks and sprite multiplexing are the hardest parts to get right.
+Some demos flat out break in emulators because of cycle-exact timing requirements.
+A dedicated ASIC replacement would do better than software. Someone should build one."""
+
+[[boards.threads.posts]]
+id = 3
+author = "8BitWitch"
+subject = "Re: Emulator talk -- can a C64 ever be emulated properly?"
+timestamp = "06/03/93 17:45"
+body = """
+The SID analog filter is a known problem. The resonance behavior is almost random.
+Different C64 boards from different years sound slightly different because of chip variance.
+A proper emulator would need to model the specific chip revision you own.
+This is why we keep the real hardware. Nothing beats the machine itself."""
+
+# ── Tech Talk additions ────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Windows NT 3.1 -- Microsoft gets serious"
+
+[[boards.threads.posts]]
+id = 1
+author = "PcJockey"
+subject = "Windows NT 3.1 -- Microsoft gets serious"
+timestamp = "07/27/93 10:00"
+body = """
+Windows NT 3.1 shipped this week. Preemptive multitasking, true 32-bit, protected memory.
+This is not Windows 3.1 with extra steps -- it's a ground-up OS from Dave Cutler's team.
+Minimum 12MB RAM makes it impractical for most but the architecture is solid.
+Microsoft finally has an OS that can compete with Unix workstations."""
+
+[[boards.threads.posts]]
+id = 2
+author = "TechWiz"
+subject = "Re: Windows NT 3.1 -- Microsoft gets serious"
+timestamp = "07/28/93 09:00"
+body = """
+The NT kernel is genuinely impressive. HAL architecture, full memory protection.
+Application isolation means a crashed app doesn't take the OS down. Novel concept.
+It runs on MIPS and Alpha too, not just x86. Microsoft is thinking long-term.
+The 12MB minimum is 16MB realistic -- not exactly a home machine OS yet."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NeonByte"
+subject = "Re: Windows NT 3.1 -- Microsoft gets serious"
+timestamp = "07/29/93 14:20"
+body = """
+Installed it on a 486/33 with 16MB. Slow. Like, noticeably slow.
+The stability is excellent though -- ran it for a week without a crash.
+On a workstation with real RAM it probably sings. Not a gaming OS either way.
+Windows 3.11 for Workgroups is still the right answer for most users."""
+
+[[boards.threads.posts]]
+id = 4
+author = "DataSurfer"
+subject = "Re: Windows NT 3.1 -- Microsoft gets serious"
+timestamp = "07/30/93 02:00"
+body = """
+What's interesting is the POSIX subsystem. Unix apps can theoretically run on NT.
+The Win32 API is cleaner than the 16-bit mess of regular Windows.
+Five years from now NT is going to be everywhere in offices.
+Home users will stay on DOS/Windows 3.x for gaming another decade at least."""
+
+[[boards.threads]]
+id = 4
+subject = "CD-ROM drives -- is 2x enough or go 4x?"
+
+[[boards.threads.posts]]
+id = 1
+author = "GfxGuru"
+subject = "CD-ROM drives -- is 2x enough or go 4x?"
+timestamp = "05/18/93 20:00"
+body = """
+Budget 2x drives are around $200 now. 4x drives are $500+.
+For games: 2x is fine. Myst won't play well on 1x but 2x handles it.
+For video (Kodak Photo CD, FMV games): 4x makes a real difference.
+The access time matters more than transfer rate for most game usage."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PixelPusher"
+subject = "Re: CD-ROM drives -- is 2x enough or go 4x?"
+timestamp = "05/19/93 11:00"
+body = """
+Picked up a NEC CDR-84 2x last month for $220. No regrets.
+The jump from 1x to 2x is huge. The jump from 2x to 4x is marginal for games.
+The interface matters: SCSI is faster and more reliable than the proprietary connectors.
+Avoid the Mitsumi and Panasonic proprietary interfaces if you can. Get SCSI."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PcJockey"
+subject = "Re: CD-ROM drives -- is 2x enough or go 4x?"
+timestamp = "05/20/93 22:30"
+body = """
+The real future argument for CD-ROM: game sizes are exploding.
+Myst on 5.5MB floppy would be 30+ disks. On CD it's one disc.
+Wing Commander games already needed 6+ floppies. CD is inevitable.
+Buy now, buy 2x minimum. The content ecosystem is building fast."""

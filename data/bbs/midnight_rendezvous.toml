@@ -262,3 +262,229 @@ I'll be there. Look for the guy with the Amiga and the Terminal window open.
 Bring something interesting to show or talk about and people will find you.
 The parking lot of 1 Police Plaza across the street is a good backup spot
 if they actually do lock down the WTC lobby permanently."""
+
+[[boards.threads]]
+id = 4
+subject = "ISDN -- is residential deployment coming?"
+
+[[boards.threads.posts]]
+id = 1
+author = "TelcoGhost"
+subject = "ISDN -- is residential deployment coming?"
+timestamp = "05/01/93 21:00"
+body = """
+ISDN Basic Rate Interface: 2B+D, 128kbps data on a single phone line.
+The Baby Bells have it available in metro areas but pricing is punishing.
+$50-100/month plus installation fees in most markets. Not consumer-friendly.
+The technology is there. The business case for pricing it right isn't."""
+
+[[boards.threads.posts]]
+id = 2
+author = "Pr0phet"
+subject = "Re: ISDN -- is residential deployment coming?"
+timestamp = "05/02/93 09:30"
+body = """
+128kbps is 17x what a 14.4k modem delivers. That's a different internet experience.
+Video conferencing, large file transfers, real-time collaboration -- ISDN enables it all.
+The problem: telcos make more money on voice calls than data connections.
+Pricing will follow demand. Demand will follow pricing. Deadlock."""
+
+[[boards.threads.posts]]
+id = 3
+author = "RingMaster"
+subject = "Re: ISDN -- is residential deployment coming?"
+timestamp = "05/03/93 14:00"
+body = """
+The Clinton NII (National Information Infrastructure) initiative could change the math.
+Government subsidy for high-speed residential access is on the table.
+The phone companies will take the money and still charge retail rates. Watch.
+Cable modem technology is the wild card -- coax has far more bandwidth than copper."""
+
+[[boards.threads]]
+id = 5
+subject = "War dialing -- tools and ethics"
+
+[[boards.threads.posts]]
+id = 1
+author = "CoinOp"
+subject = "War dialing -- tools and ethics"
+timestamp = "06/10/93 02:00"
+body = """
+ToneLoc is the standard war dialer now. Scans a range of numbers for modem carriers.
+The ethics: scanning numbers you don't own is legally grey at minimum.
+The knowledge: understanding what's out there on the PSTN is legitimate curiosity.
+Where's the line? I'll say this: documenting vulnerabilities so they can be patched."""
+
+[[boards.threads.posts]]
+id = 2
+author = "Pr0phet"
+subject = "Re: War dialing -- tools and ethics"
+timestamp = "06/10/93 10:00"
+body = """
+The Computer Fraud and Abuse Act covers unauthorized access, not scanning.
+Dialing a number is not unauthorized access. Connecting to the carrier is a grey area.
+The responsible path: document what you find, notify the owner, move on.
+Actual exploitation is where curiosity becomes crime. Know the line."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TelcoGhost"
+subject = "Re: War dialing -- tools and ethics"
+timestamp = "06/11/93 00:30"
+body = """
+The interesting finds these days aren't modems -- they're voice mail systems.
+PBX voicemail bridges are everywhere and most have default passwords still set.
+Corporate PBXs with outbound access: that's where the risk lives.
+The telcos know these are there. They don't patch them. The liability is interesting."""
+
+# ── Underground additions ──────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Anonymous remailers -- protecting digital identity"
+
+[[boards.threads.posts]]
+id = 1
+author = "CyberLiberty"
+subject = "Anonymous remailers -- protecting digital identity"
+timestamp = "04/15/93 21:00"
+body = """
+Penet.fi is the best-known anonymous remailer right now. Based in Finland.
+You send email through it, the remailer strips headers and forwards anonymously.
+The logs exist but are protected by Finnish privacy law. Better than US-based.
+For Usenet posts especially: an anonymous voice is sometimes the only honest one."""
+
+[[boards.threads.posts]]
+id = 2
+author = "DataJockey"
+subject = "Re: Anonymous remailers -- protecting digital identity"
+timestamp = "04/16/93 09:00"
+body = """
+The cypherpunk remailer network is the more sophisticated solution.
+Chained remailers: message goes through 5-10 nodes, each only knowing the next hop.
+Nobody in the chain has the full picture. Much stronger than single-remailer anonymity.
+Cypherpunks mailing list has the technical specs if you want to run a node yourself."""
+
+[[boards.threads.posts]]
+id = 3
+author = "Pr0phet"
+subject = "Re: Anonymous remailers -- protecting digital identity"
+timestamp = "04/17/93 02:00"
+body = """
+The threat model matters. Who are you hiding from?
+Penet is fine for avoiding employer surveillance. Not fine if the NSA is interested.
+Full cypherpunk chain with PGP encryption at each hop: much harder to trace.
+The technical and legal protections need to reinforce each other. Neither alone is enough."""
+
+[[boards.threads]]
+id = 4
+subject = "Steve Jackson Games v. Secret Service -- EFF wins"
+
+[[boards.threads.posts]]
+id = 1
+author = "CyberLiberty"
+subject = "Steve Jackson Games v. Secret Service -- EFF wins"
+timestamp = "03/12/93 20:00"
+body = """
+The EFF just won in federal court. Steve Jackson Games gets $50,000 in damages.
+The Secret Service seized SJG's BBS and computers in 1990 over a game book.
+GURPS Cyberpunk: the government thought it was a hacking manual. A game book.
+This case established that BBS operators have legal protections. Historic."""
+
+[[boards.threads.posts]]
+id = 2
+author = "TelcoGhost"
+subject = "Re: Steve Jackson Games v. Secret Service -- EFF wins"
+timestamp = "03/13/93 10:30"
+body = """
+The Electronic Communications Privacy Act protections were upheld in full.
+Law enforcement can't just seize a BBS and read all the private messages.
+The precedent covers us. Every BBS sysop in the country should know this case.
+Mitchell Kapor and John Perry Barlow built something important with the EFF."""
+
+[[boards.threads.posts]]
+id = 3
+author = "Pr0phet"
+subject = "Re: Steve Jackson Games v. Secret Service -- EFF wins"
+timestamp = "03/14/93 00:00"
+body = """
+The chilling effect from the 1990 raids is still real three years later.
+Sysops shut down boards, users self-censored, entire communities scattered.
+This ruling is the correction. It won't undo the damage but it sets the rule.
+The government learned something. So did we. The fight continues either way."""
+
+# ── Lounge additions ───────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Favorite door games -- what's on your board?"
+
+[[boards.threads.posts]]
+id = 1
+author = "NightOwl_NYC"
+subject = "Favorite door games -- what's on your board?"
+timestamp = "03/20/93 23:00"
+body = """
+Trade Wars 2002 is the one I can't quit. Turn-based space trading with real PvP.
+The politics between players on a good Trade Wars board rivals diplomacy.
+Also running Legend of the Red Dragon -- classic BBS RPG, simple but compelling.
+What are people playing? What should I add?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "CityExplorer"
+subject = "Re: Favorite door games -- what's on your board?"
+timestamp = "03/21/93 09:30"
+body = """
+Solar Realms Elite is the sleeper pick. Not as popular as TW2002 but deeper.
+The planetary conquest mechanics reward long-term planning.
+Barren Realms Elite for the pure text-strategy crowd. Still active on several boards.
+The door game scene is thriving. These things are social networks before social networks."""
+
+[[boards.threads.posts]]
+id = 3
+author = "RingMaster"
+subject = "Re: Favorite door games -- what's on your board?"
+timestamp = "03/22/93 14:00"
+body = """
+Usurper is the dungeon crawler that hooks people who don't think they like dungeon crawlers.
+The daily turn limit creates natural social drama -- who spent their turns and on what.
+That game taught me more about competitive strategy than anything academic.
+The asynchronous multiplayer was ahead of everything by a decade."""
+
+[[boards.threads]]
+id = 4
+subject = "Late night reading -- what's on your screen at 3am?"
+
+[[boards.threads.posts]]
+id = 1
+author = "Pr0phet"
+subject = "Late night reading -- what's on your screen at 3am?"
+timestamp = "05/05/93 03:22"
+body = """
+Currently: Bruce Sterling's The Hacker Crackdown (again) and Neuromancer (fourth time).
+Both feel more urgent every year. The world is becoming the books.
+What are people reading at the hours when the rest of the world is asleep?
+The late night text on a dark screen is its own reading experience."""
+
+[[boards.threads.posts]]
+id = 2
+author = "NightOwl_NYC"
+subject = "Re: Late night reading -- what's on your screen at 3am?"
+timestamp = "05/05/93 04:10"
+body = """
+Vernor Vinge's True Names. Someone mentioned it in the underground board. They were right.
+Also been reading through 2600 back issues from 1987. The history of the hacker community
+reads differently when you lived through some of it.
+The good stuff is always the stuff you read at 4am with coffee going cold."""
+
+[[boards.threads.posts]]
+id = 3
+author = "DataJockey"
+subject = "Re: Late night reading -- what's on your screen at 3am?"
+timestamp = "05/05/93 05:45"
+body = """
+The Whole Earth Review if I want to feel connected to something bigger.
+Stewart Brand understood the counterculture-to-cyberculture pipeline before anyone.
+Also technical RFCs. Reading how TCP/IP actually works at 3am hits different.
+The people who wrote those protocols imagined a different kind of network than we got."""

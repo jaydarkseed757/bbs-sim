@@ -232,3 +232,240 @@ Purely from a production standpoint In Utero is a masterpiece.
 The guitar tones Albini got are unlike anything on a major label record.
 Grunge as a cultural moment: probably over. The music itself: still has legs.
 Meanwhile the underground is already moving to post-rock and noise pop."""
+
+[[boards.threads]]
+id = 3
+subject = "Myst -- puzzle game or interactive movie?"
+
+[[boards.threads.posts]]
+id = 1
+author = "ByteRunner"
+subject = "Myst -- puzzle game or interactive movie?"
+timestamp = "09/24/93 20:00"
+body = """
+Myst shipped. CD-ROM required, 4MB RAM minimum. The screenshots are stunning.
+Pre-rendered 3D environments with puzzle elements. No inventory, no enemies.
+The gaming press doesn't know what category to put it in.
+I have a feeling this thing is going to sell to people who don't play games at all."""
+
+[[boards.threads.posts]]
+id = 2
+author = "CrackSmith"
+subject = "Re: Myst -- puzzle game or interactive movie?"
+timestamp = "09/25/93 11:00"
+body = """
+Played it for six hours last night. The puzzle design respects your intelligence.
+No pixel hunting, no arbitrary death -- you observe, you deduce, you solve.
+The sound design is doing half the work. Every island has its own acoustic signature.
+The story is delivered through journals you find. Elegant, atmospheric, strange."""
+
+[[boards.threads.posts]]
+id = 3
+author = "31337"
+subject = "Re: Myst -- puzzle game or interactive movie?"
+timestamp = "09/26/93 02:45"
+body = """
+It's selling to people who own CD-ROMs and want something to show them off.
+That demographic is larger than gamers think. This thing will move millions of units.
+The cynical read: it's a tech demo. The honest read: the tech demo is the experience.
+Point-and-click adventures needed this. Sierra and LucasArts take note."""
+
+[[boards.threads]]
+id = 4
+subject = "NBA Jam -- arcade perfect on home systems?"
+
+[[boards.threads.posts]]
+id = 1
+author = "SceneKid"
+subject = "NBA Jam -- arcade perfect on home systems?"
+timestamp = "05/06/93 22:00"
+body = """
+NBA Jam is taking every quarter I own. The Super NES version is apparently coming.
+Two-on-two, massive heads, fire balls, no fouls. Pure distilled fun.
+Midway knocked it out of the park. The commentary samples are incredible.
+"HE'S ON FIRE!" is going to be stuck in my head forever."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AceOfAces"
+subject = "Re: NBA Jam -- arcade perfect on home systems?"
+timestamp = "05/07/93 10:30"
+body = """
+The Super NES port is solid but the Genesis version is closer to arcade.
+The sprite scaling and rotation on SNES slows down in four-player mode.
+Both versions nail the feel though. The turbo boost mechanic is preserved.
+Barkley's dunk animation is worth the price of the cart alone."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ByteRunner"
+subject = "Re: NBA Jam -- arcade perfect on home systems?"
+timestamp = "05/08/93 19:00"
+body = """
+The hidden teams are the talk of every arcade I've been to.
+The Beastie Boys, Bill Clinton, Al Gore -- the code is out there.
+Two-player is great but this really shines as a spectator game.
+The crowd of eight gathered around the cabinet is the real product."""
+
+# ── Hacking additions ──────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "PGP 2.3 -- everyone needs to be using this now"
+
+[[boards.threads.posts]]
+id = 1
+author = "PacketMonger"
+subject = "PGP 2.3 -- everyone needs to be using this now"
+timestamp = "03/05/93 22:00"
+body = """
+PGP 2.3 is out. Phil Zimmermann's public key encryption for the masses.
+RSA encryption strong enough that no government can crack it without your key.
+The legal situation is murky -- RSA Inc. claims patent infringement.
+Ignore that and use it anyway. Privacy is not a crime."""
+
+[[boards.threads.posts]]
+id = 2
+author = "NetSurfer"
+subject = "Re: PGP 2.3 -- everyone needs to be using this now"
+timestamp = "03/06/93 09:15"
+body = """
+Key servers are up and running. pub ring is growing every week.
+The web of trust model is the right approach for decentralized authentication.
+Sign each other's keys. Attend key signing parties. The network effect matters.
+If you communicate anything sensitive: PGP. No excuses in 1993."""
+
+[[boards.threads.posts]]
+id = 3
+author = "Phreaker_X"
+subject = "Re: PGP 2.3 -- everyone needs to be using this now"
+timestamp = "03/07/93 15:30"
+body = """
+The export control situation is the real concern. Zimmermann is under federal scrutiny.
+Cryptography as a weapon: the State Department's position. Absurd but legally real.
+The crypto wars are going to be a defining fight of this decade.
+Use it, distribute it, make it ubiquitous. Too widely used to suppress."""
+
+[[boards.threads.posts]]
+id = 4
+author = "CyberLiberty"
+subject = "Re: PGP 2.3 -- everyone needs to be using this now"
+timestamp = "03/08/93 01:00"
+body = """
+The Clipper chip proposal is the government's counter-move. Watch for it.
+Mandatory key escrow so law enforcement can always decrypt. The Orwell move.
+If Clipper passes, encryption without backdoors becomes politically untenable.
+PGP being widely deployed before Clipper solidifies is exactly the right timing."""
+
+[[boards.threads]]
+id = 4
+subject = "Gopher vs WWW -- which wins?"
+
+[[boards.threads.posts]]
+id = 1
+author = "31337"
+subject = "Gopher vs WWW -- which wins?"
+timestamp = "04/20/93 19:00"
+body = """
+Gopher has more content right now. Clean hierarchy, fast, text-focused.
+The WWW is slower, messier, but supports images and links in any direction.
+Pragmatically: Gopher is better for finding things. Web is better for presenting things.
+Long term? I think the web wins. The hyperlink is too powerful to lose."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PacketMonger"
+subject = "Re: Gopher vs WWW -- which wins?"
+timestamp = "04/21/93 10:00"
+body = """
+Gopher adoption at universities is massive right now. It's the working internet.
+The web has no search infrastructure yet. How do you find anything?
+Mosaic changes the equation but the content has to follow the browser.
+Give it two years. The web site count is doubling every few months."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NetSurfer"
+subject = "Re: Gopher vs WWW -- which wins?"
+timestamp = "04/22/93 23:30"
+body = """
+I've been watching the HTML spec evolve. It's going to get more powerful fast.
+Images are already in, forms are coming, scripting will follow.
+Gopher is a read-only medium. The web is read-write by design.
+The network effect: once businesses find the web, Gopher is dead in five years."""
+
+# ── Music additions ─────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Depeche Mode Songs of Faith and Devotion -- take"
+
+[[boards.threads.posts]]
+id = 1
+author = "AudioFreak"
+subject = "Depeche Mode Songs of Faith and Devotion -- take"
+timestamp = "04/01/93 21:00"
+body = """
+Songs of Faith and Devotion dropped Monday. Already on my third listen.
+Live drums on a Depeche Mode album. Real guitar. It sounds massive.
+Walking in My Shoes might be the best song they've ever written. Bold claim, I know.
+The Devotional tour is apparently going to be enormous."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ChipWizard"
+subject = "Re: Depeche Mode Songs of Faith and Devotion -- take"
+timestamp = "04/02/93 09:00"
+body = """
+I hear what they're going for with the live instruments but I miss the cold electronics.
+Violator was near-perfect. SoFaD is warmer and less precise.
+In Your Room is the closest to classic Mode and it's stunning.
+Dave Gahan's voice sounds like a man in genuine crisis. Which he reportedly is."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ModMaster"
+subject = "Re: Depeche Mode Songs of Faith and Devotion -- take"
+timestamp = "04/03/93 02:30"
+body = """
+The production is Flood and Wilder again. The drum sounds alone cost more than my rig.
+Condemnation is the one that got me. Gospel choir on a Depeche Mode album works somehow.
+This is their heaviest record emotionally. The pressure of making it is audible.
+Hold on to whatever you can: possibly a genius record, possibly a band dissolving."""
+
+[[boards.threads]]
+id = 4
+subject = "Smashing Pumpkins Siamese Dream"
+
+[[boards.threads.posts]]
+id = 1
+author = "SoundHack"
+subject = "Smashing Pumpkins Siamese Dream"
+timestamp = "07/27/93 20:00"
+body = """
+Siamese Dream just dropped. Corgan wrote almost everything himself during a breakdown.
+The guitar layering is absurd -- allegedly hundreds of tracks on Cherub Rock alone.
+Butch Vig's production (same producer as Nevermind) is immaculate.
+Disarm is a different beast from everything else on the record. Quietly devastating."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AudioFreak"
+subject = "Re: Smashing Pumpkins Siamese Dream"
+timestamp = "07/28/93 11:30"
+body = """
+Hummer is the song. Eight minutes of feedback and melody and it all makes sense.
+The Gish comparisons are unfair -- this is a completely different scale of ambition.
+Corgan reportedly played almost every instrument himself because he didn't trust the band.
+The neurotic perfectionism is all over the record and that's why it's great."""
+
+[[boards.threads.posts]]
+id = 3
+author = "31337"
+subject = "Re: Smashing Pumpkins Siamese Dream"
+timestamp = "07/29/93 03:15"
+body = """
+From a production standpoint this is the best-sounding rock record of the year.
+Vig gets more dynamic range than anyone working in major label rock right now.
+The bass on Today is huge. The guitar on Soma is huge. Everything is huge.
+Nirvana, Soundgarden, now this. 1993 is a year for loud guitar records."""
