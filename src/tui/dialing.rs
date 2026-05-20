@@ -72,13 +72,14 @@ pub fn render_dialing(app: &App) {
     // ── Footer — phase status ──────────────────────────────────────────────
     draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, DARKGRAY);
 
+    let dots = ".".repeat((get_time() * 2.5) as usize % 4);
     let phase_label = match d.modem.phase {
-        crate::sim::modem::DialPhase::PickingUpLine => "Picking up line...",
-        crate::sim::modem::DialPhase::Dialing       => "Dialing...",
-        crate::sim::modem::DialPhase::Connecting    => "Connecting...",
-        crate::sim::modem::DialPhase::Handshaking   => "Handshaking...",
-        crate::sim::modem::DialPhase::Connected     => "Connected!",
-        crate::sim::modem::DialPhase::NoAnswer      => "No answer.",
+        crate::sim::modem::DialPhase::PickingUpLine => format!("Picking up line{}", dots),
+        crate::sim::modem::DialPhase::Dialing       => format!("Dialing{}", dots),
+        crate::sim::modem::DialPhase::Connecting    => format!("Connecting{}", dots),
+        crate::sim::modem::DialPhase::Handshaking   => format!("Handshaking{}", dots),
+        crate::sim::modem::DialPhase::Connected     => "Connected!".to_string(),
+        crate::sim::modem::DialPhase::NoAnswer      => "No answer.".to_string(),
     };
 
     draw_text_ex(

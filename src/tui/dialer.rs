@@ -40,13 +40,24 @@ pub fn render_dialer(app: &App) {
         TextParams { font_size: FONT_SIZE as u16, color: YELLOW, ..Default::default() },
     );
 
-    // ASCII art
+    // ASCII art — pulsing brightness with a phosphor glow halo
+    let t = get_time() as f32;
+    let pulse = 0.78 + 0.18 * (t * 1.1).sin().abs();
+    let logo_color = Color::new(0.05, pulse, 0.05, 1.0);
+    let glow_color = Color::new(0.0, pulse * 0.45, 0.0, 0.10);
+
     for (i, line) in HEADER_ART.iter().enumerate() {
+        let y = CHAR_H * (i as f32 + 2.0);
+        // Glow halo (4 offset passes)
+        for &(ox, oy) in &[(-1.0f32, 0.0f32), (1.0, 0.0), (0.0, -1.0), (0.0, 1.0)] {
+            draw_text_ex(
+                line, 8.0 + ox, y + oy,
+                TextParams { font_size: FONT_SIZE as u16, color: glow_color, ..Default::default() },
+            );
+        }
         draw_text_ex(
-            line,
-            8.0,
-            CHAR_H * (i as f32 + 2.0),
-            TextParams { font_size: FONT_SIZE as u16, color: GREEN, ..Default::default() },
+            line, 8.0, y,
+            TextParams { font_size: FONT_SIZE as u16, color: logo_color, ..Default::default() },
         );
     }
 

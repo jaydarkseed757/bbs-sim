@@ -75,10 +75,12 @@ pub fn render_main_menu(app: &App) {
         TextParams { font_size: FONT_SIZE, color: WHITE_BBS, ..Default::default() },
     );
     // Blinking block cursor
-    let cw = measure_text("Choice: ", None, FONT_SIZE, 1.0).width;
-    draw_rectangle(
-        menu_x + cw, prompt_y - CHAR_H + 4.0,
-        FONT_SIZE as f32 * 0.55, CHAR_H - 2.0,
-        Color::new(0.0, 0.75, 0.0, 0.8),
-    );
+    if app.blink {
+        let cw = measure_text("Choice: ", None, FONT_SIZE, 1.0).width;
+        draw_rectangle(
+            menu_x + cw, prompt_y - CHAR_H + 4.0,
+            FONT_SIZE as f32 * 0.55, CHAR_H - 2.0,
+            Color::new(0.0, 0.75, 0.0, 0.8),
+        );
+    }
 }

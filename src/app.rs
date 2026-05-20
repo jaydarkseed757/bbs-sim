@@ -1,4 +1,5 @@
 use macroquad::prelude::*;
+use macroquad::audio::{play_sound, play_sound_once, Sound, PlaySoundParams};
 
 use crate::bbs::boards::{hardcoded_boards, load_boards};
 use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Thread, TopLists};
@@ -9,6 +10,7 @@ use crate::bbs::session::Session;
 use crate::bbs::top10::load_top10;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
+use crate::tui::crt::draw_crt_overlay;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
 use crate::tui::files::{render_file_list, render_view_file};
@@ -27,6 +29,18 @@ use crate::tui::terminal::{CellStyle, TerminalBuffer};
 const GREEN_BBS: Color    = Color::new(0.0,  0.85, 0.0,  1.0); // modem / dialing output
 const WHITE_BBS: Color    = Color::new(0.85, 0.85, 0.85, 1.0); // login system text
 const INPUT_GREEN: Color  = Color::new(0.0,  0.90, 0.0,  1.0); // user-typed chars
+
+// ---------------------------------------------------------------------------
+// Sounds
+// ---------------------------------------------------------------------------
+
+pub struct Sounds {
+    pub handshake:    Sound,
+    pub connect:      Sound,
+    pub no_answer:    Sound,
+    pub carrier_drop: Sound,
+    pub nav_click:    Sound,
+}
 
 // ---------------------------------------------------------------------------
 // Screen state machine
@@ -264,6 +278,9 @@ impl LoginState {
 pub struct App {
     pub screen: Screen,
     pub should_quit: bool,
+    pub sounds: Option<Sounds>,
+    pub blink: bool,
+    blink_ticks: u32,
     pub phonebook: Vec<BbsEntry>,
     pub selected_row: usize,
     pub dial: Option<DialingState>,
@@ -297,6 +314,9 @@ impl App {
         Self {
             screen: Screen::Dialer,
             should_quit: false,
+            sounds: None,
+            blink: true,
+            blink_ticks: 0,
             phonebook: hardcoded_phonebook(),
             selected_row: 0,
             dial: None,
@@ -349,6 +369,7 @@ impl App {
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
+        draw_crt_overlay();
     }
 
     pub fn handle_input(&mut self) {
@@ -377,6 +398,12 @@ impl App {
     }
 
     pub fn tick(&mut self) {
+        self.blink_ticks += 1;
+        if self.blink_ticks >= 10 {
+            self.blink = !self.blink;
+            self.blink_ticks = 0;
+        }
+
         match self.screen.clone() {
             Screen::Dialing   => self.tick_dialing(),
             Screen::Login     => self.tick_login(),
@@ -391,12 +418,33 @@ impl App {
     fn tick_dialing(&mut self) {
         let Some(ref mut d) = self.dial else { return };
 
+        let prev_phase = d.modem.phase.clone();
+
         if let Some(text) = d.modem.tick() {
             d.typer.enqueue(&text);
         }
         for ch in d.typer.tick() {
             d.buffer.push_char(ch, CellStyle::fg(GREEN_BBS));
         }
+
+        // Sound on phase transitions.
+        if d.modem.phase != prev_phase {
+            if let Some(ref sounds) = self.sounds {
+                match (&prev_phase, &d.modem.phase) {
+                    (DialPhase::Dialing, DialPhase::Connecting) => {
+                        play_sound(&sounds.handshake, PlaySoundParams { looped: false, volume: 0.55 });
+                    }
+                    (_, DialPhase::Connected) => {
+                        play_sound_once(&sounds.connect);
+                    }
+                    (_, DialPhase::NoAnswer) => {
+                        play_sound_once(&sounds.no_answer);
+                    }
+                    _ => {}
+                }
+            }
+        }
+
         if d.modem.phase == DialPhase::Connected && d.typer.is_empty() && !d.awaiting_keypress {
             d.buffer.push_str("\r\n\r\nPress [Enter] to log in...\r\n", CellStyle::fg(YELLOW));
             d.awaiting_keypress = true;
@@ -514,10 +562,12 @@ impl App {
         if is_key_pressed(KeyCode::Up) {
             self.selected_row =
                 if self.selected_row == 0 { len.saturating_sub(1) } else { self.selected_row - 1 };
+            if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
         }
         if is_key_pressed(KeyCode::Down) {
             self.selected_row =
                 if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
+            if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
         }
         if is_key_pressed(KeyCode::Escape) {
             self.should_quit = true;
@@ -529,10 +579,12 @@ impl App {
                 'j' => {
                     self.selected_row =
                         if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
+                    if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
                 }
                 'k' => {
                     self.selected_row =
                         if self.selected_row == 0 { len.saturating_sub(1) } else { self.selected_row - 1 };
+                    if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
                 }
                 'd' | 'D' => {
                     if let Some(bbs) = self.phonebook.get(self.selected_row).cloned() {
@@ -1366,6 +1418,9 @@ impl App {
     }
 
     fn begin_logout(&mut self) {
+        if let Some(ref sounds) = self.sounds {
+            play_sound_once(&sounds.carrier_drop);
+        }
         let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
         let handle   = self.session.user_handle.clone().unwrap_or_default();
         let baud     = self.phonebook.iter()

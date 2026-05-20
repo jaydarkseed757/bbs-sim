@@ -1,4 +1,5 @@
 pub mod ansi;
+pub mod crt;
 pub mod boards;
 pub mod graffiti;
 pub mod compose;
