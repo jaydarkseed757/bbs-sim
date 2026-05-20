@@ -58,10 +58,3 @@ pub fn tw(text: &str) -> f32 {
     })
 }
 
-/// Measure text width at a custom size.
-pub fn tw_sz(text: &str, size: u16) -> f32 {
-    BBS_FONT.with(|f| {
-        let guard = f.borrow();
-        measure_text(text, guard.as_ref(), size, 1.0).width
-    })
-}

@@ -57,13 +57,13 @@ pub enum Screen {
     MessageBoards,
     ThreadList { board_id: String },
     ReadThread { board_id: String, thread_id: u32 },
-    ComposeMessage { board_id: String, thread_id: Option<u32> },
+    ComposeMessage,
     Mail,
     ReadMail { id: u32 },
     ComposeMail,
     Files,
     ViewFile { id: u32 },
-    DownloadFile { id: u32 },
+    DownloadFile,
     GraffitiWall,
     TopTen,
     SysopChat,
@@ -411,13 +411,13 @@ impl App {
             Screen::ReadThread { ref board_id, thread_id } => {
                 render_read_thread(self, board_id, thread_id)
             }
-            Screen::ComposeMessage { .. } => render_compose(self),
+            Screen::ComposeMessage => render_compose(self),
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
             Screen::Files              => render_file_list(self),
             Screen::ViewFile { id }    => render_view_file(self, id),
-            Screen::DownloadFile { .. } => render_download(self),
+            Screen::DownloadFile => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
             Screen::SysopChat       => render_sysop_chat(self),
@@ -438,13 +438,13 @@ impl App {
             Screen::ReadThread { board_id, thread_id } => {
                 self.read_thread_input(board_id, thread_id)
             }
-            Screen::ComposeMessage { .. } => self.compose_input(),
+            Screen::ComposeMessage => self.compose_input(),
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
             Screen::Files              => self.files_input(),
             Screen::ViewFile { id }    => self.view_file_input(id),
-            Screen::DownloadFile { .. } => self.download_input(),
+            Screen::DownloadFile => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
@@ -464,7 +464,7 @@ impl App {
             Screen::Login        => self.tick_login(),
             Screen::Logout       => self.tick_logout(),
             Screen::SysopChat    => self.tick_sysop_chat(),
-            Screen::DownloadFile { .. } => self.tick_download(),
+            Screen::DownloadFile => self.tick_download(),
             _                    => {}
         }
     }
@@ -897,10 +897,7 @@ impl App {
                             body: String::new(),
                             field: ComposeField::Subject,
                         });
-                        self.screen = Screen::ComposeMessage {
-                            board_id,
-                            thread_id: None,
-                        };
+                        self.screen = Screen::ComposeMessage;
                         return;
                     }
                 }
@@ -959,10 +956,7 @@ impl App {
                     body: String::new(),
                     field: ComposeField::Body,
                 });
-                self.screen = Screen::ComposeMessage {
-                    board_id,
-                    thread_id: Some(thread_id),
-                };
+                self.screen = Screen::ComposeMessage;
                 return;
             }
         }
@@ -1150,7 +1144,7 @@ impl App {
                         self.download = Some(DownloadState::new(
                             bbs_name, f.name, f.size, baud,
                         ));
-                        self.screen = Screen::DownloadFile { id: f.id };
+                        self.screen = Screen::DownloadFile;
                     }
                 }
                 _ => {}
