@@ -9,12 +9,14 @@ mod tui;
 
 use app::{App, Sounds};
 use sim::audio::{carrier_drop_wav, connect_wav, handshake_wav, nav_click_wav, no_answer_wav};
+use tui::font::set_bbs_font;
 
 fn window_conf() -> Conf {
     Conf {
         window_title: "BBS-SIM".to_owned(),
         window_width: 1024,
         window_height: 768,
+        high_dpi: true,
         ..Default::default()
     }
 }
@@ -22,6 +24,12 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     set_default_filter_mode(FilterMode::Nearest);
+
+    // Load Monaco for a crisp monospace terminal look.
+    // Falls back to the built-in font if the file is unavailable.
+    if let Ok(font) = load_ttf_font("/System/Library/Fonts/Monaco.ttf").await {
+        set_bbs_font(font);
+    }
 
     let mut app = App::new();
 
