@@ -85,24 +85,19 @@ pub fn render_file_list(app: &App) {
 
     let selected_file = flat.get(app.selected_file_row);
     let can_view = selected_file.map(|f| f.kind == "text").unwrap_or(false);
-
-    if app.file_download_notice {
-        txt("  Initiating ZMODEM transfer...  (stub)", s(8.0), footer_y + ch() * 1.2, YELLOW);
-    } else {
-        let view_color = if can_view { YELLOW } else { DIM_GRAY };
-        let mut hx = s(8.0);
-        let hints: &[(&str, &str, Color)] = &[
-            ("[↑↓/jk]", " Navigate  ", YELLOW),
-            ("[V]", " View  ", view_color),
-            ("[D]", " Download  ", YELLOW),
-            ("[Esc]", " Main Menu", YELLOW),
-        ];
-        for (key, desc, kc) in hints {
-            txt(key, hx, footer_y + ch() * 1.2, *kc);
-            hx += tw(key);
-            txt(desc, hx, footer_y + ch() * 1.2, DARKGRAY);
-            hx += tw(desc);
-        }
+    let view_color = if can_view { YELLOW } else { DIM_GRAY };
+    let mut hx = s(8.0);
+    let hints: &[(&str, &str, Color)] = &[
+        ("[↑↓/jk]", " Navigate  ", YELLOW),
+        ("[V]",     " View  ",      view_color),
+        ("[D]",     " Download  ", YELLOW),
+        ("[Esc]",   " Main Menu",  YELLOW),
+    ];
+    for (key, desc, kc) in hints {
+        txt(key, hx, footer_y + ch() * 1.2, *kc);
+        hx += tw(key);
+        txt(desc, hx, footer_y + ch() * 1.2, DARKGRAY);
+        hx += tw(desc);
     }
 }
 

@@ -1,5 +1,6 @@
 pub mod ansi;
 pub mod crt;
+pub mod download;
 pub mod font;
 pub mod boards;
 pub mod graffiti;

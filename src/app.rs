@@ -13,6 +13,7 @@ use crate::sim::typer::BaudTyper;
 use crate::tui::crt::draw_crt_overlay;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
 use crate::tui::compose::render_compose;
+use crate::tui::download::render_download;
 use crate::tui::files::{render_file_list, render_view_file};
 use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
@@ -61,10 +62,71 @@ pub enum Screen {
     ComposeMail,
     Files,
     ViewFile { id: u32 },
+    DownloadFile { id: u32 },
     GraffitiWall,
     TopTen,
     SysopChat,
     Logout,
+}
+
+// ---------------------------------------------------------------------------
+// Download state
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DownloadPhase {
+    Negotiating { ticks: u32 },
+    Transferring,
+    Complete { elapsed_secs: f32 },
+}
+
+pub struct DownloadState {
+    pub bbs_name:       String,
+    pub file_name:      String,
+    pub file_size_str:  String,
+    pub file_size_bytes: u64,
+    pub baud:           u32,
+    pub bytes_done:     u64,
+    pub phase:          DownloadPhase,
+    pub cps_display:    f32,   // smoothed CPS shown on screen
+    pub log_lines:      Vec<String>,
+    pub tick_count:     u32,   // ticks spent in Transferring phase
+}
+
+impl DownloadState {
+    pub fn new(bbs_name: String, file_name: String, file_size_str: String, baud: u32) -> Self {
+        let file_size_bytes = parse_size(&file_size_str);
+        let cps_display     = baud as f32 / 8.0 * 0.92; // theoretical ZMODEM efficiency
+        Self {
+            bbs_name,
+            file_name,
+            file_size_str,
+            file_size_bytes,
+            baud,
+            bytes_done: 0,
+            phase: DownloadPhase::Negotiating { ticks: 0 },
+            cps_display,
+            log_lines: vec!["ZRQINIT...".into()],
+            tick_count: 0,
+        }
+    }
+
+    /// Wall-clock seconds elapsed in the Transferring phase (for display).
+    pub fn elapsed_secs(&self) -> f32 {
+        self.tick_count as f32 / 20.0
+    }
+}
+
+/// Parse size strings like "1.4M", "320K", "8K" into bytes.
+fn parse_size(s: &str) -> u64 {
+    let s = s.trim();
+    if let Some(num) = s.strip_suffix('M') {
+        (num.parse::<f32>().unwrap_or(0.0) * 1024.0 * 1024.0) as u64
+    } else if let Some(num) = s.strip_suffix('K') {
+        (num.parse::<f32>().unwrap_or(0.0) * 1024.0) as u64
+    } else {
+        s.parse::<u64>().unwrap_or(0)
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -301,6 +363,7 @@ pub struct App {
     pub selected_file_row: usize,
     pub file_view_scroll: usize,
     pub file_download_notice: bool,
+    pub download: Option<DownloadState>,
     pub manual_dial_input: Option<String>,
     pub oneliners: Vec<Oneliner>,
     pub graffiti_scroll: usize,
@@ -337,6 +400,7 @@ impl App {
             selected_file_row: 0,
             file_view_scroll: 0,
             file_download_notice: false,
+            download: None,
             manual_dial_input: None,
             oneliners: vec![],
             graffiti_scroll: 0,
@@ -362,8 +426,9 @@ impl App {
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
-            Screen::Files           => render_file_list(self),
-            Screen::ViewFile { id } => render_view_file(self, id),
+            Screen::Files              => render_file_list(self),
+            Screen::ViewFile { id }    => render_view_file(self, id),
+            Screen::DownloadFile { .. } => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
             Screen::SysopChat       => render_sysop_chat(self),
@@ -388,8 +453,9 @@ impl App {
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
-            Screen::Files           => self.files_input(),
-            Screen::ViewFile { id } => self.view_file_input(id),
+            Screen::Files              => self.files_input(),
+            Screen::ViewFile { id }    => self.view_file_input(id),
+            Screen::DownloadFile { .. } => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
@@ -405,11 +471,12 @@ impl App {
         }
 
         match self.screen.clone() {
-            Screen::Dialing   => self.tick_dialing(),
-            Screen::Login     => self.tick_login(),
-            Screen::Logout    => self.tick_logout(),
-            Screen::SysopChat => self.tick_sysop_chat(),
-            _                 => {}
+            Screen::Dialing      => self.tick_dialing(),
+            Screen::Login        => self.tick_login(),
+            Screen::Logout       => self.tick_logout(),
+            Screen::SysopChat    => self.tick_sysop_chat(),
+            Screen::DownloadFile { .. } => self.tick_download(),
+            _                    => {}
         }
     }
 
@@ -1078,7 +1145,21 @@ impl App {
                     }
                 }
                 'd' => {
-                    self.file_download_notice = true;
+                    let file = self.files.iter()
+                        .flat_map(|s| s.files.iter())
+                        .nth(self.selected_file_row)
+                        .cloned();
+                    if let Some(f) = file {
+                        let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
+                        let baud = self.phonebook.iter()
+                            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+                            .map(|e| e.baud)
+                            .unwrap_or(2400);
+                        self.download = Some(DownloadState::new(
+                            bbs_name, f.name, f.size, baud,
+                        ));
+                        self.screen = Screen::DownloadFile { id: f.id };
+                    }
                 }
                 _ => {}
             }
@@ -1101,6 +1182,109 @@ impl App {
         }
         if is_key_pressed(KeyCode::PageDown) {
             self.file_view_scroll += 10;
+        }
+    }
+
+    // ── Input / tick: download ───────────────────────────────────────────────
+
+    fn download_input(&mut self) {
+        let done = self.download.as_ref()
+            .map(|d| matches!(d.phase, DownloadPhase::Complete { .. }))
+            .unwrap_or(false);
+
+        if done {
+            // Any key returns to file list
+            let any = get_char_pressed().is_some()
+                || is_key_pressed(KeyCode::Enter)
+                || is_key_pressed(KeyCode::Space)
+                || is_key_pressed(KeyCode::Escape);
+            if any {
+                self.download = None;
+                self.screen   = Screen::Files;
+            }
+        } else if is_key_pressed(KeyCode::Escape) {
+            // Cancel — abort transfer
+            self.download = None;
+            self.screen   = Screen::Files;
+        }
+    }
+
+    fn tick_download(&mut self) {
+        let dl = match self.download.as_mut() { Some(d) => d, None => return };
+
+        // Speed multiplier: sim runs ~15× real ZMODEM speed for playability.
+        // bytes_per_tick = (baud_bps / 8) × efficiency × speed_factor / 20_Hz
+        const SPEED_FACTOR: f32 = 15.0;
+        const EFFICIENCY:   f32 = 0.92;
+        let bytes_per_sec_real = dl.baud as f32 / 8.0 * EFFICIENCY;
+        let bytes_per_tick_avg = (bytes_per_sec_real * SPEED_FACTOR / 20.0) as u64;
+
+        match dl.phase.clone() {
+            DownloadPhase::Negotiating { ticks } => {
+                let t = ticks + 1;
+                // ZMODEM handshake log lines appear progressively
+                match t {
+                    5  => dl.log_lines.push("ZRINIT...".into()),
+                    12 => dl.log_lines.push(format!("ZFILE {}...", dl.file_name)),
+                    18 => dl.log_lines.push(format!("ZDATA 0x{:08X}", 0u32)),
+                    25 => dl.log_lines.push("Receiving data blocks...".into()),
+                    _  => {}
+                }
+                if t >= 30 {
+                    dl.phase = DownloadPhase::Transferring;
+                } else {
+                    dl.phase = DownloadPhase::Negotiating { ticks: t };
+                }
+            }
+
+            DownloadPhase::Transferring => {
+                // Add mild jitter (±15%) to CPS display
+                let jitter = {
+                    let t = dl.tick_count;
+                    let wave = ((t as f32 * 0.23).sin() * 0.10
+                               + (t as f32 * 0.07).sin() * 0.05) as f32;
+                    1.0_f32 + wave
+                };
+                let bytes_this_tick = ((bytes_per_tick_avg as f32) * jitter) as u64;
+                dl.bytes_done = (dl.bytes_done + bytes_this_tick).min(dl.file_size_bytes);
+                dl.tick_count += 1;
+
+                // Smooth CPS toward the current instantaneous rate
+                let instant_cps = bytes_per_sec_real * SPEED_FACTOR * jitter;
+                dl.cps_display += (instant_cps - dl.cps_display) * 0.15;
+
+                // Protocol chatter: emit a log line every ~8 ticks
+                if dl.tick_count % 8 == 0 {
+                    let block = dl.bytes_done / 1024;
+                    dl.log_lines.push(format!(
+                        "ZDATA 0x{:08X}  ({} KB)",
+                        dl.bytes_done as u32, block
+                    ));
+                }
+                // Occasional noise: error-recovery lines
+                if dl.tick_count % 53 == 0 {
+                    dl.log_lines.push("ZRPOS  (resync)".into());
+                }
+                if dl.tick_count % 97 == 0 {
+                    dl.log_lines.push(format!(
+                        "ZNAK  block {}  (retry)", dl.tick_count / 97
+                    ));
+                }
+
+                if dl.bytes_done >= dl.file_size_bytes {
+                    let elapsed = dl.elapsed_secs();
+                    dl.phase = DownloadPhase::Complete { elapsed_secs: elapsed };
+                    dl.log_lines.push("ZEOF...".into());
+                    dl.log_lines.push("ZFIN...".into());
+                    dl.log_lines.push(format!(
+                        "Transfer complete.  {} bytes in {}",
+                        dl.file_size_bytes,
+                        fmt_elapsed(elapsed),
+                    ));
+                }
+            }
+
+            DownloadPhase::Complete { .. } => {}
         }
     }
 
@@ -1523,4 +1707,15 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             call_count: 3,
         },
     ]
+}
+
+fn fmt_elapsed(secs: f32) -> String {
+    let s  = secs as u32;
+    let m  = s / 60;
+    let ss = s % 60;
+    if m >= 60 {
+        format!("{}h {:02}m {:02}s", m / 60, m % 60, ss)
+    } else {
+        format!("{}:{:02}", m, ss)
+    }
 }
