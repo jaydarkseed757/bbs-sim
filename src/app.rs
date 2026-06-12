@@ -25,7 +25,10 @@ use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
 use crate::tui::sysop::render_sysop_chat;
+use crate::save::SaveData;
+use crate::tui::font::{ch, BODY_PAD};
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
+use crate::tui::theme::BbsTheme;
 
 // Palette constants reused across tick methods.
 const GREEN_BBS: Color    = Color::new(0.0,  0.85, 0.0,  1.0); // modem / dialing output
@@ -260,7 +263,7 @@ pub struct DialingState {
 
 impl DialingState {
     fn new(bbs: BbsEntry) -> Self {
-        let modem = ModemSim::new(&bbs.number);
+        let modem = ModemSim::new(&bbs.number, bbs.baud);
         let typer = BaudTyper::new(bbs.baud);
         Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: false }
     }
@@ -332,6 +335,9 @@ pub struct App {
     pub sounds: Option<Sounds>,
     pub blink: bool,
     blink_ticks: u32,
+    pub tick_count: u64,
+    pub frame_count: u64,
+    pub sessions_this_run: u32,
     pub phonebook: Vec<BbsEntry>,
     pub selected_row: usize,
     pub dial: Option<DialingState>,
@@ -359,17 +365,24 @@ pub struct App {
     pub graffiti_input: Option<String>,
     pub top_lists: TopLists,
     pub top_list_tab: usize,
+    pub theme: BbsTheme,
+    pub save: SaveData,
 }
 
 impl App {
     pub fn new() -> Self {
+        let save     = SaveData::load();
+        let phonebook = save.apply_to_phonebook(hardcoded_phonebook());
         Self {
             screen: Screen::Dialer,
             should_quit: false,
             sounds: None,
             blink: true,
             blink_ticks: 0,
-            phonebook: hardcoded_phonebook(),
+            tick_count: 0,
+            frame_count: 0,
+            sessions_this_run: 0,
+            phonebook,
             selected_row: 0,
             dial: None,
             login: None,
@@ -396,10 +409,13 @@ impl App {
             graffiti_input: None,
             top_lists: TopLists::default(),
             top_list_tab: 0,
+            theme: BbsTheme::default(),
+            save,
         }
     }
 
     pub fn render(&mut self) {
+        self.frame_count += 1;
         let screen = self.screen.clone();
         match screen {
             Screen::Dialer        => render_dialer(self),
@@ -453,6 +469,7 @@ impl App {
     }
 
     pub fn tick(&mut self) {
+        self.tick_count += 1;
         self.blink_ticks += 1;
         if self.blink_ticks >= 10 {
             self.blink = !self.blink;
@@ -559,11 +576,29 @@ impl App {
 
         if let Some((handle, bbs_name, slug)) = transition {
             self.session.login(handle.clone(), bbs_name.clone());
-            self.boards     = load_boards(&slug);
-            self.mail       = load_mail(&slug, &handle);
-            self.files      = load_files(&slug);
-            self.oneliners  = load_oneliners(&slug);
+            self.sessions_this_run += 1;
+            self.theme = BbsTheme::for_slug(&slug);
+
+            // Use saved BBS data if available; otherwise load fresh from TOML.
+            if let Some(saved) = self.save.bbs.get(&slug).cloned() {
+                self.boards    = saved.boards;
+                self.mail      = saved.mail;
+                self.oneliners = saved.oneliners;
+                // Mail was personalized for the handle it was saved under;
+                // remap to/from if this session uses a different one.
+                if !saved.handle.is_empty() && saved.handle != handle {
+                    for m in &mut self.mail {
+                        if m.to   == saved.handle { m.to   = handle.clone(); }
+                        if m.from == saved.handle { m.from = handle.clone(); }
+                    }
+                }
+            } else {
+                self.boards    = load_boards(&slug);
+                self.mail      = load_mail(&slug, &handle);
+                self.oneliners = load_oneliners(&slug);
+            }
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+            self.files      = load_files(&slug);   // files are read-only; always load fresh
             self.top_lists  = load_top10(&slug);
             self.top_list_tab        = 0;
             self.selected_board_row  = 0;
@@ -577,6 +612,7 @@ impl App {
                 entry.call_count  += 1;
                 entry.last_called  = Some("04/28/93".into());
             }
+            self.persist_session();
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -600,7 +636,17 @@ impl App {
             if is_key_pressed(KeyCode::Enter) {
                 let number = self.manual_dial_input.take().unwrap_or_default();
                 if !number.trim().is_empty() {
-                    self.dial = Some(DialingState::new_manual(number));
+                    // A manually dialed number that matches a phonebook entry
+                    // connects normally; anything else rings out.
+                    let digits = |s: &str| s.chars().filter(char::is_ascii_digit).collect::<String>();
+                    let typed = digits(&number);
+                    let entry = self.phonebook.iter()
+                        .find(|e| digits(&e.number) == typed)
+                        .cloned();
+                    self.dial = Some(match entry {
+                        Some(bbs) => DialingState::new(bbs),
+                        None      => DialingState::new_manual(number),
+                    });
                     self.screen = Screen::Dialing;
                 }
                 return;
@@ -629,12 +675,18 @@ impl App {
             if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
         }
         if is_key_pressed(KeyCode::Escape) {
+            self.save.capture_phonebook(&self.phonebook.clone());
+            self.save.write();
             self.should_quit = true;
         }
 
         while let Some(ch) = get_char_pressed() {
             match ch {
-                'q' | 'Q' => self.should_quit = true,
+                'q' | 'Q' => {
+                    self.save.capture_phonebook(&self.phonebook.clone());
+                    self.save.write();
+                    self.should_quit = true;
+                }
                 'j' => {
                     self.selected_row =
                         if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
@@ -825,7 +877,7 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            match ch {
+            match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_board_row =
                         if self.selected_board_row == 0 { len.saturating_sub(1) }
@@ -874,7 +926,7 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            match ch {
+            match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_thread_row =
                         if self.selected_thread_row == 0 { len.saturating_sub(1) }
@@ -935,9 +987,16 @@ impl App {
         if is_key_pressed(KeyCode::PageDown) {
             self.read_scroll += 10;
         }
+        {
+            use crate::tui::boards::{READ_FOOTER_CH, READ_HEADER_CH};
+            let body_h = screen_height() - ch() * (READ_HEADER_CH + READ_FOOTER_CH);
+            let rows_vis = ((body_h - BODY_PAD) / ch()) as usize;
+            let max_scroll = self.thread_line_count(&board_id, thread_id).saturating_sub(rows_vis);
+            self.read_scroll = self.read_scroll.min(max_scroll);
+        }
 
         while let Some(ch) = get_char_pressed() {
-            if ch == 'r' {
+            if ch.eq_ignore_ascii_case(&'r') {
                 let board_name = self.boards.iter()
                     .find(|b| b.id == board_id)
                     .map(|b| b.name.clone())
@@ -960,6 +1019,21 @@ impl App {
                 return;
             }
         }
+    }
+
+    /// Count display lines for a thread, matching the layout in `render_read_thread`.
+    fn thread_line_count(&self, board_id: &str, thread_id: u32) -> usize {
+        let thread = self.boards.iter()
+            .find(|b| b.id == board_id)
+            .and_then(|b| b.threads.iter().find(|t| t.id == thread_id));
+        let Some(thread) = thread else { return 0 };
+        let mut count = 0;
+        for (i, msg) in thread.posts.iter().enumerate() {
+            if i > 0 { count += 2; }        // blank line + separator row
+            count += 3;                      // From header, Subj header, blank line
+            count += msg.body.replace('\r', "").split('\n').count();
+        }
+        count
     }
 
     // ── Input: compose ───────────────────────────────────────────────────────
@@ -1070,6 +1144,7 @@ impl App {
                 self.screen = Screen::ThreadList { board_id };
             }
         }
+        self.persist_session();
     }
 
     // ── Input: files ─────────────────────────────────────────────────────────
@@ -1152,7 +1227,7 @@ impl App {
         }
     }
 
-    fn view_file_input(&mut self, _id: u32) {
+    fn view_file_input(&mut self, id: u32) {
         if is_key_pressed(KeyCode::Escape) {
             self.screen = Screen::Files;
             return;
@@ -1168,6 +1243,13 @@ impl App {
         }
         if is_key_pressed(KeyCode::PageDown) {
             self.file_view_scroll += 10;
+        }
+        if let Some(file) = self.files.iter().flat_map(|s| s.files.iter()).find(|f| f.id == id) {
+            use crate::tui::files::{VIEW_FOOTER_CH, VIEW_HEADER_CH};
+            let body_h = screen_height() - ch() * (VIEW_HEADER_CH + VIEW_FOOTER_CH);
+            let rows_vis = ((body_h - BODY_PAD) / ch()) as usize;
+            let max_scroll = file.content.split('\n').count().saturating_sub(rows_vis);
+            self.file_view_scroll = self.file_view_scroll.min(max_scroll);
         }
     }
 
@@ -1227,8 +1309,8 @@ impl App {
                 // Add mild jitter (±15%) to CPS display
                 let jitter = {
                     let t = dl.tick_count;
-                    let wave = ((t as f32 * 0.23).sin() * 0.10
-                               + (t as f32 * 0.07).sin() * 0.05) as f32;
+                    let wave = (t as f32 * 0.23).sin() * 0.10
+                             + (t as f32 * 0.07).sin() * 0.05;
                     1.0_f32 + wave
                 };
                 let bytes_this_tick = ((bytes_per_tick_avg as f32) * jitter) as u64;
@@ -1295,7 +1377,7 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            match ch {
+            match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_mail_row =
                         if self.selected_mail_row == 0 { len.saturating_sub(1) }
@@ -1350,9 +1432,16 @@ impl App {
         if is_key_pressed(KeyCode::PageDown) {
             self.mail_read_scroll += 10;
         }
+        if let Some(msg) = self.mail.iter().find(|m| m.id == id) {
+            use crate::tui::mail::{READ_FOOTER_CH, READ_HEADER_CH};
+            let body_h = screen_height() - ch() * (READ_HEADER_CH + READ_FOOTER_CH);
+            let rows_vis = ((body_h - BODY_PAD) / ch()) as usize;
+            let max_scroll = msg.body.split('\n').count().saturating_sub(rows_vis);
+            self.mail_read_scroll = self.mail_read_scroll.min(max_scroll);
+        }
 
         while let Some(ch) = get_char_pressed() {
-            if ch == 'r' {
+            if ch.eq_ignore_ascii_case(&'r') {
                 let (from, subject) = self.mail.iter()
                     .find(|m| m.id == id)
                     .map(|m| (m.from.clone(), format!("Re: {}", m.subject)))
@@ -1442,6 +1531,7 @@ impl App {
         self.mail.push(sent);
         self.compose_mail = None;
         self.screen = Screen::Mail;
+        self.persist_session();
     }
 
     // ── Input: graffiti wall ─────────────────────────────────────────────────
@@ -1462,6 +1552,7 @@ impl App {
                     let handle = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
                     self.oneliners.push(Oneliner { handle, message: trimmed, date: "04/28/93".into() });
                     self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+                    self.persist_session();
                 }
                 return;
             }
@@ -1543,7 +1634,7 @@ impl App {
     }
 
     fn tick_sysop_chat(&mut self) {
-        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        let green = self.theme.hi;
         if let Some(ref mut state) = self.sysop_chat {
             for ch in state.typer.tick() {
                 state.buffer.push_char(ch, CellStyle::fg(green));
@@ -1576,7 +1667,7 @@ impl App {
     }
 
     fn tick_logout(&mut self) {
-        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        let green = self.theme.hi;
         if let Some(ref mut state) = self.logout {
             for ch in state.typer.tick() {
                 state.buffer.push_char(ch, CellStyle::fg(green));
@@ -1601,6 +1692,26 @@ impl App {
         self.screen = Screen::Logout;
     }
 
+    /// Snapshot the live session (boards/mail/oneliners + phonebook) into the
+    /// save file. Called after every user mutation so a window close can't
+    /// lose data — exit paths are not guaranteed to run under macroquad.
+    fn persist_session(&mut self) {
+        let slug = self.session.bbs_name.as_ref()
+            .and_then(|n| self.phonebook.iter().find(|e| &e.name == n))
+            .map(|e| e.slug.clone())
+            .unwrap_or_default();
+        let handle = self.session.user_handle.clone().unwrap_or_default();
+        self.save.capture_bbs(
+            &slug,
+            &handle,
+            self.boards.clone(),
+            self.mail.clone(),
+            self.oneliners.clone(),
+        );
+        self.save.capture_phonebook(&self.phonebook.clone());
+        self.save.write();
+    }
+
     fn finish_logout(&mut self) {
         if let Some(ref state) = self.logout {
             let bbs_name = state.bbs_name.clone();
@@ -1608,6 +1719,9 @@ impl App {
                 entry.last_called = Some("04/27/93".into());
             }
         }
+
+        self.persist_session();
+
         self.session.logout();
         self.logout   = None;
 
@@ -1631,9 +1745,91 @@ impl App {
         self.graffiti_scroll     = 0;
         self.top_list_tab        = 0;
         self.file_download_notice = false;
+        self.theme               = BbsTheme::default();
 
         self.screen = Screen::Dialer;
     }
+
+    // ── Exit stats ───────────────────────────────────────────────────────────
+
+    pub fn print_exit_stats(&self) {
+        let runtime_secs  = self.tick_count as f64 / 20.0;
+        let runtime_min   = runtime_secs as u64 / 60;
+        let runtime_sec   = runtime_secs as u64 % 60;
+        let avg_fps       = if runtime_secs > 0.0 { self.frame_count as f64 / runtime_secs } else { 0.0 };
+
+        let pb_total      = self.phonebook.len();
+        let pb_called     = self.phonebook.iter().filter(|e| e.call_count > 0).count();
+
+        let board_count   = self.boards.len();
+        let thread_count: usize = self.boards.iter().map(|b| b.threads.len()).sum();
+        let post_count:   usize = self.boards.iter()
+            .flat_map(|b| b.threads.iter())
+            .map(|t| t.posts.len())
+            .sum();
+        let mail_count    = self.mail.len();
+        let sect_count    = self.files.len();
+        let file_count: usize = self.files.iter().map(|s| s.files.len()).sum();
+        let oneliner_count = self.oneliners.len();
+        let top_callers   = self.top_lists.callers.len();
+        let top_files     = self.top_lists.files.len();
+        let top_posters   = self.top_lists.posters.len();
+
+        let last_bbs    = self.session.bbs_name.as_deref()
+            .or_else(|| self.phonebook.iter()
+                .filter(|e| e.last_called.is_some())
+                .max_by_key(|e| e.call_count)
+                .map(|e| e.name.as_str()))
+            .unwrap_or("—");
+        let last_handle = self.session.user_handle.as_deref().unwrap_or("—");
+
+        let w = 57;
+        let bar = "=".repeat(w);
+        println!();
+        println!("{}", bar);
+        println!("  BBS-SIM  —  exit stats");
+        println!("{}", bar);
+        println!("  runtime          {}m {:02}s   ({} ticks / {} frames)",
+            runtime_min, runtime_sec,
+            fmt_u64(self.tick_count), fmt_u64(self.frame_count));
+        println!("  avg fps          {:.1}", avg_fps);
+        println!("  sessions this run  {}", self.sessions_this_run);
+        println!();
+        println!("  phonebook        {} entries  ({} ever called)",
+            pb_total, pb_called);
+        println!("  last BBS         {}", last_bbs);
+        println!("  last handle      {}", last_handle);
+        println!();
+        println!("  content (last session loaded)");
+        if board_count > 0 {
+            println!("    boards         {}  |  threads {}  |  posts {}", board_count, thread_count, post_count);
+        } else {
+            println!("    boards         (none loaded)");
+        }
+        println!("    mail           {}", if mail_count > 0 { mail_count.to_string() } else { "(none)".into() });
+        if sect_count > 0 {
+            println!("    files          {} sections  /  {} files", sect_count, file_count);
+        } else {
+            println!("    files          (none loaded)");
+        }
+        println!("    one-liners     {}", if oneliner_count > 0 { oneliner_count.to_string() } else { "(none)".into() });
+        if top_callers + top_files + top_posters > 0 {
+            println!("    top-10         callers {}  /  files {}  /  posters {}", top_callers, top_files, top_posters);
+        }
+        println!("{}", bar);
+        println!();
+    }
+}
+
+fn fmt_u64(n: u64) -> String {
+    // comma-format a u64
+    let s = n.to_string();
+    let mut out = String::new();
+    for (i, ch) in s.chars().rev().enumerate() {
+        if i > 0 && i % 3 == 0 { out.push(','); }
+        out.push(ch);
+    }
+    out.chars().rev().collect()
 }
 
 // ---------------------------------------------------------------------------
@@ -1713,6 +1909,18 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             slug: "midnight_rendezvous".into(),
             total_callers: 2_047,
             call_count: 3,
+        },
+        BbsEntry {
+            name: "FREQ 867 BBS".into(),
+            number: "867-5309".into(),
+            sysop: "SpinDr".into(),
+            location: "Nashville, TN".into(),
+            baud: 14400,
+            boards: vec!["Alt/Grunge".into(), "Metal".into(), "Hip-Hop".into(), "New Releases".into(), "Concert Talk".into()],
+            last_called: None,
+            slug: "freq_867".into(),
+            total_callers: 3_847,
+            call_count: 0,
         },
     ]
 }

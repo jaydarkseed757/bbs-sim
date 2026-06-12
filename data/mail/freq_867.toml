@@ -1,0 +1,89 @@
+# FREQ 867 BBS -- private mailbox
+
+[[messages]]
+id = 1
+from = "SpinDr"
+subject = "Welcome to FREQ 867!"
+timestamp = "11/23/93 20:00"
+body = """
+Hey -- welcome aboard FREQ 867 BBS!
+
+Been running this place since '91 out of Nashville. Started it because
+there wasn't a single BBS in the city that took music seriously.
+Now we've got callers from all over the South and beyond.
+
+Rules are simple: talk music, be cool, no drama.
+The boards are organized by genre -- jump in wherever suits you.
+
+Graffiti wall is open. Drop a line.
+
+I'm online most nights after 10pm CST. Spin ya later.
+
+-- SpinDr (SysOp)"""
+
+[[messages]]
+id = 2
+from = "WaxPoetic"
+subject = "Saw you just called in"
+timestamp = "11/23/93 22:15"
+body = """
+Hey! Noticed the new handle in the log. Good to have you.
+
+I run most of the Alt/Grunge board discussions around here.
+Heavy traffic right now with In Utero and Pearl Jam Vs. both out.
+Jump in -- opinions are welcome even if they're wrong.
+
+Also the Concert Talk board has been great lately.
+Lots of Lollapalooza recaps and some genuinely wild show stories.
+
+-- WaxPoetic"""
+
+[[messages]]
+id = 3
+from = "BeatBoxer"
+subject = "Hip-Hop board is the place to be right now"
+timestamp = "11/24/93 01:45"
+body = """
+Just want to flag -- if you're into hip-hop, this is the moment.
+
+Wu-Tang just dropped 36 Chambers TWO DAYS AGO.
+Snoop's Doggystyle dropped this week.
+The Chronic has been running all year.
+
+It's the best three-month stretch in hip-hop history and the Hip-Hop board
+is on fire. FreqWave and I are in there arguing constantly. Come add a voice.
+
+-- BeatBoxer"""
+
+[[messages]]
+id = 4
+from = "GigGoer"
+subject = "Concert Talk board -- looking for Nashville show recs"
+timestamp = "11/20/93 18:00"
+body = """
+Hey -- you're in Nashville right? (Saw the connection log.)
+
+We get a lot of callers asking what shows are worth catching in your area.
+Any recommendations? Anyone good come through the Exit/In or 328 Performance Hall lately?
+
+I'm over in Atlanta and we trade show tips with Nashville folks regularly.
+The Southern circuit is underrated -- lots of good touring acts skip it for no reason.
+
+-- GigGoer"""
+
+[[messages]]
+id = 5
+from = "AnalogFreak"
+subject = "Depeche Mode thread -- thanks for the discussion"
+timestamp = "03/25/93 10:30"
+body = """
+Just wanted to say the Songs of Faith and Devotion thread has been the best
+discussion I've had on any BBS in months. People actually listened to the record.
+
+Most places I call, DM gets dismissed as 'synth pop for goths.'
+Here we actually talked about the Alan Wilder arrangements and the production choices.
+That's what a music board should be.
+
+Anyway. Back to lurking and posting. See you in the threads.
+
+-- AnalogFreak"""

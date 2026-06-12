@@ -122,6 +122,7 @@ impl TerminalBuffer {
     }
 
     /// Draw the buffer contents using macroquad.
+    #[allow(clippy::too_many_arguments)]
     pub fn draw(
         &self,
         origin_x: f32,

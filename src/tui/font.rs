@@ -4,8 +4,12 @@ use macroquad::prelude::*;
 // Logical (unscaled) base sizes.  Everything is multiplied by dpi_scale() at draw time.
 pub const BASE_FS: f32 = 18.0;
 
+/// Vertical padding inside a scrollable body box, in px.  Used by both the
+/// renderers and the input handlers in app.rs so the visible-row counts match.
+pub const BODY_PAD: f32 = 16.0;
+
 thread_local! {
-    static BBS_FONT: RefCell<Option<Font>> = RefCell::new(None);
+    static BBS_FONT: RefCell<Option<Font>> = const { RefCell::new(None) };
 }
 
 pub fn set_bbs_font(font: Font) {

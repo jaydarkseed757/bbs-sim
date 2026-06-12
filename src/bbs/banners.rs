@@ -10,6 +10,7 @@ pub fn bbs_banner(bbs: &BbsEntry) -> String {
         "elite_force"        => elite_force(bbs),
         "underground_railroad" => underground_railroad(bbs),
         "midnight_rendezvous"  => midnight_rendezvous(bbs),
+        "freq_867"           => freq_867(bbs),
         _                    => generic(bbs),
     }
 }
@@ -158,6 +159,36 @@ fn midnight_rendezvous(_bbs: &BbsEntry) -> String {
         r"  =  'The city never sleeps. Neither do we.' =",
         r"  *                                          *",
         r"  -=*=- -=*=- -=*=- -=*=- -=*=- -=*=- -=*=-",
+        "",
+    ].join("\r\n")
+}
+
+fn freq_867(_bbs: &BbsEntry) -> String {
+    [
+        "",
+        r"  ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~",
+        r"  ~                                    ~",
+        r"  ~     * * * F R E Q  8 6 7 * * *    ~",
+        r"  ~                                    ~",
+        r"  ~            B  B  S                 ~",
+        r"  ~                                    ~",
+        r"  ~    Music Is The Only Truth         ~",
+        r"  ~                                    ~",
+        r"  ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~",
+        r"  ~                                    ~",
+        r"  ~  SysOp  :  SpinDr                 ~",
+        r"  ~  Line   :  867-5309               ~",
+        r"  ~  City   :  Nashville, TN           ~",
+        r"  ~  Speed  :  14400 Baud              ~",
+        r"  ~                                    ~",
+        r"  ~  Boards :  Alt/Grunge  |  Metal    ~",
+        r"  ~             Hip-Hop  |  New  |     ~",
+        r"  ~             Concert Talk           ~",
+        r"  ~                                    ~",
+        r"  ~  'If it's too loud,               ~",
+        r"  ~        you're too old.'            ~",
+        r"  ~                                    ~",
+        r"  ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~",
         "",
     ].join("\r\n")
 }

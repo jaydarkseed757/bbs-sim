@@ -3,8 +3,6 @@ use macroquad::prelude::*;
 use crate::app::App;
 use crate::tui::font::{ch, s, txt};
 
-const TERM_GREEN: Color = Color::new(0.0, 0.85, 0.0, 1.0);
-const TERM_DIM:   Color = Color::new(0.0, 0.45, 0.0, 1.0);
 
 pub fn render_dialing(app: &App) {
     let d = match app.dial.as_ref() {
@@ -47,7 +45,7 @@ pub fn render_dialing(app: &App) {
             || text.trim_start().starts_with("NO ")
             || text.trim_start().starts_with("RING");
 
-        let color = if is_command { TERM_GREEN } else { TERM_DIM };
+        let color = if is_command { app.theme.hi } else { app.theme.lo };
         txt(&text, origin_x, origin_y + (row + 1) as f32 * ch(), color);
     }
 

@@ -12,16 +12,18 @@ pub struct ModemSim {
     pub phase: DialPhase,
     phase_ticks: u32,
     number: String,
+    baud: u32,
     noise_seed: u64,
     no_answer: bool,
 }
 
 impl ModemSim {
-    pub fn new(number: &str) -> Self {
+    pub fn new(number: &str, baud: u32) -> Self {
         Self {
             phase: DialPhase::PickingUpLine,
             phase_ticks: 0,
             number: number.to_string(),
+            baud,
             noise_seed: 0xdeadbeef_cafebabe,
             no_answer: false,
         }
@@ -30,7 +32,7 @@ impl ModemSim {
     pub fn new_no_answer(number: &str) -> Self {
         Self {
             no_answer: true,
-            ..Self::new(number)
+            ..Self::new(number, 2400)
         }
     }
 
@@ -75,7 +77,7 @@ impl ModemSim {
                 if self.phase_ticks >= 35 {
                     self.advance(DialPhase::Connected);
                     // Flush remaining noise then the clean connect string.
-                    return Some(format!("{}\r\nCONNECT 2400\r\n", self.noise_burst(8)));
+                    return Some(format!("{}\r\nCONNECT {}\r\n", self.noise_burst(8), self.baud));
                 }
                 return Some(self.noise_burst(10));
             }

@@ -1,4 +1,5 @@
 pub mod ansi;
+pub mod theme;
 pub mod crt;
 pub mod download;
 pub mod font;

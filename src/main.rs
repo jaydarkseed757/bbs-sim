@@ -4,6 +4,7 @@ use macroquad::audio::load_sound_from_bytes;
 
 mod app;
 mod bbs;
+mod save;
 mod sim;
 mod tui;
 
@@ -67,4 +68,6 @@ async fn main() {
 
         next_frame().await;
     }
+
+    app.print_exit_stats();
 }
