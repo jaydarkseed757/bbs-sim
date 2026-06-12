@@ -227,3 +227,239 @@ body = """
 Giordano's stuffed is a different category than deep dish. It's stuffed pizza.
 If we're comparing apples to apples: Malnati's on butter crust, Uno's on history.
 But the correct Chicago pizza is thin crust tavern style. Fight me."""
+
+[[boards.threads]]
+id = 4
+subject = "The information superhighway -- real or vaporware?"
+
+[[boards.threads.posts]]
+id = 1
+author = "ConductorX"
+subject = "The information superhighway -- real or vaporware?"
+timestamp = "05/10/93 20:00"
+body = """
+The Clinton administration keeps talking about the National Information Infrastructure.
+Gore's "information superhighway" is the metaphor everyone's running with now.
+The actual policy: deregulation, private investment, universal access goals.
+The gap between the rhetoric and what will actually get built in poor neighborhoods: large."""
+
+[[boards.threads.posts]]
+id = 2
+author = "EconMajor93"
+subject = "Re: The information superhighway -- real or vaporware?"
+timestamp = "05/11/93 10:00"
+body = """
+The cable and phone company lobbying is going to shape this more than any White House plan.
+Whoever controls the pipes controls the future. They know this. Do we?
+The open internet as it exists today survives on academic infrastructure.
+Commercialization is coming. The question is whether openness survives it."""
+
+[[boards.threads.posts]]
+id = 3
+author = "LaborWatch"
+subject = "Re: The information superhighway -- real or vaporware?"
+timestamp = "05/12/93 19:30"
+body = """
+The universal access question is the one I care about.
+Rural America, low-income urban neighborhoods: what does this future include them?
+The market will wire profitable areas first. Government has to mandate the rest.
+Without that commitment the information superhighway runs through suburbs only."""
+
+[[boards.threads]]
+id = 5
+subject = "Somalia -- what are we doing there?"
+
+[[boards.threads.posts]]
+id = 1
+author = "PoliticWatcher"
+subject = "Somalia -- what are we doing there?"
+timestamp = "06/05/93 14:00"
+body = """
+The UN operation in Somalia is escalating. We went in for humanitarian relief.
+Now US forces are actively hunting Aidid after the June 5th ambush on Pakistani troops.
+The mission has crept dramatically. There's no clear exit condition.
+This is the pattern: good intentions, mission creep, no endgame."""
+
+[[boards.threads.posts]]
+id = 2
+author = "NewsFreak_IL"
+subject = "Re: Somalia -- what are we doing there?"
+timestamp = "06/06/93 09:00"
+body = """
+The Black Hawk fleet is doing the heavy lifting on the hunt for Aidid.
+Urban combat in Mogadishu is a different war than anything in the Gulf.
+No front lines, no uniforms, civilian populations as cover.
+The Pentagon is not being straight with the American people about what this looks like."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ConductorX"
+subject = "Re: Somalia -- what are we doing there?"
+timestamp = "06/07/93 18:00"
+body = """
+The humanitarian case was real and the initial operation was right.
+The switch to nation-building without a plan for what that means: that's the failure.
+Clinton inherited Bush Sr.'s commitment and can't easily reverse it.
+Watch the fall. I think this ends badly and the lessons won't be learned."""
+
+# ── News additions ──────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Flooding in the Midwest -- worst in decades"
+
+[[boards.threads.posts]]
+id = 1
+author = "NewsFreak_IL"
+subject = "Flooding in the Midwest -- worst in decades"
+timestamp = "07/15/93 20:00"
+body = """
+The Mississippi and Missouri rivers are at record levels. Unprecedented flooding.
+Des Moines lost its water treatment plant. The city is without clean water.
+Illinois, Iowa, Missouri, Minnesota all in emergency status.
+The scale of this is hard to communicate. Drive 20 miles and it's underwater."""
+
+[[boards.threads.posts]]
+id = 2
+author = "ConductorX"
+subject = "Re: Flooding in the Midwest -- worst in decades"
+timestamp = "07/16/93 10:00"
+body = """
+The Des Moines water situation is the logistical nightmare -- bottled water for 250,000 people.
+Army Corps of Engineers is on every levee that's still holding.
+The climate science community has been saying extreme weather events will increase.
+This is what "increase" looks like. The argument about causation can wait; people need help."""
+
+[[boards.threads.posts]]
+id = 3
+author = "LaborWatch"
+subject = "Re: Flooding in the Midwest -- worst in decades"
+timestamp = "07/17/93 15:30"
+body = """
+The farm losses are going to be catastrophic. Corn and soybean crop devastated.
+The flood insurance situation is a mess -- many farmers couldn't afford it.
+The economic ripple effect hits food prices by fall. Planning accordingly.
+FEMA response so far is better than usual but the scale is overwhelming."""
+
+[[boards.threads]]
+id = 4
+subject = "Jurassic Park box office -- what does this mean for film?"
+
+[[boards.threads.posts]]
+id = 1
+author = "StarGazer_CHI"
+subject = "Jurassic Park box office -- what does this mean for film?"
+timestamp = "06/20/93 16:00"
+body = """
+Jurassic Park made $50 million opening weekend. Heading toward $100M domestic fast.
+The CGI dinosaurs have shifted the conversation about practical effects permanently.
+ILM just changed the art form. Stop-motion dinosaurs are instantly obsolete.
+The Oscars are going to grapple with what counts as filmmaking craft now."""
+
+[[boards.threads.posts]]
+id = 2
+author = "NewsFreak_IL"
+subject = "Re: Jurassic Park box office -- what does this mean for film?"
+timestamp = "06/21/93 10:30"
+body = """
+The business story: this is the template for the summer blockbuster going forward.
+Huge IP, massive effects budget, family-friendly PG-13, global release.
+Spielberg just showed the studios what the formula looks like at maximum scale.
+Terminator 2 pointed the way; Jurassic Park kicked the door off its hinges."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ChiTownFoodie"
+subject = "Re: Jurassic Park box office -- what does this mean for film?"
+timestamp = "06/22/93 22:00"
+body = """
+The kids-in-danger aspect is what makes it work. Spielberg knows how to weaponize that.
+The raptor kitchen scene scared my twelve-year-old cousin so badly she's still talking about it.
+You can have all the tech in the world; if the characters don't matter it's screensavers.
+Spielberg understands the difference. Not everyone who'll try to copy this will."""
+
+# ── General additions ────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "How did you find The Underground Railroad?"
+
+[[boards.threads.posts]]
+id = 1
+author = "EconMajor93"
+subject = "How did you find The Underground Railroad?"
+timestamp = "02/01/93 19:00"
+body = """
+Found it listed in a Chicago area BBS list downloaded from another board.
+Description said "political discussion, no flamers." Didn't believe it. Was wrong.
+This is the first board I've been on that can argue about NAFTA without collapsing.
+How'd everyone else end up here?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "LaborWatch"
+subject = "Re: How did you find The Underground Railroad?"
+timestamp = "02/02/93 09:30"
+body = """
+ConductorX left a note on a union organizing board I was on. Small world.
+The labor discussion here is better than anything else I've found online.
+People who actually disagree but still think. Rare. Worth dialing long distance for."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NewsFreak_IL"
+subject = "Re: How did you find The Underground Railroad?"
+timestamp = "02/03/93 14:00"
+body = """
+A friend from college gave me the number. She said "this is the one serious board in Chicago."
+She was right and I've told three other people the same thing.
+The political discussion stays substantive because ConductorX enforces the no-flame rule.
+Good moderation is the scarcest resource on any BBS."""
+
+[[boards.threads]]
+id = 4
+subject = "Chicago tech scene -- is there one?"
+
+[[boards.threads.posts]]
+id = 1
+author = "ConductorX"
+subject = "Chicago tech scene -- is there one?"
+timestamp = "04/25/93 20:00"
+body = """
+Everyone talks about Silicon Valley, Seattle (Microsoft), Boston (Route 128).
+Chicago: we have Ameritech, Motorola in the suburbs, some finance tech shops.
+The startup culture doesn't feel like it's here. No venture capital ecosystem.
+Am I missing something or is the Chicago tech scene a polite fiction?"""
+
+[[boards.threads.posts]]
+id = 2
+author = "EconMajor93"
+subject = "Re: Chicago tech scene -- is there one?"
+timestamp = "04/26/93 10:30"
+body = """
+The commodity trading tech at the CME and CBOT is world class. Just not visible.
+The financial engineering happening in the Loop is sophisticated.
+The consumer/startup scene: you're right, it's thin. Chicago talent leaves for coasts.
+The UIC and Northwestern pipeline produces good people who don't stay."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NewsFreak_IL"
+subject = "Re: Chicago tech scene -- is there one?"
+timestamp = "04/27/93 18:00"
+body = """
+Motorola's cellular division in Schaumburg is legitimately important.
+The DynaTAC team invented the cell phone. The StarTAC is coming. Real innovation.
+The problem is it's all suburban corporate, not city startup culture.
+Chicago's strength is logistics, finance, manufacturing tech -- not software startups."""
+
+[[boards.threads.posts]]
+id = 4
+author = "LaborWatch"
+subject = "Re: Chicago tech scene -- is there one?"
+timestamp = "04/28/93 09:00"
+body = """
+The BBS scene here is stronger than people admit. Twenty active boards that I know of.
+We're building community infrastructure and nobody's calling it a tech scene.
+The informal network of people who run BBSes, write software, share knowledge.
+That's a scene. It just doesn't have venture capital so nobody counts it."""

@@ -1,9 +1,11 @@
 use macroquad::prelude::*;
 
 use crate::app::App;
+use crate::tui::font::{ch, s, txt, tw, BODY_PAD};
 
-const FONT_SIZE: u16 = 18;
-const CHAR_H: f32 = FONT_SIZE as f32 * 1.35;
+/// File viewer chrome, in ch() units — shared with the scroll clamp in app.rs.
+pub const VIEW_HEADER_CH: f32 = 3.0;
+pub const VIEW_FOOTER_CH: f32 = 2.2;
 
 // ── File list ─────────────────────────────────────────────────────────────────
 
@@ -11,58 +13,50 @@ pub fn render_file_list(app: &App) {
     let t  = &app.theme;
     let sw = screen_width();
     let sh = screen_height();
-    let header_h = CHAR_H * 2.2;
-    let footer_h = CHAR_H * 2.2;
+    let header_h = ch() * 2.2;
+    let footer_h = ch() * 2.2;
     let body_y   = header_h;
     let body_h   = sh - header_h - footer_h;
     let footer_y = sh - footer_h;
 
-    // ── Header ────────────────────────────────────────────────────────────────
-    draw_rectangle_lines(1.0, 1.0, sw - 2.0, header_h - 1.0, 1.5, t.border);
-    let title = format!(
-        "  {}  --  FILES",
-        app.session.bbs_name.as_deref().unwrap_or("BBS"),
+    draw_rectangle_lines(s(1.0), s(1.0), sw - s(2.0), header_h - s(1.0), s(1.5), t.border);
+    txt(
+        &format!("  {}  --  FILES", app.session.bbs_name.as_deref().unwrap_or("BBS")),
+        s(8.0), ch() * 1.3,
+        t.title,
     );
-    draw_text_ex(&title, 8.0, CHAR_H * 1.3,
-        TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() });
 
-    // ── Body ──────────────────────────────────────────────────────────────────
-    draw_rectangle_lines(1.0, body_y, sw - 2.0, body_h, 1.5, t.border);
-    draw_text_ex(
+    draw_rectangle_lines(s(1.0), body_y, sw - s(2.0), body_h, s(1.5), t.border);
+    txt(
         "   NAME                     SIZE    DATE       DESCRIPTION",
-        12.0, body_y + CHAR_H * 1.0,
-        TextParams { font_size: FONT_SIZE, color: t.highlight, ..Default::default() },
+        s(12.0), body_y + ch() * 1.0,
+        t.label,
     );
-    draw_line(4.0, body_y + CHAR_H * 1.25, sw - 4.0, body_y + CHAR_H * 1.25, 1.0, t.border);
+    draw_line(s(4.0), body_y + ch() * 1.25, sw - s(4.0), body_y + ch() * 1.25, s(1.0), t.border);
 
-    let flat: Vec<_> = app.files.iter()
-        .flat_map(|s| s.files.iter())
-        .collect();
+    let flat: Vec<_> = app.files.iter().flat_map(|s| s.files.iter()).collect();
 
-    let mut row_y = body_y + CHAR_H * 2.2;
+    let mut row_y = body_y + ch() * 2.2;
     let mut flat_idx: usize = 0;
 
     for section in &app.files {
-        if row_y + CHAR_H > footer_y { break; }
+        if row_y + ch() > footer_y { break; }
 
-        draw_text_ex(
-            &format!("  ── {}  ", section.name),
-            12.0, row_y,
-            TextParams { font_size: FONT_SIZE, color: t.highlight, ..Default::default() },
-        );
-        let lw = measure_text(&format!("  ── {}  ", section.name), None, FONT_SIZE, 1.0).width;
-        draw_line(12.0 + lw, row_y - CHAR_H * 0.35, sw - 12.0, row_y - CHAR_H * 0.35, 1.0, t.dim);
-        row_y += CHAR_H * 1.4;
+        let section_label = format!("  ── {}  ", section.name);
+        txt(&section_label, s(12.0), row_y, t.label);
+        let lw = tw(&section_label);
+        draw_line(s(12.0) + lw, row_y - ch() * 0.35, sw - s(12.0), row_y - ch() * 0.35, s(1.0), t.muted);
+        row_y += ch() * 1.4;
 
         for file in &section.files {
-            if row_y + CHAR_H > footer_y { break; }
+            if row_y + ch() > footer_y { break; }
 
             let selected = flat_idx == app.selected_file_row;
             if selected {
-                draw_rectangle(2.0, row_y - CHAR_H + 4.0, sw - 4.0, CHAR_H + 2.0, t.sel_bg);
+                draw_rectangle(s(2.0), row_y - ch() + s(4.0), sw - s(4.0), ch() + s(2.0), t.sel_bg);
             }
 
-            let fg     = if selected { t.primary } else { t.secondary };
+            let fg     = if selected { t.hi } else { t.lo };
             let prefix = if selected { "►" } else { " " };
             let line = format!(
                 "  {} {:<22}  {:<6}  {:<10}  {}",
@@ -72,52 +66,42 @@ pub fn render_file_list(app: &App) {
                 clip(&file.date, 10),
                 clip(&file.description, 45),
             );
-            draw_text_ex(&line, 12.0, row_y,
-                TextParams { font_size: FONT_SIZE, color: fg, ..Default::default() });
+            txt(&line, s(12.0), row_y, fg);
 
             flat_idx += 1;
-            row_y += CHAR_H * 1.5;
+            row_y += ch() * 1.5;
         }
 
-        row_y += CHAR_H * 0.3;
+        row_y += ch() * 0.3;
     }
 
     if flat.is_empty() {
-        draw_text_ex(
-            "  No files.",
-            12.0, body_y + CHAR_H * 3.0,
-            TextParams { font_size: FONT_SIZE, color: t.dim, ..Default::default() },
-        );
+        txt("  No files.", s(12.0), body_y + ch() * 3.0, t.muted);
     }
 
-    // ── Footer ────────────────────────────────────────────────────────────────
-    draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, t.border);
+    draw_rectangle_lines(s(1.0), footer_y, sw - s(2.0), footer_h - s(1.0), s(1.5), t.border);
 
     let selected_file = flat.get(app.selected_file_row);
     let can_view = selected_file.map(|f| f.kind == "text").unwrap_or(false);
-    let view_color = if can_view { t.title } else { t.dim };
-
-    let mut hx = 8.0;
+    let view_color = if can_view { t.title } else { t.muted };
+    let mut hx = s(8.0);
     let hints: &[(&str, &str, Color)] = &[
         ("[↑↓/jk]", " Navigate  ", t.title),
-        ("[V]",      " View  ",     view_color),
-        ("[D]",      " Download  ", t.title),
-        ("[Esc]",    " Main Menu",  t.title),
+        ("[V]",     " View  ",      view_color),
+        ("[D]",     " Download  ", t.title),
+        ("[Esc]",   " Main Menu",  t.title),
     ];
     for (key, desc, kc) in hints {
-        draw_text_ex(key, hx, footer_y + CHAR_H * 1.2,
-            TextParams { font_size: FONT_SIZE, color: *kc, ..Default::default() });
-        hx += measure_text(key, None, FONT_SIZE, 1.0).width;
-        draw_text_ex(desc, hx, footer_y + CHAR_H * 1.2,
-            TextParams { font_size: FONT_SIZE, color: t.border, ..Default::default() });
-        hx += measure_text(desc, None, FONT_SIZE, 1.0).width;
+        txt(key, hx, footer_y + ch() * 1.2, *kc);
+        hx += tw(key);
+        txt(desc, hx, footer_y + ch() * 1.2, t.border);
+        hx += tw(desc);
     }
 }
 
 // ── View file ─────────────────────────────────────────────────────────────────
 
 pub fn render_view_file(app: &App, id: u32) {
-    let t = &app.theme;
     let file = match app.files.iter()
         .flat_map(|s| s.files.iter())
         .find(|f| f.id == id)
@@ -126,53 +110,42 @@ pub fn render_view_file(app: &App, id: u32) {
         None    => return,
     };
 
+    let t  = &app.theme;
     let sw = screen_width();
     let sh = screen_height();
-    let header_h = CHAR_H * 3.0;
-    let footer_h = CHAR_H * 2.2;
+    let header_h = ch() * VIEW_HEADER_CH;
+    let footer_h = ch() * VIEW_FOOTER_CH;
     let body_y   = header_h;
     let body_h   = sh - header_h - footer_h;
     let footer_y = sh - footer_h;
 
-    // ── Header ────────────────────────────────────────────────────────────────
-    draw_rectangle_lines(1.0, 1.0, sw - 2.0, header_h - 1.0, 1.5, t.border);
-    draw_text_ex(&format!("  {}", file.name), 8.0, CHAR_H * 1.0,
-        TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() });
-    draw_text_ex(&format!("  Size: {}   Date: {}", file.size, file.date),
-        8.0, CHAR_H * 2.1,
-        TextParams { font_size: FONT_SIZE, color: t.secondary, ..Default::default() });
+    draw_rectangle_lines(s(1.0), s(1.0), sw - s(2.0), header_h - s(1.0), s(1.5), t.border);
+    txt(&format!("  {}", file.name), s(8.0), ch() * 1.0, t.title);
+    txt(&format!("  Size: {}   Date: {}", file.size, file.date), s(8.0), ch() * 2.1, t.lo);
 
-    // ── Body ──────────────────────────────────────────────────────────────────
-    draw_rectangle_lines(1.0, body_y, sw - 2.0, body_h, 1.5, t.border);
+    draw_rectangle_lines(s(1.0), body_y, sw - s(2.0), body_h, s(1.5), t.border);
 
     let lines: Vec<&str> = file.content.split('\n').collect();
-    let rows_vis   = ((body_h - 16.0) / CHAR_H) as usize;
+    let rows_vis   = ((body_h - s(BODY_PAD)) / ch()) as usize;
     let max_scroll = lines.len().saturating_sub(rows_vis);
     let scroll     = app.file_view_scroll.min(max_scroll);
 
     for (i, line) in lines[scroll..lines.len().min(scroll + rows_vis)].iter().enumerate() {
-        let y = body_y + 8.0 + (i as f32 + 1.0) * CHAR_H;
-        draw_text_ex(line, 12.0, y,
-            TextParams { font_size: FONT_SIZE, color: t.primary, ..Default::default() });
+        let y = body_y + s(8.0) + (i as f32 + 1.0) * ch();
+        txt(line, s(12.0), y, t.body);
     }
 
     if lines.len() > rows_vis {
         let pct = if max_scroll == 0 { 100 } else { (scroll as f32 / max_scroll as f32 * 100.0) as u32 };
-        draw_text_ex(&format!("{:3}%", pct), sw - 55.0, body_y + CHAR_H,
-            TextParams { font_size: FONT_SIZE, color: t.dim, ..Default::default() });
+        txt(&format!("{:3}%", pct), sw - s(55.0), body_y + ch(), t.muted);
     }
 
-    // ── Footer ────────────────────────────────────────────────────────────────
-    draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, t.border);
-    let mut hx = 8.0;
-    for (key, desc) in &[("[↑↓]", " Scroll  "), ("[PgUp/PgDn]", " Page  "), ("[Esc]", " Back")] {
-        draw_text_ex(key, hx, footer_y + CHAR_H * 1.2,
-            TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() });
-        hx += measure_text(key, None, FONT_SIZE, 1.0).width;
-        draw_text_ex(desc, hx, footer_y + CHAR_H * 1.2,
-            TextParams { font_size: FONT_SIZE, color: t.border, ..Default::default() });
-        hx += measure_text(desc, None, FONT_SIZE, 1.0).width;
-    }
+    draw_rectangle_lines(s(1.0), footer_y, sw - s(2.0), footer_h - s(1.0), s(1.5), t.border);
+    draw_hint_bar(footer_y + ch() * 1.2, &[
+        ("[↑↓]", " Scroll  "),
+        ("[PgUp/PgDn]", " Page  "),
+        ("[Esc]", " Back"),
+    ], t.title, t.border);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -181,4 +154,14 @@ fn clip(s: &str, max: usize) -> String {
     if s.chars().count() <= max { return s.to_string(); }
     let t: String = s.chars().take(max.saturating_sub(1)).collect();
     format!("{}~", t)
+}
+
+fn draw_hint_bar(y: f32, hints: &[(&str, &str)], key_color: Color, desc_color: Color) {
+    let mut hx = s(8.0);
+    for (key, desc) in hints {
+        txt(key, hx, y, key_color);
+        hx += tw(key);
+        txt(desc, hx, y, desc_color);
+        hx += tw(desc);
+    }
 }

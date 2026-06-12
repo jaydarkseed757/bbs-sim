@@ -1,0 +1,89 @@
+[[callers]]
+handle = "StarDrifter"
+location = "Seattle, WA"
+time_on = "02:18"
+date = "04/28/93"
+
+[[callers]]
+handle = "Quasar7"
+location = "Portland, OR"
+time_on = "01:03"
+date = "04/28/93"
+
+[[callers]]
+handle = "NovaPilot"
+location = "San Francisco, CA"
+time_on = "00:44"
+date = "04/28/93"
+
+[[callers]]
+handle = "VoidWalker"
+location = "Los Angeles, CA"
+time_on = "01:57"
+date = "04/27/93"
+
+[[callers]]
+handle = "DarkMatter"
+location = "Denver, CO"
+time_on = "00:22"
+date = "04/27/93"
+
+[[callers]]
+handle = "IonStream"
+location = "Phoenix, AZ"
+time_on = "01:14"
+date = "04/27/93"
+
+[[callers]]
+handle = "WarpCore"
+location = "Salt Lake City, UT"
+time_on = "02:30"
+date = "04/26/93"
+
+[[callers]]
+handle = "PhotonGirl"
+location = "Albuquerque, NM"
+time_on = "00:58"
+date = "04/26/93"
+
+[[callers]]
+handle = "GridRunner"
+location = "San Diego, CA"
+time_on = "01:27"
+date = "04/25/93"
+
+[[callers]]
+handle = "NebulaCat"
+location = "Reno, NV"
+time_on = "00:35"
+date = "04/25/93"
+
+[[callers]]
+handle = "TachyonX"
+location = "Boise, ID"
+time_on = "01:49"
+date = "04/24/93"
+
+[[callers]]
+handle = "SubspaceM"
+location = "Tucson, AZ"
+time_on = "00:17"
+date = "04/24/93"
+
+[[callers]]
+handle = "Parallax"
+location = "Spokane, WA"
+time_on = "01:06"
+date = "04/23/93"
+
+[[callers]]
+handle = "EventHrz"
+location = "Sacramento, CA"
+time_on = "00:51"
+date = "04/23/93"
+
+[[callers]]
+handle = "CRTCowboy"
+location = "Las Vegas, NV"
+time_on = "02:04"
+date = "04/22/93"

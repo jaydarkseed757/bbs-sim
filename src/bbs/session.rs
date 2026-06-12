@@ -18,5 +18,4 @@ impl Session {
         self.user_handle = None;
         self.bbs_name = None;
     }
-
 }

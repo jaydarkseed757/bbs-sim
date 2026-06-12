@@ -2,10 +2,12 @@ use macroquad::prelude::*;
 
 use crate::app::App;
 use crate::bbs::data::Thread;
-use crate::tui::theme::Theme;
+use crate::tui::font::{ch, s, txt, tw, BODY_PAD};
+use crate::tui::theme::BbsTheme;
 
-const FONT_SIZE: u16 = 18;
-const CHAR_H: f32 = FONT_SIZE as f32 * 1.35;
+/// Thread reader chrome, in ch() units — shared with the scroll clamp in app.rs.
+pub const READ_HEADER_CH: f32 = 2.2;
+pub const READ_FOOTER_CH: f32 = 2.2;
 
 // ── Message Boards list ───────────────────────────────────────────────────────
 
@@ -13,50 +15,47 @@ pub fn render_message_boards(app: &App) {
     let t  = &app.theme;
     let sw = screen_width();
     let sh = screen_height();
-    let header_h = CHAR_H * 2.2;
-    let footer_h = CHAR_H * 2.2;
+    let header_h = ch() * 2.2;
+    let footer_h = ch() * 2.2;
     let body_y   = header_h;
     let body_h   = sh - header_h - footer_h;
     let footer_y = sh - footer_h;
 
-    draw_rectangle_lines(1.0, 1.0, sw - 2.0, header_h - 1.0, 1.5, t.border);
+    draw_rectangle_lines(s(1.0), s(1.0), sw - s(2.0), header_h - s(1.0), s(1.5), t.border);
     let title = format!(
         "  {}  --  MESSAGE BOARDS",
         app.session.bbs_name.as_deref().unwrap_or("BBS")
     );
-    draw_text_ex(&title, 8.0, CHAR_H * 1.3,
-        TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() });
+    txt(&title, s(8.0), ch() * 1.3, t.title);
 
-    draw_rectangle_lines(1.0, body_y, sw - 2.0, body_h, 1.5, t.border);
-    draw_text_ex(
+    draw_rectangle_lines(s(1.0), body_y, sw - s(2.0), body_h, s(1.5), t.border);
+    txt(
         "   #  BOARD NAME                         THREADS",
-        12.0, body_y + CHAR_H * 1.0,
-        TextParams { font_size: FONT_SIZE, color: t.highlight, ..Default::default() },
+        s(12.0), body_y + ch() * 1.0,
+        t.label,
     );
-    draw_line(4.0, body_y + CHAR_H * 1.25, sw - 4.0, body_y + CHAR_H * 1.25, 1.0, t.border);
+    draw_line(s(4.0), body_y + ch() * 1.25, sw - s(4.0), body_y + ch() * 1.25, s(1.0), t.border);
 
     for (i, board) in app.boards.iter().enumerate() {
-        let ry = body_y + CHAR_H * (i as f32 * 1.5 + 2.2);
-        if ry + CHAR_H > footer_y { break; }
+        let ry = body_y + ch() * (i as f32 * 1.5 + 2.2);
+        if ry + ch() > footer_y { break; }
 
         let selected = i == app.selected_board_row;
         if selected {
-            draw_rectangle(2.0, ry - CHAR_H + 4.0, sw - 4.0, CHAR_H + 2.0, t.sel_bg);
+            draw_rectangle(s(2.0), ry - ch() + s(4.0), sw - s(4.0), ch() + s(2.0), t.sel_bg);
         }
-        let fg     = if selected { t.primary } else { t.secondary };
+        let fg     = if selected { t.hi } else { t.lo };
         let prefix = if selected { "►" } else { " " };
-        let line   = format!("  {} {:2}  {:<40}  {}",
-            prefix, i + 1, board.name, board.threads.len());
-        draw_text_ex(&line, 12.0, ry,
-            TextParams { font_size: FONT_SIZE, color: fg, ..Default::default() });
+        let line   = format!("  {} {:2}  {:<40}  {}", prefix, i + 1, board.name, board.threads.len());
+        txt(&line, s(12.0), ry, fg);
     }
 
-    draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, t.border);
-    draw_hint_bar(footer_y + CHAR_H * 1.2, &[
+    draw_rectangle_lines(s(1.0), footer_y, sw - s(2.0), footer_h - s(1.0), s(1.5), t.border);
+    draw_hint_bar(footer_y + ch() * 1.2, &[
         ("[↑↓/jk]", " Navigate  "),
         ("[Enter]", " Open Board  "),
         ("[Esc]", " Main Menu"),
-    ], t);
+    ], t.title, t.border);
 }
 
 // ── Thread list ───────────────────────────────────────────────────────────────
@@ -65,8 +64,8 @@ pub fn render_thread_list(app: &App, board_id: &str) {
     let t  = &app.theme;
     let sw = screen_width();
     let sh = screen_height();
-    let header_h = CHAR_H * 2.2;
-    let footer_h = CHAR_H * 2.2;
+    let header_h = ch() * 2.2;
+    let footer_h = ch() * 2.2;
     let body_y   = header_h;
     let body_h   = sh - header_h - footer_h;
     let footer_y = sh - footer_h;
@@ -76,33 +75,32 @@ pub fn render_thread_list(app: &App, board_id: &str) {
         None => return,
     };
 
-    draw_rectangle_lines(1.0, 1.0, sw - 2.0, header_h - 1.0, 1.5, t.border);
+    draw_rectangle_lines(s(1.0), s(1.0), sw - s(2.0), header_h - s(1.0), s(1.5), t.border);
     let title = format!("  Board: {}  ({} threads)", board.name, board.threads.len());
-    draw_text_ex(&title, 8.0, CHAR_H * 1.3,
-        TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() });
+    txt(&title, s(8.0), ch() * 1.3, t.title);
 
-    draw_rectangle_lines(1.0, body_y, sw - 2.0, body_h, 1.5, t.border);
-    draw_text_ex(
+    draw_rectangle_lines(s(1.0), body_y, sw - s(2.0), body_h, s(1.5), t.border);
+    txt(
         "   #  SUBJECT                                  FROM          DATE     RPL",
-        12.0, body_y + CHAR_H * 1.0,
-        TextParams { font_size: FONT_SIZE, color: t.highlight, ..Default::default() },
+        s(12.0), body_y + ch() * 1.0,
+        t.label,
     );
-    draw_line(4.0, body_y + CHAR_H * 1.25, sw - 4.0, body_y + CHAR_H * 1.25, 1.0, t.border);
+    draw_line(s(4.0), body_y + ch() * 1.25, sw - s(4.0), body_y + ch() * 1.25, s(1.0), t.border);
 
     for (i, thread) in board.threads.iter().enumerate() {
-        let ry = body_y + CHAR_H * (i as f32 * 1.5 + 2.2);
-        if ry + CHAR_H > footer_y { break; }
+        let ry = body_y + ch() * (i as f32 * 1.5 + 2.2);
+        if ry + ch() > footer_y { break; }
 
         let selected = i == app.selected_thread_row;
         if selected {
-            draw_rectangle(2.0, ry - CHAR_H + 4.0, sw - 4.0, CHAR_H + 2.0, t.sel_bg);
+            draw_rectangle(s(2.0), ry - ch() + s(4.0), sw - s(4.0), ch() + s(2.0), t.sel_bg);
         }
-        let fg     = if selected { t.primary } else { t.secondary };
+        let fg     = if selected { t.hi } else { t.lo };
         let prefix = if selected { "►" } else { " " };
-        let Some(first) = thread.posts.first() else { continue };
-        let replies = thread.posts.len().saturating_sub(1);
+        let first   = &thread.posts[0];
+        let replies = thread.posts.len() - 1;
         let date    = if first.timestamp.len() >= 8 { &first.timestamp[..8] } else { &first.timestamp };
-        let line    = format!(
+        let line = format!(
             "  {} {:2}  {:<44}  {:<12}  {}  {}",
             prefix, i + 1,
             clip(&thread.subject, 44),
@@ -110,17 +108,16 @@ pub fn render_thread_list(app: &App, board_id: &str) {
             date,
             replies,
         );
-        draw_text_ex(&line, 12.0, ry,
-            TextParams { font_size: FONT_SIZE, color: fg, ..Default::default() });
+        txt(&line, s(12.0), ry, fg);
     }
 
-    draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, t.border);
-    draw_hint_bar(footer_y + CHAR_H * 1.2, &[
+    draw_rectangle_lines(s(1.0), footer_y, sw - s(2.0), footer_h - s(1.0), s(1.5), t.border);
+    draw_hint_bar(footer_y + ch() * 1.2, &[
         ("[↑↓/jk]", " Navigate  "),
         ("[Enter]", " Read Thread  "),
         ("[N]", " New Thread  "),
         ("[Esc]", " Boards"),
-    ], t);
+    ], t.title, t.border);
 }
 
 // ── Read thread ───────────────────────────────────────────────────────────────
@@ -129,8 +126,8 @@ pub fn render_read_thread(app: &App, board_id: &str, thread_id: u32) {
     let t  = &app.theme;
     let sw = screen_width();
     let sh = screen_height();
-    let header_h = CHAR_H * 2.2;
-    let footer_h = CHAR_H * 2.2;
+    let header_h = ch() * READ_HEADER_CH;
+    let footer_h = ch() * READ_FOOTER_CH;
     let body_y   = header_h;
     let body_h   = sh - header_h - footer_h;
     let footer_y = sh - footer_h;
@@ -140,43 +137,35 @@ pub fn render_read_thread(app: &App, board_id: &str, thread_id: u32) {
         None => return,
     };
 
-    let lines       = build_thread_lines(thread, t);
-    let rows_vis    = ((body_h - 16.0) / CHAR_H) as usize;
-    let max_scroll  = lines.len().saturating_sub(rows_vis);
-    let scroll      = app.read_scroll.min(max_scroll);
+    let lines      = build_thread_lines(thread, t);
+    let rows_vis   = ((body_h - s(BODY_PAD)) / ch()) as usize;
+    let max_scroll = lines.len().saturating_sub(rows_vis);
+    let scroll     = app.read_scroll.min(max_scroll);
 
-    draw_rectangle_lines(1.0, 1.0, sw - 2.0, header_h - 1.0, 1.5, t.border);
-    draw_text_ex(
-        &format!("  {}", clip(&thread.subject, 70)),
-        8.0, CHAR_H * 1.3,
-        TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() },
-    );
+    draw_rectangle_lines(s(1.0), s(1.0), sw - s(2.0), header_h - s(1.0), s(1.5), t.border);
+    txt(&format!("  {}", clip(&thread.subject, 70)), s(8.0), ch() * 1.3, t.title);
 
-    draw_rectangle_lines(1.0, body_y, sw - 2.0, body_h, 1.5, t.border);
+    draw_rectangle_lines(s(1.0), body_y, sw - s(2.0), body_h, s(1.5), t.border);
 
     let visible = &lines[scroll..lines.len().min(scroll + rows_vis)];
     for (i, (text, color)) in visible.iter().enumerate() {
-        let y = body_y + 8.0 + (i as f32 + 1.0) * CHAR_H;
-        draw_text_ex(text, 12.0, y,
-            TextParams { font_size: FONT_SIZE, color: *color, ..Default::default() });
+        let y = body_y + s(8.0) + (i as f32 + 1.0) * ch();
+        txt(text, s(12.0), y, *color);
     }
 
     if lines.len() > rows_vis {
-        let pct = (scroll as f32 / max_scroll as f32 * 100.0) as u32;
-        draw_text_ex(
-            &format!("{:3}%", pct),
-            sw - 55.0, body_y + CHAR_H,
-            TextParams { font_size: FONT_SIZE, color: t.dim, ..Default::default() },
-        );
+        let pct = if max_scroll == 0 { 100 }
+                  else { (scroll as f32 / max_scroll as f32 * 100.0) as u32 };
+        txt(&format!("{:3}%", pct), sw - s(55.0), body_y + ch(), t.muted);
     }
 
-    draw_rectangle_lines(1.0, footer_y, sw - 2.0, footer_h - 1.0, 1.5, t.border);
-    draw_hint_bar(footer_y + CHAR_H * 1.2, &[
+    draw_rectangle_lines(s(1.0), footer_y, sw - s(2.0), footer_h - s(1.0), s(1.5), t.border);
+    draw_hint_bar(footer_y + ch() * 1.2, &[
         ("[↑↓]", " Scroll  "),
         ("[PgUp/PgDn]", " Page  "),
         ("[R]", " Reply  "),
         ("[Esc]", " Back"),
-    ], t);
+    ], t.title, t.border);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -192,23 +181,23 @@ fn find_thread<'a>(
         .find(|t| t.id == thread_id)
 }
 
-fn build_thread_lines(thread: &Thread, t: &Theme) -> Vec<(String, Color)> {
+fn build_thread_lines(thread: &Thread, t: &BbsTheme) -> Vec<(String, Color)> {
     let sep = "-".repeat(78);
     let mut out: Vec<(String, Color)> = vec![];
 
     for (i, msg) in thread.posts.iter().enumerate() {
         if i > 0 {
-            out.push((String::new(), t.primary));
-            out.push((sep.clone(), t.dim));
+            out.push((String::new(), t.body));
+            out.push((sep.clone(), t.muted));
         }
         out.push((
             format!("From : {}   Date: {}   Msg #{}", msg.author, msg.timestamp, msg.id),
-            t.highlight,
+            t.label,
         ));
-        out.push((format!("Subj : {}", msg.subject), t.highlight));
-        out.push((String::new(), t.primary));
+        out.push((format!("Subj : {}", msg.subject), t.label));
+        out.push((String::new(), t.body));
         for body_line in msg.body.replace('\r', "").split('\n') {
-            out.push((body_line.to_string(), t.primary));
+            out.push((body_line.to_string(), t.body));
         }
     }
     out
@@ -223,14 +212,12 @@ fn clip(s: &str, max: usize) -> String {
     }
 }
 
-fn draw_hint_bar(y: f32, hints: &[(&str, &str)], t: &Theme) {
-    let mut hx = 8.0;
+fn draw_hint_bar(y: f32, hints: &[(&str, &str)], key_color: Color, desc_color: Color) {
+    let mut hx = s(8.0);
     for (key, desc) in hints {
-        draw_text_ex(key, hx, y,
-            TextParams { font_size: FONT_SIZE, color: t.title, ..Default::default() });
-        hx += measure_text(key, None, FONT_SIZE, 1.0).width;
-        draw_text_ex(desc, hx, y,
-            TextParams { font_size: FONT_SIZE, color: t.border, ..Default::default() });
-        hx += measure_text(desc, None, FONT_SIZE, 1.0).width;
+        txt(key, hx, y, key_color);
+        hx += tw(key);
+        txt(desc, hx, y, desc_color);
+        hx += tw(desc);
     }
 }

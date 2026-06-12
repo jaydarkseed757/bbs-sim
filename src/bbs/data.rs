@@ -1,6 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Caller {
+    pub handle: String,
+    pub location: String,
+    pub time_on: String,
+    pub date: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BbsEntry {
     pub name: String,
     pub number: String,

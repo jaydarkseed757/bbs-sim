@@ -1,8 +1,12 @@
 use macroquad::prelude::*;
+use macroquad::audio::{play_sound, play_sound_once, Sound, PlaySoundParams};
+use macroquad::rand::gen_range;
 
 use crate::bbs::banner::load_banner;
+use crate::bbs::banners::bbs_banner;
 use crate::bbs::boards::{hardcoded_boards, load_boards};
-use crate::bbs::data::{BbsEntry, Board, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
+use crate::bbs::callers::load_callers;
+use crate::bbs::data::{BbsEntry, Board, Caller, FileSection, MailMessage, Message, Oneliner, Poll, Thread, TopLists};
 use crate::bbs::files::load_files;
 use crate::bbs::mail::load_mail;
 use crate::bbs::oneliners::load_oneliners;
@@ -12,8 +16,12 @@ use crate::bbs::voting::load_polls;
 use crate::sim::modem::{DialPhase, ModemSim};
 use crate::sim::typer::BaudTyper;
 use crate::tui::ansi::AnsiParser;
+use crate::tui::crt::draw_crt_overlay;
 use crate::tui::boards::{render_message_boards, render_read_thread, render_thread_list};
+use crate::tui::callers::render_last_callers;
 use crate::tui::compose::render_compose;
+use crate::tui::door::render_door_game;
+use crate::tui::download::render_download;
 use crate::tui::files::{render_file_list, render_view_file};
 use crate::tui::graffiti::render_graffiti_wall;
 use crate::tui::mail::{render_compose_mail, render_inbox, render_read_mail};
@@ -23,11 +31,12 @@ use crate::tui::dialing::render_dialing;
 use crate::tui::login::render_login;
 use crate::tui::logout::render_logout;
 use crate::tui::menus::render_main_menu;
-use crate::tui::download::render_download;
-use crate::tui::theme::Theme;
-use crate::tui::voting::render_voting;
 use crate::tui::sysop::render_sysop_chat;
+use crate::tui::voting::render_voting;
+use crate::save::SaveData;
+use crate::tui::font::{ch, BODY_PAD};
 use crate::tui::terminal::{CellStyle, TerminalBuffer};
+use crate::tui::theme::BbsTheme;
 
 // Palette constants reused across tick methods.
 const GREEN_BBS: Color    = Color::new(0.0,  0.85, 0.0,  1.0); // modem / dialing output
@@ -38,6 +47,18 @@ const INPUT_GREEN: Color  = Color::new(0.0,  0.90, 0.0,  1.0); // user-typed cha
 const VOTE_H_VOTED:   f32 = 18.0 * 1.35 * 3.8;
 const VOTE_H_UNVOTED: f32 = 18.0 * 1.35 * 2.8;
 const VOTE_VIEWPORT:  f32 = 450.0; // conservative body-height budget (px)
+
+// ---------------------------------------------------------------------------
+// Sounds
+// ---------------------------------------------------------------------------
+
+pub struct Sounds {
+    pub handshake:    Sound,
+    pub connect:      Sound,
+    pub no_answer:    Sound,
+    pub carrier_drop: Sound,
+    pub nav_click:    Sound,
+}
 
 // ---------------------------------------------------------------------------
 // Screen state machine
@@ -58,12 +79,155 @@ pub enum Screen {
     ComposeMail,
     Files,
     ViewFile { id: u32 },
-    Downloading,
+    DownloadFile,
     GraffitiWall,
     TopTen,
     Voting,
+    LastCallers,
+    DoorGame,
     SysopChat,
     Logout,
+}
+
+// ---------------------------------------------------------------------------
+// Door game — The Gauntlet
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DoorPhase {
+    ClassSelect,
+    Combat,
+    BetweenRounds,
+    Dead,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum PlayerClass {
+    Warrior,
+    Mage,
+    Rogue,
+}
+
+impl PlayerClass {
+    pub fn name(&self) -> &str {
+        match self { Self::Warrior => "WARRIOR", Self::Mage => "MAGE", Self::Rogue => "ROGUE" }
+    }
+    pub fn max_hp(&self)  -> i32 { match self { Self::Warrior => 30, Self::Mage => 20, Self::Rogue => 25 } }
+    pub fn atk_min(&self) -> i32 { match self { Self::Warrior => 3,  Self::Mage => 6,  Self::Rogue => 4  } }
+    pub fn atk_max(&self) -> i32 { match self { Self::Warrior => 8,  Self::Mage => 14, Self::Rogue => 11 } }
+}
+
+#[derive(Debug, Clone)]
+pub struct DoorEnemy {
+    pub name: String,
+    pub hp: i32,
+    pub max_hp: i32,
+    pub atk_min: i32,
+    pub atk_max: i32,
+}
+
+#[derive(Debug, Clone)]
+pub struct DoorGameState {
+    pub phase: DoorPhase,
+    pub class: Option<PlayerClass>,
+    pub hp: i32,
+    pub round: u32,
+    pub score: u32,
+    pub enemy: Option<DoorEnemy>,
+    pub log: Vec<String>,
+    pub slain_by: String,
+}
+
+impl DoorGameState {
+    pub fn new() -> Self {
+        Self {
+            phase: DoorPhase::ClassSelect,
+            class: None,
+            hp: 0,
+            round: 0,
+            score: 0,
+            enemy: None,
+            log: vec![],
+            slain_by: String::new(),
+        }
+    }
+
+    pub fn player_max_hp(&self) -> i32 {
+        self.class.as_ref().map(|c| c.max_hp()).unwrap_or(25)
+    }
+}
+
+fn spawn_enemy(round: u32) -> DoorEnemy {
+    let (name, hp, atk_min, atk_max) = match round {
+        1 => ("Kobold",       12,  1,  3),
+        2 => ("Goblin",       20,  2,  5),
+        3 => ("Orc Warrior",  30,  4,  8),
+        4 => ("Cave Troll",   44,  5, 10),
+        5 => ("Dark Knight",  58,  7, 13),
+        6 => ("Lich",         74,  9, 15),
+        n => ("Ancient Dragon", 80 + (n as i32 - 6) * 12, 11, 18 + (n as i32 - 6)),
+    };
+    DoorEnemy { name: name.into(), hp, max_hp: hp, atk_min, atk_max }
+}
+
+// ---------------------------------------------------------------------------
+// Download state
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DownloadPhase {
+    Negotiating { ticks: u32 },
+    Transferring,
+    Complete { elapsed_secs: f32 },
+}
+
+pub struct DownloadState {
+    pub bbs_name:       String,
+    pub file_name:      String,
+    pub file_size_str:  String,
+    pub file_size_bytes: u64,
+    pub baud:           u32,
+    pub bytes_done:     u64,
+    pub phase:          DownloadPhase,
+    pub cps_display:    f32,   // smoothed CPS shown on screen
+    pub log_lines:      Vec<String>,
+    pub tick_count:     u32,   // ticks spent in Transferring phase
+}
+
+impl DownloadState {
+    pub fn new(bbs_name: String, file_name: String, file_size_str: String, baud: u32) -> Self {
+        let file_size_bytes = parse_size(&file_size_str);
+        let cps_display     = baud as f32 / 8.0 * 0.92; // theoretical ZMODEM efficiency
+        Self {
+            bbs_name,
+            file_name,
+            file_size_str,
+            file_size_bytes,
+            baud,
+            bytes_done: 0,
+            phase: DownloadPhase::Negotiating { ticks: 0 },
+            cps_display,
+            log_lines: vec!["ZRQINIT...".into()],
+            tick_count: 0,
+        }
+    }
+
+    /// Wall-clock seconds elapsed in the Transferring phase (for display).
+    pub fn elapsed_secs(&self) -> f32 {
+        self.tick_count as f32 / 20.0
+    }
+}
+
+/// Parse size strings like "1.4M", "320K", "8K" into bytes.
+fn parse_size(s: &str) -> u64 {
+    let s = s.trim();
+    if let Some(num) = s.strip_suffix('M') {
+        (num.parse::<f32>().unwrap_or(0.0) * 1024.0 * 1024.0) as u64
+    } else if let Some(num) = s.strip_suffix('K') {
+        (num.parse::<f32>().unwrap_or(0.0) * 1024.0) as u64
+    } else {
+        s.parse::<u64>().unwrap_or(0)
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -167,50 +331,6 @@ impl SysopChatState {
 }
 
 // ---------------------------------------------------------------------------
-// DownloadState
-// ---------------------------------------------------------------------------
-
-fn parse_size(s: &str) -> u64 {
-    let s = s.trim();
-    if let Some(n) = s.strip_suffix("MB").or_else(|| s.strip_suffix('M')) {
-        (n.trim().parse::<f64>().unwrap_or(0.0) * 1_048_576.0) as u64
-    } else if let Some(n) = s.strip_suffix("KB").or_else(|| s.strip_suffix('K')) {
-        (n.trim().parse::<f64>().unwrap_or(0.0) * 1_024.0) as u64
-    } else {
-        s.parse::<u64>().unwrap_or(10_240)
-    }
-}
-
-pub struct DownloadState {
-    pub file_name: String,
-    pub total_bytes: u64,
-    pub transferred: u64,
-    pub baud: u32,
-    pub elapsed_ticks: u64,
-    pub packet_count: u64,
-    pub bytes_per_tick: u64,
-    pub done: bool,
-}
-
-impl DownloadState {
-    fn new(file_name: String, size_str: &str, baud: u32) -> Self {
-        let total_bytes = parse_size(size_str).max(1);
-        // Target ~15 seconds at 20 ticks/sec = 300 ticks
-        let bytes_per_tick = (total_bytes / 300).max(1);
-        Self {
-            file_name,
-            total_bytes,
-            transferred: 0,
-            baud,
-            elapsed_ticks: 0,
-            packet_count: 0,
-            bytes_per_tick,
-            done: false,
-        }
-    }
-}
-
-// ---------------------------------------------------------------------------
 // Login step sub-state
 // ---------------------------------------------------------------------------
 
@@ -240,7 +360,7 @@ pub struct DialingState {
 
 impl DialingState {
     fn new(bbs: BbsEntry) -> Self {
-        let modem = ModemSim::new(&bbs.number);
+        let modem = ModemSim::new(&bbs.number, bbs.baud);
         let typer = BaudTyper::new(bbs.baud);
         Self { bbs, modem, typer, buffer: TerminalBuffer::new(80, 500), awaiting_keypress: false, no_answer: false }
     }
@@ -283,28 +403,19 @@ pub struct LoginState {
 
 impl LoginState {
     fn new(bbs: BbsEntry) -> Self {
-        let typer = BaudTyper::new(bbs.baud);
+        let mut typer = BaudTyper::new(bbs.baud);
         let mut buffer = TerminalBuffer::new(80, 500);
 
         if let Some(art) = load_banner(&bbs.slug) {
-            // Paint ANSI art instantly into the buffer (no baud delay for the banner).
+            // ANSI art banner — painted instantly (no baud delay for the banner).
             let mut parser = AnsiParser::new();
             for (ch, style) in parser.parse(&art) {
                 buffer.push_char(ch, style);
             }
         } else {
-            // Fallback plain-text header for unknown/manual-dial slugs.
-            let boards = bbs.boards.join("  ");
-            let sep    = "-".repeat(42);
-            let text   = format!(
-                "\r\n{sep}\r\n  {name}\r\n{sep}\r\n\r\n\
-                 Sysop:    {sysop}\r\n\
-                 Location: {location}\r\n\
-                 Boards:   {boards}\r\n\r\n",
-                sep = sep, name = bbs.name,
-                sysop = bbs.sysop, location = bbs.location, boards = boards,
-            );
-            buffer.push_str(&text, CellStyle::fg(WHITE_BBS));
+            // ASCII art banner — typed out through the baud limiter.
+            let banner = bbs_banner(&bbs);
+            typer.enqueue(&banner);
         }
 
         Self {
@@ -328,6 +439,12 @@ impl LoginState {
 pub struct App {
     pub screen: Screen,
     pub should_quit: bool,
+    pub sounds: Option<Sounds>,
+    pub blink: bool,
+    blink_ticks: u32,
+    pub tick_count: u64,
+    pub frame_count: u64,
+    pub sessions_this_run: u32,
     pub phonebook: Vec<BbsEntry>,
     pub selected_row: usize,
     pub dial: Option<DialingState>,
@@ -347,26 +464,39 @@ pub struct App {
     pub files: Vec<FileSection>,
     pub selected_file_row: usize,
     pub file_view_scroll: usize,
+    pub file_download_notice: bool,
     pub download: Option<DownloadState>,
     pub manual_dial_input: Option<String>,
     pub oneliners: Vec<Oneliner>,
     pub graffiti_scroll: usize,
     pub graffiti_input: Option<String>,
-    pub theme: Theme,
     pub top_lists: TopLists,
     pub top_list_tab: usize,
+    pub theme: BbsTheme,
+    pub save: SaveData,
     pub polls: Vec<Poll>,
     pub selected_poll_row: usize,
     pub voting_scroll: usize,
     pub voted_polls: std::collections::HashSet<u32>,
+    pub last_callers: Vec<Caller>,
+    pub callers_scroll: usize,
+    pub door_game: Option<DoorGameState>,
 }
 
 impl App {
     pub fn new() -> Self {
+        let save     = SaveData::load();
+        let phonebook = save.apply_to_phonebook(hardcoded_phonebook());
         Self {
             screen: Screen::Dialer,
             should_quit: false,
-            phonebook: hardcoded_phonebook(),
+            sounds: None,
+            blink: true,
+            blink_ticks: 0,
+            tick_count: 0,
+            frame_count: 0,
+            sessions_this_run: 0,
+            phonebook,
             selected_row: 0,
             dial: None,
             login: None,
@@ -385,22 +515,28 @@ impl App {
             files: vec![],
             selected_file_row: 0,
             file_view_scroll: 0,
+            file_download_notice: false,
             download: None,
             manual_dial_input: None,
             oneliners: vec![],
             graffiti_scroll: 0,
             graffiti_input: None,
-            theme: Theme::for_slug(""),
             top_lists: TopLists::default(),
             top_list_tab: 0,
+            theme: BbsTheme::default(),
+            save,
             polls: vec![],
             selected_poll_row: 0,
             voting_scroll: 0,
             voted_polls: std::collections::HashSet::new(),
+            last_callers: vec![],
+            callers_scroll: 0,
+            door_game: None,
         }
     }
 
     pub fn render(&mut self) {
+        self.frame_count += 1;
         let screen = self.screen.clone();
         match screen {
             Screen::Dialer        => render_dialer(self),
@@ -416,15 +552,18 @@ impl App {
             Screen::Mail          => render_inbox(self),
             Screen::ReadMail { id } => render_read_mail(self, id),
             Screen::ComposeMail   => render_compose_mail(self),
-            Screen::Files           => render_file_list(self),
-            Screen::ViewFile { id } => render_view_file(self, id),
-            Screen::Downloading => render_download(self),
+            Screen::Files              => render_file_list(self),
+            Screen::ViewFile { id }    => render_view_file(self, id),
+            Screen::DownloadFile => render_download(self),
             Screen::GraffitiWall    => render_graffiti_wall(self),
             Screen::TopTen          => render_top10(self),
             Screen::Voting          => render_voting(self),
+            Screen::LastCallers     => render_last_callers(self),
+            Screen::DoorGame        => render_door_game(self),
             Screen::SysopChat       => render_sysop_chat(self),
             Screen::Logout        => render_logout(self),
         }
+        draw_crt_overlay();
     }
 
     pub fn handle_input(&mut self) {
@@ -443,25 +582,34 @@ impl App {
             Screen::Mail          => self.inbox_input(),
             Screen::ReadMail { id } => self.read_mail_input(id),
             Screen::ComposeMail   => self.compose_mail_input(),
-            Screen::Files           => self.files_input(),
-            Screen::ViewFile { id } => self.view_file_input(id),
-            Screen::Downloading => self.download_input(),
+            Screen::Files              => self.files_input(),
+            Screen::ViewFile { id }    => self.view_file_input(id),
+            Screen::DownloadFile => self.download_input(),
             Screen::GraffitiWall    => self.graffiti_wall_input(),
             Screen::TopTen          => self.top10_input(),
             Screen::Voting          => self.voting_input(),
+            Screen::LastCallers     => self.last_callers_input(),
+            Screen::DoorGame        => self.door_game_input(),
             Screen::SysopChat       => self.sysop_chat_input(),
             Screen::Logout        => self.logout_input(),
         }
     }
 
     pub fn tick(&mut self) {
+        self.tick_count += 1;
+        self.blink_ticks += 1;
+        if self.blink_ticks >= 10 {
+            self.blink = !self.blink;
+            self.blink_ticks = 0;
+        }
+
         match self.screen.clone() {
-            Screen::Dialing        => self.tick_dialing(),
-            Screen::Login          => self.tick_login(),
-            Screen::Logout         => self.tick_logout(),
-            Screen::SysopChat      => self.tick_sysop_chat(),
-            Screen::Downloading => self.tick_download(),
-            _                      => {}
+            Screen::Dialing      => self.tick_dialing(),
+            Screen::Login        => self.tick_login(),
+            Screen::Logout       => self.tick_logout(),
+            Screen::SysopChat    => self.tick_sysop_chat(),
+            Screen::DownloadFile => self.tick_download(),
+            _                    => {}
         }
     }
 
@@ -470,12 +618,33 @@ impl App {
     fn tick_dialing(&mut self) {
         let Some(ref mut d) = self.dial else { return };
 
+        let prev_phase = d.modem.phase.clone();
+
         if let Some(text) = d.modem.tick() {
             d.typer.enqueue(&text);
         }
         for ch in d.typer.tick() {
             d.buffer.push_char(ch, CellStyle::fg(GREEN_BBS));
         }
+
+        // Sound on phase transitions.
+        if d.modem.phase != prev_phase {
+            if let Some(ref sounds) = self.sounds {
+                match (&prev_phase, &d.modem.phase) {
+                    (DialPhase::Dialing, DialPhase::Connecting) => {
+                        play_sound(&sounds.handshake, PlaySoundParams { looped: false, volume: 0.55 });
+                    }
+                    (_, DialPhase::Connected) => {
+                        play_sound_once(&sounds.connect);
+                    }
+                    (_, DialPhase::NoAnswer) => {
+                        play_sound_once(&sounds.no_answer);
+                    }
+                    _ => {}
+                }
+            }
+        }
+
         if d.modem.phase == DialPhase::Connected && d.typer.is_empty() && !d.awaiting_keypress {
             d.buffer.push_str("\r\n\r\nPress [Enter] to log in...\r\n", CellStyle::fg(YELLOW));
             d.awaiting_keypress = true;
@@ -534,26 +703,49 @@ impl App {
 
         if let Some((handle, bbs_name, slug)) = transition {
             self.session.login(handle.clone(), bbs_name.clone());
-            self.theme      = Theme::for_slug(&slug);
-            self.boards     = load_boards(&slug);
-            self.mail       = load_mail(&slug, &handle);
-            self.files      = load_files(&slug);
-            self.oneliners  = load_oneliners(&slug);
+            self.sessions_this_run += 1;
+            self.theme = BbsTheme::for_slug(&slug);
+
+            // Use saved BBS data if available; otherwise load fresh from TOML.
+            if let Some(saved) = self.save.bbs.get(&slug).cloned() {
+                self.boards    = saved.boards;
+                self.mail      = saved.mail;
+                self.oneliners = saved.oneliners;
+                // Mail was personalized for the handle it was saved under;
+                // remap to/from if this session uses a different one.
+                if !saved.handle.is_empty() && saved.handle != handle {
+                    for m in &mut self.mail {
+                        if m.to   == saved.handle { m.to   = handle.clone(); }
+                        if m.from == saved.handle { m.from = handle.clone(); }
+                    }
+                }
+            } else {
+                self.boards    = load_boards(&slug);
+                self.mail      = load_mail(&slug, &handle);
+                self.oneliners = load_oneliners(&slug);
+            }
             self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+            self.files      = load_files(&slug);   // files are read-only; always load fresh
             self.top_lists  = load_top10(&slug);
-            self.top_list_tab = 0;
-            self.polls = load_polls(&slug);
-            self.selected_poll_row = 0;
-            self.voting_scroll = 0;
+            self.polls      = load_polls(&slug);
+            self.last_callers = load_callers(&slug);
             self.voted_polls.clear();
+            self.selected_poll_row = 0;
+            self.voting_scroll     = 0;
+            self.callers_scroll    = 0;
+            self.top_list_tab        = 0;
             self.selected_board_row  = 0;
             self.selected_thread_row = 0;
             self.selected_mail_row   = 0;
             self.selected_file_row   = 0;
+            self.read_scroll         = 0;
+            self.mail_read_scroll    = 0;
+            self.file_view_scroll    = 0;
             if let Some(entry) = self.phonebook.iter_mut().find(|e| e.name == bbs_name) {
                 entry.call_count  += 1;
                 entry.last_called  = Some("04/28/93".into());
             }
+            self.persist_session();
             self.login = None;
             self.screen = Screen::MainMenu;
         }
@@ -577,7 +769,17 @@ impl App {
             if is_key_pressed(KeyCode::Enter) {
                 let number = self.manual_dial_input.take().unwrap_or_default();
                 if !number.trim().is_empty() {
-                    self.dial = Some(DialingState::new_manual(number));
+                    // A manually dialed number that matches a phonebook entry
+                    // connects normally; anything else rings out.
+                    let digits = |s: &str| s.chars().filter(char::is_ascii_digit).collect::<String>();
+                    let typed = digits(&number);
+                    let entry = self.phonebook.iter()
+                        .find(|e| digits(&e.number) == typed)
+                        .cloned();
+                    self.dial = Some(match entry {
+                        Some(bbs) => DialingState::new(bbs),
+                        None      => DialingState::new_manual(number),
+                    });
                     self.screen = Screen::Dialing;
                 }
                 return;
@@ -598,25 +800,35 @@ impl App {
         if is_key_pressed(KeyCode::Up) {
             self.selected_row =
                 if self.selected_row == 0 { len.saturating_sub(1) } else { self.selected_row - 1 };
+            if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
         }
         if is_key_pressed(KeyCode::Down) {
             self.selected_row =
                 if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
+            if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
         }
         if is_key_pressed(KeyCode::Escape) {
+            self.save.capture_phonebook(&self.phonebook.clone());
+            self.save.write();
             self.should_quit = true;
         }
 
         while let Some(ch) = get_char_pressed() {
             match ch {
-                'q' | 'Q' => self.should_quit = true,
+                'q' | 'Q' => {
+                    self.save.capture_phonebook(&self.phonebook.clone());
+                    self.save.write();
+                    self.should_quit = true;
+                }
                 'j' => {
                     self.selected_row =
                         if self.selected_row + 1 >= len { 0 } else { self.selected_row + 1 };
+                    if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
                 }
                 'k' => {
                     self.selected_row =
                         if self.selected_row == 0 { len.saturating_sub(1) } else { self.selected_row - 1 };
+                    if let Some(ref s) = self.sounds { play_sound_once(&s.nav_click); }
                 }
                 'd' | 'D' => {
                     if let Some(bbs) = self.phonebook.get(self.selected_row).cloned() {
@@ -751,6 +963,7 @@ impl App {
                 }
                 'f' => {
                     self.selected_file_row = 0;
+                    self.file_download_notice = false;
                     self.screen = Screen::Files;
                 }
                 'o' => {
@@ -765,6 +978,14 @@ impl App {
                     self.selected_poll_row = 0;
                     self.voting_scroll = 0;
                     self.screen = Screen::Voting;
+                }
+                'w' => {
+                    self.callers_scroll = 0;
+                    self.screen = Screen::LastCallers;
+                }
+                'd' => {
+                    self.door_game = Some(DoorGameState::new());
+                    self.screen = Screen::DoorGame;
                 }
                 'c' => {
                     self.begin_sysop_chat();
@@ -802,7 +1023,7 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            match ch {
+            match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_board_row =
                         if self.selected_board_row == 0 { len.saturating_sub(1) }
@@ -851,7 +1072,7 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            match ch {
+            match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_thread_row =
                         if self.selected_thread_row == 0 { len.saturating_sub(1) }
@@ -912,9 +1133,16 @@ impl App {
         if is_key_pressed(KeyCode::PageDown) {
             self.read_scroll += 10;
         }
+        {
+            use crate::tui::boards::{READ_FOOTER_CH, READ_HEADER_CH};
+            let body_h = screen_height() - ch() * (READ_HEADER_CH + READ_FOOTER_CH);
+            let rows_vis = ((body_h - BODY_PAD) / ch()) as usize;
+            let max_scroll = self.thread_line_count(&board_id, thread_id).saturating_sub(rows_vis);
+            self.read_scroll = self.read_scroll.min(max_scroll);
+        }
 
         while let Some(ch) = get_char_pressed() {
-            if ch == 'r' {
+            if ch.eq_ignore_ascii_case(&'r') {
                 let board_name = self.boards.iter()
                     .find(|b| b.id == board_id)
                     .map(|b| b.name.clone())
@@ -937,6 +1165,21 @@ impl App {
                 return;
             }
         }
+    }
+
+    /// Count display lines for a thread, matching the layout in `render_read_thread`.
+    fn thread_line_count(&self, board_id: &str, thread_id: u32) -> usize {
+        let thread = self.boards.iter()
+            .find(|b| b.id == board_id)
+            .and_then(|b| b.threads.iter().find(|t| t.id == thread_id));
+        let Some(thread) = thread else { return 0 };
+        let mut count = 0;
+        for (i, msg) in thread.posts.iter().enumerate() {
+            if i > 0 { count += 2; }        // blank line + separator row
+            count += 3;                      // From header, Subj header, blank line
+            count += msg.body.replace('\r', "").split('\n').count();
+        }
+        count
     }
 
     // ── Input: compose ───────────────────────────────────────────────────────
@@ -1041,17 +1284,26 @@ impl App {
                         timestamp,
                     }],
                 });
-                let last = board.threads.len().saturating_sub(1);
+                let last = board.threads.len() - 1;
                 self.compose             = None;
                 self.selected_thread_row = last;
                 self.screen = Screen::ThreadList { board_id };
             }
         }
+        self.persist_session();
     }
 
     // ── Input: files ─────────────────────────────────────────────────────────
 
     fn files_input(&mut self) {
+        let any_key = is_key_pressed(KeyCode::Up)
+            || is_key_pressed(KeyCode::Down)
+            || is_key_pressed(KeyCode::Escape);
+
+        if self.file_download_notice && any_key {
+            self.file_download_notice = false;
+        }
+
         if is_key_pressed(KeyCode::Escape) {
             self.screen = Screen::MainMenu;
             return;
@@ -1071,6 +1323,10 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
+            if self.file_download_notice {
+                self.file_download_notice = false;
+                continue;
+            }
             match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_file_row =
@@ -1101,9 +1357,15 @@ impl App {
                         .nth(self.selected_file_row)
                         .cloned();
                     if let Some(f) = file {
-                        let id = f.id;
-                        self.begin_download(id);
-                        return;
+                        let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
+                        let baud = self.phonebook.iter()
+                            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
+                            .map(|e| e.baud)
+                            .unwrap_or(2400);
+                        self.download = Some(DownloadState::new(
+                            bbs_name, f.name, f.size, baud,
+                        ));
+                        self.screen = Screen::DownloadFile;
                     }
                 }
                 _ => {}
@@ -1111,7 +1373,7 @@ impl App {
         }
     }
 
-    fn view_file_input(&mut self, _id: u32) {
+    fn view_file_input(&mut self, id: u32) {
         if is_key_pressed(KeyCode::Escape) {
             self.screen = Screen::Files;
             return;
@@ -1127,6 +1389,116 @@ impl App {
         }
         if is_key_pressed(KeyCode::PageDown) {
             self.file_view_scroll += 10;
+        }
+        if let Some(file) = self.files.iter().flat_map(|s| s.files.iter()).find(|f| f.id == id) {
+            use crate::tui::files::{VIEW_FOOTER_CH, VIEW_HEADER_CH};
+            let body_h = screen_height() - ch() * (VIEW_HEADER_CH + VIEW_FOOTER_CH);
+            let rows_vis = ((body_h - BODY_PAD) / ch()) as usize;
+            let max_scroll = file.content.split('\n').count().saturating_sub(rows_vis);
+            self.file_view_scroll = self.file_view_scroll.min(max_scroll);
+        }
+    }
+
+    // ── Input / tick: download ───────────────────────────────────────────────
+
+    fn download_input(&mut self) {
+        let done = self.download.as_ref()
+            .map(|d| matches!(d.phase, DownloadPhase::Complete { .. }))
+            .unwrap_or(false);
+
+        if done {
+            // Any key returns to file list
+            let any = get_char_pressed().is_some()
+                || is_key_pressed(KeyCode::Enter)
+                || is_key_pressed(KeyCode::Space)
+                || is_key_pressed(KeyCode::Escape);
+            if any {
+                self.download = None;
+                self.screen   = Screen::Files;
+            }
+        } else if is_key_pressed(KeyCode::Escape) {
+            // Cancel — abort transfer
+            self.download = None;
+            self.screen   = Screen::Files;
+        }
+    }
+
+    fn tick_download(&mut self) {
+        let dl = match self.download.as_mut() { Some(d) => d, None => return };
+
+        // Speed multiplier: sim runs ~15× real ZMODEM speed for playability.
+        // bytes_per_tick = (baud_bps / 8) × efficiency × speed_factor / 20_Hz
+        const SPEED_FACTOR: f32 = 15.0;
+        const EFFICIENCY:   f32 = 0.92;
+        let bytes_per_sec_real = dl.baud as f32 / 8.0 * EFFICIENCY;
+        let bytes_per_tick_avg = (bytes_per_sec_real * SPEED_FACTOR / 20.0) as u64;
+
+        match dl.phase.clone() {
+            DownloadPhase::Negotiating { ticks } => {
+                let t = ticks + 1;
+                // ZMODEM handshake log lines appear progressively
+                match t {
+                    5  => dl.log_lines.push("ZRINIT...".into()),
+                    12 => dl.log_lines.push(format!("ZFILE {}...", dl.file_name)),
+                    18 => dl.log_lines.push(format!("ZDATA 0x{:08X}", 0u32)),
+                    25 => dl.log_lines.push("Receiving data blocks...".into()),
+                    _  => {}
+                }
+                if t >= 30 {
+                    dl.phase = DownloadPhase::Transferring;
+                } else {
+                    dl.phase = DownloadPhase::Negotiating { ticks: t };
+                }
+            }
+
+            DownloadPhase::Transferring => {
+                // Add mild jitter (±15%) to CPS display
+                let jitter = {
+                    let t = dl.tick_count;
+                    let wave = (t as f32 * 0.23).sin() * 0.10
+                             + (t as f32 * 0.07).sin() * 0.05;
+                    1.0_f32 + wave
+                };
+                let bytes_this_tick = ((bytes_per_tick_avg as f32) * jitter) as u64;
+                dl.bytes_done = (dl.bytes_done + bytes_this_tick).min(dl.file_size_bytes);
+                dl.tick_count += 1;
+
+                // Smooth CPS toward the current instantaneous rate
+                let instant_cps = bytes_per_sec_real * SPEED_FACTOR * jitter;
+                dl.cps_display += (instant_cps - dl.cps_display) * 0.15;
+
+                // Protocol chatter: emit a log line every ~8 ticks
+                if dl.tick_count % 8 == 0 {
+                    let block = dl.bytes_done / 1024;
+                    dl.log_lines.push(format!(
+                        "ZDATA 0x{:08X}  ({} KB)",
+                        dl.bytes_done as u32, block
+                    ));
+                }
+                // Occasional noise: error-recovery lines
+                if dl.tick_count % 53 == 0 {
+                    dl.log_lines.push("ZRPOS  (resync)".into());
+                }
+                if dl.tick_count % 97 == 0 {
+                    dl.log_lines.push(format!(
+                        "ZNAK  block {}  (retry)", dl.tick_count / 97
+                    ));
+                }
+
+                if dl.bytes_done >= dl.file_size_bytes {
+                    let elapsed = dl.elapsed_secs();
+                    dl.phase = DownloadPhase::Complete { elapsed_secs: elapsed };
+                    dl.log_lines.push("ZEOF...".into());
+                    dl.log_lines.push("ZFIN...".into());
+                    dl.log_lines.push(format!(
+                        "Transfer complete.  {} bytes in {}",
+                        dl.file_size_bytes,
+                        fmt_elapsed(elapsed),
+                    ));
+                }
+            }
+
+            DownloadPhase::Complete { .. } => {}
         }
     }
 
@@ -1151,7 +1523,7 @@ impl App {
         }
 
         while let Some(ch) = get_char_pressed() {
-            match ch {
+            match ch.to_ascii_lowercase() {
                 'k' => {
                     self.selected_mail_row =
                         if self.selected_mail_row == 0 { len.saturating_sub(1) }
@@ -1206,9 +1578,16 @@ impl App {
         if is_key_pressed(KeyCode::PageDown) {
             self.mail_read_scroll += 10;
         }
+        if let Some(msg) = self.mail.iter().find(|m| m.id == id) {
+            use crate::tui::mail::{READ_FOOTER_CH, READ_HEADER_CH};
+            let body_h = screen_height() - ch() * (READ_HEADER_CH + READ_FOOTER_CH);
+            let rows_vis = ((body_h - BODY_PAD) / ch()) as usize;
+            let max_scroll = msg.body.split('\n').count().saturating_sub(rows_vis);
+            self.mail_read_scroll = self.mail_read_scroll.min(max_scroll);
+        }
 
         while let Some(ch) = get_char_pressed() {
-            if ch == 'r' {
+            if ch.eq_ignore_ascii_case(&'r') {
                 let (from, subject) = self.mail.iter()
                     .find(|m| m.id == id)
                     .map(|m| (m.from.clone(), format!("Re: {}", m.subject)))
@@ -1298,6 +1677,7 @@ impl App {
         self.mail.push(sent);
         self.compose_mail = None;
         self.screen = Screen::Mail;
+        self.persist_session();
     }
 
     // ── Input: graffiti wall ─────────────────────────────────────────────────
@@ -1318,6 +1698,7 @@ impl App {
                     let handle = self.session.user_handle.clone().unwrap_or_else(|| "Anonymous".into());
                     self.oneliners.push(Oneliner { handle, message: trimmed, date: "04/28/93".into() });
                     self.graffiti_scroll = self.oneliners.len().saturating_sub(1);
+                    self.persist_session();
                 }
                 return;
             }
@@ -1378,6 +1759,128 @@ impl App {
                 '2' => { self.top_list_tab = 1; }
                 '3' => { self.top_list_tab = 2; }
                 _ => {}
+            }
+        }
+    }
+
+    // ── Input: last callers ──────────────────────────────────────────────────
+
+    fn last_callers_input(&mut self) {
+        if is_key_pressed(KeyCode::Escape) {
+            self.screen = Screen::MainMenu;
+            return;
+        }
+        let max_scroll = self.last_callers.len().saturating_sub(1);
+        if (is_key_pressed(KeyCode::Up) || get_char_pressed() == Some('k'))
+            && self.callers_scroll > 0
+        {
+            self.callers_scroll -= 1;
+        }
+        if (is_key_pressed(KeyCode::Down) || get_char_pressed() == Some('j'))
+            && self.callers_scroll < max_scroll
+        {
+            self.callers_scroll += 1;
+        }
+    }
+
+    // ── Input / logic: door game ─────────────────────────────────────────────
+
+    fn door_game_input(&mut self) {
+        let Some(ref mut g) = self.door_game else { return };
+        let ch = get_char_pressed();
+
+        match g.phase.clone() {
+            DoorPhase::ClassSelect => {
+                let class = match ch {
+                    Some('1') => Some(PlayerClass::Warrior),
+                    Some('2') => Some(PlayerClass::Mage),
+                    Some('3') => Some(PlayerClass::Rogue),
+                    _ => None,
+                };
+                if let Some(c) = class {
+                    let hp = c.max_hp();
+                    g.class = Some(c);
+                    g.hp    = hp;
+                    g.round = 1;
+                    g.score = 0;
+                    g.log   = vec!["The Gauntlet begins! Fight for your life!".into()];
+                    g.enemy = Some(spawn_enemy(1));
+                    g.phase = DoorPhase::Combat;
+                } else if ch == Some('\x1b') || is_key_pressed(KeyCode::Escape) {
+                    self.door_game = None;
+                    self.screen = Screen::MainMenu;
+                }
+            }
+            DoorPhase::Combat => {
+                if ch == Some('\x1b') || is_key_pressed(KeyCode::Escape) {
+                    self.door_game = None;
+                    self.screen = Screen::MainMenu;
+                    return;
+                }
+                if ch != Some('a') && ch != Some('A') { return; }
+
+                let Some(ref mut g) = self.door_game else { return };
+                let Some(ref c) = g.class.clone() else { return };
+                let Some(ref mut enemy) = g.enemy else { return };
+
+                // Player attacks
+                let p_dmg = gen_range(c.atk_min(), c.atk_max() + 1);
+                enemy.hp -= p_dmg;
+                let enemy_name = enemy.name.clone();
+                let enemy_hp   = enemy.hp;
+                let enemy_mhp  = enemy.max_hp;
+
+                if enemy.hp <= 0 {
+                    let xp = g.round * 50;
+                    g.score += xp;
+                    g.log.push(format!(
+                        "> You deal {} dmg — {} is slain! (+{} pts)",
+                        p_dmg, enemy_name, xp
+                    ));
+                    g.enemy = None;
+                    g.phase = DoorPhase::BetweenRounds;
+                } else {
+                    g.log.push(format!(
+                        "> You deal {} dmg to {}. ({}/{})",
+                        p_dmg, enemy_name, enemy_hp.max(0), enemy_mhp
+                    ));
+                    // Enemy counter-attacks
+                    let e_dmg = gen_range(enemy.atk_min, enemy.atk_max + 1);
+                    g.hp -= e_dmg;
+                    let player_hp = g.hp;
+                    let player_mhp = g.player_max_hp();
+                    g.log.push(format!(
+                        "> {} strikes you for {} dmg. ({}/{})",
+                        enemy_name, e_dmg, player_hp.max(0), player_mhp
+                    ));
+                    if g.hp <= 0 {
+                        g.slain_by = enemy_name;
+                        g.phase = DoorPhase::Dead;
+                    }
+                }
+                // Keep log at most 8 lines
+                while g.log.len() > 8 {
+                    g.log.remove(0);
+                }
+            }
+            DoorPhase::BetweenRounds => {
+                if ch.is_some() || is_key_pressed(KeyCode::Enter) {
+                    let Some(ref mut g) = self.door_game else { return };
+                    g.round += 1;
+                    g.enemy  = Some(spawn_enemy(g.round));
+                    g.log.push(format!("--- Round {} begins! ---", g.round));
+                    while g.log.len() > 8 { g.log.remove(0); }
+                    g.phase  = DoorPhase::Combat;
+                }
+            }
+            DoorPhase::Dead => {
+                if ch == Some('r') || ch == Some('R') {
+                    let Some(ref mut g) = self.door_game else { return };
+                    *g = DoorGameState::new();
+                } else if ch == Some('\x1b') || is_key_pressed(KeyCode::Escape) {
+                    self.door_game = None;
+                    self.screen = Screen::MainMenu;
+                }
             }
         }
     }
@@ -1457,7 +1960,7 @@ impl App {
     }
 
     fn tick_sysop_chat(&mut self) {
-        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        let green = self.theme.hi;
         if let Some(ref mut state) = self.sysop_chat {
             for ch in state.typer.tick() {
                 state.buffer.push_char(ch, CellStyle::fg(green));
@@ -1490,7 +1993,7 @@ impl App {
     }
 
     fn tick_logout(&mut self) {
-        let green = Color::new(0.0, 0.85, 0.0, 1.0);
+        let green = self.theme.hi;
         if let Some(ref mut state) = self.logout {
             for ch in state.typer.tick() {
                 state.buffer.push_char(ch, CellStyle::fg(green));
@@ -1502,6 +2005,9 @@ impl App {
     }
 
     fn begin_logout(&mut self) {
+        if let Some(ref sounds) = self.sounds {
+            play_sound_once(&sounds.carrier_drop);
+        }
         let bbs_name = self.session.bbs_name.clone().unwrap_or_default();
         let handle   = self.session.user_handle.clone().unwrap_or_default();
         let baud     = self.phonebook.iter()
@@ -1512,6 +2018,26 @@ impl App {
         self.screen = Screen::Logout;
     }
 
+    /// Snapshot the live session (boards/mail/oneliners + phonebook) into the
+    /// save file. Called after every user mutation so a window close can't
+    /// lose data — exit paths are not guaranteed to run under macroquad.
+    fn persist_session(&mut self) {
+        let slug = self.session.bbs_name.as_ref()
+            .and_then(|n| self.phonebook.iter().find(|e| &e.name == n))
+            .map(|e| e.slug.clone())
+            .unwrap_or_default();
+        let handle = self.session.user_handle.clone().unwrap_or_default();
+        self.save.capture_bbs(
+            &slug,
+            &handle,
+            self.boards.clone(),
+            self.mail.clone(),
+            self.oneliners.clone(),
+        );
+        self.save.capture_phonebook(&self.phonebook.clone());
+        self.save.write();
+    }
+
     fn finish_logout(&mut self) {
         if let Some(ref state) = self.logout {
             let bbs_name = state.bbs_name.clone();
@@ -1519,51 +2045,124 @@ impl App {
                 entry.last_called = Some("04/27/93".into());
             }
         }
+
+        self.persist_session();
+
         self.session.logout();
-        self.logout = None;
+        self.logout   = None;
+
+        // Clear all per-session data so nothing leaks into the next dial.
+        self.boards              = vec![];
+        self.mail                = vec![];
+        self.files               = vec![];
+        self.oneliners           = vec![];
+        self.top_lists           = TopLists::default();
+        self.compose             = None;
+        self.compose_mail        = None;
+        self.download            = None;
+        self.graffiti_input      = None;
+        self.selected_board_row  = 0;
+        self.selected_thread_row = 0;
+        self.selected_mail_row   = 0;
+        self.selected_file_row   = 0;
+        self.read_scroll         = 0;
+        self.mail_read_scroll    = 0;
+        self.file_view_scroll    = 0;
+        self.graffiti_scroll     = 0;
+        self.top_list_tab        = 0;
+        self.file_download_notice = false;
+        self.theme               = BbsTheme::default();
+        self.polls               = vec![];
+        self.voted_polls.clear();
+        self.selected_poll_row   = 0;
+        self.voting_scroll       = 0;
+        self.last_callers        = vec![];
+        self.callers_scroll      = 0;
+        self.door_game           = None;
+
         self.screen = Screen::Dialer;
     }
 
-    // ── Download ─────────────────────────────────────────────────────────────
+    // ── Exit stats ───────────────────────────────────────────────────────────
 
-    fn begin_download(&mut self, file_id: u32) {
-        let baud = self.phonebook.iter()
-            .find(|e| Some(&e.name) == self.session.bbs_name.as_ref())
-            .map(|e| e.baud)
-            .unwrap_or(2400);
-        let file = self.files.iter()
-            .flat_map(|s| s.files.iter())
-            .find(|f| f.id == file_id)
-            .cloned();
-        if let Some(f) = file {
-            self.download = Some(DownloadState::new(f.name, &f.size, baud));
-            self.screen = Screen::Downloading;
-        }
-    }
+    pub fn print_exit_stats(&self) {
+        let runtime_secs  = self.tick_count as f64 / 20.0;
+        let runtime_min   = runtime_secs as u64 / 60;
+        let runtime_sec   = runtime_secs as u64 % 60;
+        let avg_fps       = if runtime_secs > 0.0 { self.frame_count as f64 / runtime_secs } else { 0.0 };
 
-    fn tick_download(&mut self) {
-        let Some(ref mut dl) = self.download else { return };
-        if dl.done { return; }
-        dl.elapsed_ticks += 1;
-        dl.transferred = (dl.transferred + dl.bytes_per_tick).min(dl.total_bytes);
-        dl.packet_count = dl.transferred / 128;
-        if dl.transferred >= dl.total_bytes {
-            dl.done = true;
-        }
-    }
+        let pb_total      = self.phonebook.len();
+        let pb_called     = self.phonebook.iter().filter(|e| e.call_count > 0).count();
 
-    fn download_input(&mut self) {
-        if is_key_pressed(KeyCode::Escape) {
-            self.download = None;
-            self.screen = Screen::Files;
-            return;
+        let board_count   = self.boards.len();
+        let thread_count: usize = self.boards.iter().map(|b| b.threads.len()).sum();
+        let post_count:   usize = self.boards.iter()
+            .flat_map(|b| b.threads.iter())
+            .map(|t| t.posts.len())
+            .sum();
+        let mail_count    = self.mail.len();
+        let sect_count    = self.files.len();
+        let file_count: usize = self.files.iter().map(|s| s.files.len()).sum();
+        let oneliner_count = self.oneliners.len();
+        let top_callers   = self.top_lists.callers.len();
+        let top_files     = self.top_lists.files.len();
+        let top_posters   = self.top_lists.posters.len();
+
+        let last_bbs    = self.session.bbs_name.as_deref()
+            .or_else(|| self.phonebook.iter()
+                .filter(|e| e.last_called.is_some())
+                .max_by_key(|e| e.call_count)
+                .map(|e| e.name.as_str()))
+            .unwrap_or("—");
+        let last_handle = self.session.user_handle.as_deref().unwrap_or("—");
+
+        let w = 57;
+        let bar = "=".repeat(w);
+        println!();
+        println!("{}", bar);
+        println!("  BBS-SIM  —  exit stats");
+        println!("{}", bar);
+        println!("  runtime          {}m {:02}s   ({} ticks / {} frames)",
+            runtime_min, runtime_sec,
+            fmt_u64(self.tick_count), fmt_u64(self.frame_count));
+        println!("  avg fps          {:.1}", avg_fps);
+        println!("  sessions this run  {}", self.sessions_this_run);
+        println!();
+        println!("  phonebook        {} entries  ({} ever called)",
+            pb_total, pb_called);
+        println!("  last BBS         {}", last_bbs);
+        println!("  last handle      {}", last_handle);
+        println!();
+        println!("  content (last session loaded)");
+        if board_count > 0 {
+            println!("    boards         {}  |  threads {}  |  posts {}", board_count, thread_count, post_count);
+        } else {
+            println!("    boards         (none loaded)");
         }
-        let done = self.download.as_ref().map(|d| d.done).unwrap_or(false);
-        if done && (is_key_pressed(KeyCode::Enter) || get_char_pressed().is_some()) {
-            self.download = None;
-            self.screen = Screen::Files;
+        println!("    mail           {}", if mail_count > 0 { mail_count.to_string() } else { "(none)".into() });
+        if sect_count > 0 {
+            println!("    files          {} sections  /  {} files", sect_count, file_count);
+        } else {
+            println!("    files          (none loaded)");
         }
+        println!("    one-liners     {}", if oneliner_count > 0 { oneliner_count.to_string() } else { "(none)".into() });
+        if top_callers + top_files + top_posters > 0 {
+            println!("    top-10         callers {}  /  files {}  /  posters {}", top_callers, top_files, top_posters);
+        }
+        println!("{}", bar);
+        println!();
     }
+}
+
+fn fmt_u64(n: u64) -> String {
+    // comma-format a u64
+    let s = n.to_string();
+    let mut out = String::new();
+    for (i, ch) in s.chars().rev().enumerate() {
+        if i > 0 && i % 3 == 0 { out.push(','); }
+        out.push(ch);
+    }
+    out.chars().rev().collect()
 }
 
 // ---------------------------------------------------------------------------
@@ -1644,5 +2243,28 @@ fn hardcoded_phonebook() -> Vec<BbsEntry> {
             total_callers: 2_047,
             call_count: 3,
         },
+        BbsEntry {
+            name: "FREQ 867 BBS".into(),
+            number: "867-5309".into(),
+            sysop: "SpinDr".into(),
+            location: "Nashville, TN".into(),
+            baud: 14400,
+            boards: vec!["Alt/Grunge".into(), "Metal".into(), "Hip-Hop".into(), "New Releases".into(), "Concert Talk".into()],
+            last_called: None,
+            slug: "freq_867".into(),
+            total_callers: 3_847,
+            call_count: 0,
+        },
     ]
+}
+
+fn fmt_elapsed(secs: f32) -> String {
+    let s  = secs as u32;
+    let m  = s / 60;
+    let ss = s % 60;
+    if m >= 60 {
+        format!("{}h {:02}m {:02}s", m / 60, m % 60, ss)
+    } else {
+        format!("{}:{:02}", m, ss)
+    }
 }

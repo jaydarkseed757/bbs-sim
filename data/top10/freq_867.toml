@@ -1,0 +1,139 @@
+[[callers]]
+handle = "SpinDr"
+calls = 1204
+location = "Nashville, TN"
+
+[[callers]]
+handle = "WaxPoetic"
+calls = 876
+location = "Memphis, TN"
+
+[[callers]]
+handle = "BeatBoxer"
+calls = 743
+location = "Atlanta, GA"
+
+[[callers]]
+handle = "GigGoer"
+calls = 692
+location = "Atlanta, GA"
+
+[[callers]]
+handle = "TapeHead"
+calls = 588
+location = "Louisville, KY"
+
+[[callers]]
+handle = "VinylJunkie"
+calls = 521
+location = "Nashville, TN"
+
+[[callers]]
+handle = "FreqWave"
+calls = 467
+location = "Knoxville, TN"
+
+[[callers]]
+handle = "AnalogFreak"
+calls = 398
+location = "Charlotte, NC"
+
+[[callers]]
+handle = "GrungeKid"
+calls = 344
+location = "Birmingham, AL"
+
+[[callers]]
+handle = "PitMaster"
+calls = 287
+location = "New Orleans, LA"
+
+[[files]]
+name = "GRUNGE_101.TXT"
+downloads = 412
+description = "Grunge guitar basics explained"
+
+[[files]]
+name = "NIRVANA.TXT"
+downloads = 387
+description = "Nirvana tab collection"
+
+[[files]]
+name = "LOLLA93.TXT"
+downloads = 334
+description = "Lollapalooza 1993 tour recap"
+
+[[files]]
+name = "METALLICA.TXT"
+downloads = 298
+description = "Black Album riff tabs"
+
+[[files]]
+name = "MODPLAY26.ZIP"
+downloads = 267
+description = "MOD/XM tracker player"
+
+[[files]]
+name = "CDPLAY15.ZIP"
+downloads = 234
+description = "DOS CD player shell"
+
+[[files]]
+name = "MPEGPLAY.ZIP"
+downloads = 198
+description = "MPEG audio player"
+
+[[files]]
+name = "PLAYMIDI.ZIP"
+downloads = 176
+description = "DOS MIDI player"
+
+[[posters]]
+handle = "WaxPoetic"
+posts = 567
+board = "Alt/Grunge"
+
+[[posters]]
+handle = "BeatBoxer"
+posts = 489
+board = "Hip-Hop"
+
+[[posters]]
+handle = "SpinDr"
+posts = 412
+board = "New Releases"
+
+[[posters]]
+handle = "GigGoer"
+posts = 378
+board = "Concert Talk"
+
+[[posters]]
+handle = "PitMaster"
+posts = 321
+board = "Metal"
+
+[[posters]]
+handle = "TapeHead"
+posts = 298
+board = "Alt/Grunge"
+
+[[posters]]
+handle = "AnalogFreak"
+posts = 245
+board = "New Releases"
+
+[[posters]]
+handle = "FreqWave"
+posts = 212
+board = "Hip-Hop"
+
+[[posters]]
+handle = "VinylJunkie"
+posts = 187
+board = "Concert Talk"
+
+[[posters]]
+handle = "GrungeKid"
+posts = 154
+board = "Alt/Grunge"

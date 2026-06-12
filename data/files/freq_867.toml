@@ -1,0 +1,272 @@
+# FREQ 867 BBS -- file library
+
+[[sections]]
+name = "Audio Tools"
+
+[[sections.files]]
+id = 1
+name = "PLAYMIDI.ZIP"
+size = "88K"
+date = "09/05/93"
+description = "DOS MIDI player -- General MIDI compatible"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 2
+name = "MPEGPLAY.ZIP"
+size = "142K"
+date = "10/12/93"
+description = "MPEG audio player for DOS -- early MP2 support"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 3
+name = "CDPLAY15.ZIP"
+size = "34K"
+date = "08/01/93"
+description = "CD player shell for DOS -- full track control"
+kind = "binary"
+content = ""
+
+[[sections.files]]
+id = 4
+name = "MODPLAY26.ZIP"
+size = "67K"
+date = "07/22/93"
+description = "MOD/S3M/XM tracker module player for DOS"
+kind = "binary"
+content = ""
+
+[[sections]]
+name = "Tabz & Lyrics"
+
+[[sections.files]]
+id = 5
+name = "NIRVANA.TXT"
+size = "22K"
+date = "09/15/93"
+description = "Nirvana tab collection -- Nevermind + In Utero"
+kind = "text"
+content = """
+NIRVANA GUITAR TAB COLLECTION
+Compiled by TapeHead / FREQ 867 BBS -- September 1993
+
+===============================================================
+COME AS YOU ARE
+from Nevermind (1991)
+===============================================================
+
+Main riff (clean, chorus effect):
+
+e|--0-0-0-0--0-0-0-0--|
+B|--0-0-0-0--0-0-0-0--|
+G|--0-0-0-0--0-0-0-0--|
+D|--2-2-2-2--2-2-2-2--|
+A|--2-2-2-2--2-2-2-2--|
+E|--0-0-0-0--0-0-0-0--|
+
+Intro/verse: Em shape, repeated. Dead simple but iconic.
+
+Pre-chorus palm mute: F#5 to A5, driving eighth notes.
+
+Chorus: open power chords, let ring. F#5 - A5 - C#5 - A5.
+
+---------------
+
+HEART-SHAPED BOX
+from In Utero (1993)
+---------------
+
+Intro riff (clean):
+
+e|--x-x-x-x--|
+B|--x-x-x-x--|
+G|--9-9-8-8--|
+D|--9-9-8-8--|
+A|--7-7-6-6--|
+E|--x-x-x-x--|
+
+Verse: same figure, slight variation on the second chord.
+
+Chorus: F5 - Ab5 - Bb5 progression, heavy with chorus+distortion.
+Kurt uses a very light pick attack on the intro riff -- don't dig in.
+
+The outro: G - Bb - Ab cycling. Albini recorded it very dry.
+
+-- TapeHead / FREQ 867 BBS
+"""
+
+[[sections.files]]
+id = 6
+name = "METALLICA.TXT"
+size = "18K"
+date = "08/14/93"
+description = "Metallica Black Album riffs and solos -- tabbed by AxeGrinder"
+kind = "text"
+content = """
+METALLICA -- THE BLACK ALBUM TAB NOTES
+Tabbed by AxeGrinder / FREQ 867 BBS -- August 1993
+
+These tabs are approximate -- Kirk Hammett's studio solos are complex
+and vary live. Riff notation is fairly accurate.
+
+===============================================================
+SAD BUT TRUE -- Main Riff
+===============================================================
+
+This riff is a DROP D tuning. Tune your low E down to D.
+Tempo is slow and crushing -- let each chord breathe.
+
+Standard notation (drop D):
+
+e|--x---------|
+B|--x---------|
+G|--x---------|
+D|--0-0-0-0---|
+A|--0-0-0-0---|
+D|--0-0-0-0---|
+
+The 'wall of sound' effect: James plays with a very thick pick,
+palm muted, with heavy downstrokes. Do not upstroke this riff.
+
+After the main figure:
+
+D5 - Eb5 - D5 - C5 - Bb5 - C5 - D5 (power chords, drop D)
+
+===============================================================
+ENTER SANDMAN -- Intro
+===============================================================
+
+Standard tuning. The signature riff:
+
+e|--x-x-x-x-x-x--|
+B|--x-x-x-x-x-x--|
+G|--x-x-x-x-x-x--|
+D|--x-x-x-x-x-x--|
+A|--2-2-0-3-2-0--|
+E|--0-0---1-0----|
+
+The palm mute is essential. Very tight, controlled.
+James uses 0.73mm picks but hits incredibly hard.
+
+NOTE: The studio tone uses a Mesa Boogie MkIIC+ into an old Marshall cab.
+Getting this exact sound at home is nearly impossible -- get close and move on.
+
+-- AxeGrinder / FREQ 867 BBS
+"""
+
+[[sections.files]]
+id = 7
+name = "GRUNGE_101.TXT"
+size = "11K"
+date = "10/01/93"
+description = "Grunge guitar basics -- tunings, tones, bands explained"
+kind = "text"
+content = """
+GRUNGE GUITAR 101
+Written by WaxPoetic / FREQ 867 BBS -- October 1993
+
+So you want to know what makes grunge sound like grunge.
+Here's the short version.
+
+TUNING:
+Most grunge uses standard tuning (EADGBe) or drop D (DADGBe).
+Some bands tune down a half step (Eb tuning) for a heavier feel.
+Soundgarden uses a lot of open and non-standard tunings -- avoid
+trying to tab their stuff by ear unless you're prepared for confusion.
+
+GEAR:
+The classic grunge signal chain is embarrassingly simple:
+  Guitar (usually a Stratocaster, Jaguar, or Les Paul)
+  --> Boss DS-1 or ProCo Rat distortion pedal
+  --> Cheap solid-state practice amp OR a loud tube combo
+
+The Big Muff Pi fuzz (Electro-Harmonix) is everywhere.
+Kurt Cobain used it constantly. It's not subtle.
+
+PLAYING STYLE:
+The 'Seattle sound' is deliberately sloppy in places.
+Perfect technique is not the goal. Urgency is the goal.
+Open power chords. Loud. Dynamic -- quiet verse, loud chorus.
+That's the whole formula.
+
+BANDS TO STUDY:
+
+Nirvana: Simple chord shapes, pop melodies buried under noise.
+         Learn the verse-chorus dynamic from 'Lithium.'
+
+Pearl Jam: More traditional rock technique. Eddie Vedder's
+           rhythm playing is underrated. Stone Gossard writes
+           great parts that leave room for the vocal.
+
+Soundgarden: The most technically demanding. Kim Thayil uses
+             unusual tunings and complex rhythmic feels.
+             'Black Hole Sun' is in drop D but sounds simple -- it isn't.
+
+Alice in Chains: The dark one. Jerry Cantrell uses a lot of
+                 7th chords and chromatic movement. The twin-guitar
+                 harmonies with Layne Staley on vocals are unique.
+                 'Would?' is the essential AIC song to learn.
+
+-- WaxPoetic / FREQ 867 BBS
+"""
+
+[[sections]]
+name = "Scene News"
+
+[[sections.files]]
+id = 8
+name = "LOLLA93.TXT"
+size = "8K"
+date = "08/20/93"
+description = "Lollapalooza 1993 tour dates and setlist notes"
+kind = "text"
+content = """
+LOLLAPALOOZA 1993 -- TOUR RECAP
+Compiled from multiple callers / FREQ 867 BBS
+
+LINEUP (Main Stage):
+  Primus
+  Rage Against the Machine
+  Alice in Chains (headliner)
+  Arrested Development
+  Dinosaur Jr.
+  Babes in Toyland
+  Fishbone
+
+LINEUP (Second Stage):
+  Tool
+  Nine Inch Nails (before NIN exploded -- catch them here)
+  Front 242
+
+SETLIST NOTES (Chicago, from GigGoer's report):
+
+Primus opened with 'Jerry Was a Race Car Driver' and 'Wynona's Big Brown Beaver.'
+Les Claypool's bass playing stopped being normal music and became performance art.
+
+RATM played an 8-song set that felt like being hit by a bus:
+  Killing in the Name
+  Wake Up
+  Bullet in the Head
+  Bombtrack
+  Know Your Enemy
+  Freedom
+  (two more from the debut)
+
+Tom Morello killed it. Zack de la Rocha was out of his mind. Crowd was insane.
+
+Alice in Chains headlined. Layne Staley's voice in an open air amphitheater at night:
+that is one of the finest moments in modern rock music. 'Would?' as the closer destroyed.
+
+Nine Inch Nails second stage: Broken just came out. They played all of it plus
+songs from Pretty Hate Machine. Trent Reznor is not entirely well and that's
+100% what makes this work. Best second stage set of the tour by multiple accounts.
+
+BOTTOM LINE:
+If you didn't go this year, you missed one of the great festival lineups of the decade.
+Tool, NIN, and RATM in one day for $25. This does not happen again.
+
+-- FREQ 867 BBS
+"""

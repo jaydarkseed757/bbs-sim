@@ -1,0 +1,535 @@
+# FREQ 867 BBS — board data
+
+# ── Alternative / Grunge ──────────────────────────────────────────────────────
+
+[[boards]]
+id = "alt_grunge"
+name = "Alt/Grunge"
+
+[[boards.threads]]
+id = 1
+subject = "Nirvana In Utero -- is it better than Nevermind?"
+
+[[boards.threads.posts]]
+id = 1
+author = "WaxPoetic"
+subject = "Nirvana In Utero -- is it better than Nevermind?"
+timestamp = "09/14/93 22:10"
+body = """
+In Utero came out this week and it's hard and raw and angular.
+Kurt clearly pushed back against the Nevermind polished-rock-radio sound.
+Steve Albini's production is confrontational -- 'Scentless Apprentice'
+sounds like it wants to hurt you. That is the point.
+Nevermind made them famous. This is what they were always going to do next."""
+
+[[boards.threads.posts]]
+id = 2
+author = "GrungeKid"
+subject = "Re: Nirvana In Utero -- is it better than Nevermind?"
+timestamp = "09/15/93 01:33"
+body = """
+'Heart-Shaped Box' is the perfect single -- weird enough to be Nirvana,
+melodic enough to justify DGC releasing it. The video is incredibly strange.
+The rest of the album is mostly less accessible than that suggests.
+'Rape Me' is Nirvana deconstructing 'Smells Like Teen Spirit.' Fascinating."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TapeHead"
+subject = "Re: Nirvana In Utero -- is it better than Nevermind?"
+timestamp = "09/15/93 11:44"
+body = """
+Albini mastered the drums to sound like actual drums hit in a real room.
+Nevermind's snare sounds like a machine. This one sounds like Dave Grohl.
+'Pennyroyal Tea' is devastating. 'All Apologies' is beautiful. Side B rules.
+Better than Nevermind? I think it's what they actually meant to sound like."""
+
+[[boards.threads.posts]]
+id = 4
+author = "FreqWave"
+subject = "Re: Nirvana In Utero -- is it better than Nevermind?"
+timestamp = "09/16/93 03:20"
+body = """
+The album was re-mixed after Albini's version because DGC got cold feet.
+His original mixes are apparently much rawer -- I want to hear those someday.
+Even the compromised version is far more abrasive than anything on Nevermind.
+Kurt wanted noise. He got noise. We're lucky he gets to make records."""
+
+[[boards.threads]]
+id = 2
+subject = "Pearl Jam Vs. -- five million copies first week"
+
+[[boards.threads.posts]]
+id = 1
+author = "VinylJunkie"
+subject = "Pearl Jam Vs. -- five million copies first week"
+timestamp = "10/19/93 20:00"
+body = """
+Five million copies in the first week. Pearl Jam is the biggest band on
+the planet right now. They refuse to do MTV interviews or make videos and
+they're outselling everyone. That is either genius or luck.
+Vs. is heavier and rawer than Ten. Less arena-ready. More interesting."""
+
+[[boards.threads.posts]]
+id = 2
+author = "WaxPoetic"
+subject = "Re: Pearl Jam Vs. -- five million copies first week"
+timestamp = "10/20/93 09:15"
+body = """
+'Elderly Woman Behind the Counter in a Small Town' is the best song on it.
+Eddie Vedder's voice on that track is unlike anything he's done before.
+The whole album has more tempo variety than Ten -- '5/4' and 'Leash' push hard.
+Brendan O'Brien's production gives it a dirtier low end. Smart call."""
+
+[[boards.threads.posts]]
+id = 3
+author = "GrungeKid"
+subject = "Re: Pearl Jam Vs. -- five million copies first week"
+timestamp = "10/21/93 00:48"
+body = """
+Ten was a near-perfect debut. Vs. is them figuring out they can do anything.
+'Glorified G' is almost a joke song. 'W.M.A.' is punk-influenced spoken word.
+They're not trying to repeat the arena rock formula. That's why they'll last.
+The Ticketmaster boycott is going to cost them though. Respect the principle."""
+
+[[boards.threads]]
+id = 3
+subject = "Smashing Pumpkins Siamese Dream -- album of the year?"
+
+[[boards.threads.posts]]
+id = 1
+author = "TuneHead"
+subject = "Smashing Pumpkins Siamese Dream -- album of the year?"
+timestamp = "07/28/93 19:00"
+body = """
+Siamese Dream came out earlier this month and I haven't stopped listening.
+Butch Vig produced it -- same as Nevermind -- but it sounds completely different.
+Bigger, denser, more layered. Billy Corgan played almost every instrument himself.
+'Soma' is six minutes and feels like two. That guitar outro is transcendent."""
+
+[[boards.threads.posts]]
+id = 2
+author = "TapeHead"
+subject = "Re: Smashing Pumpkins Siamese Dream -- album of the year?"
+timestamp = "07/29/93 15:30"
+body = """
+'Cherub Rock' is a mission statement -- he's calling out the indie gatekeepers
+while making the most overblown, unironic guitar rock album of the decade.
+'Today' is deceptively simple. Best pop song about being suicidal ever made.
+The production on this is massive. How many guitar tracks is that? 50?"""
+
+[[boards.threads.posts]]
+id = 3
+author = "StaticNoise"
+subject = "Re: Smashing Pumpkins Siamese Dream -- album of the year?"
+timestamp = "07/30/93 02:10"
+body = """
+Corgan was fighting severe depression during the recording. He's talked about it.
+The album is both falling apart and incredibly controlled. That tension is the sound.
+'Disarm' is almost too honest for radio but here it is in heavy rotation.
+Album of the year so far for me. Nothing else has hit as hard."""
+
+# ── Metal ─────────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "metal"
+name = "Metal"
+
+[[boards.threads]]
+id = 1
+subject = "Metallica Black Album -- two years in, still selling millions"
+
+[[boards.threads.posts]]
+id = 1
+author = "AxeGrinder"
+subject = "Metallica Black Album -- two years in, still selling millions"
+timestamp = "08/12/93 21:00"
+body = """
+Two years since the Black Album dropped and it's still the best-selling metal
+record ever made. Bob Rock's production was divisive -- thrash purists hated it.
+They slowed down, cleaned up, and traded speed for sheer weight.
+'Sad But True' is a brick wall. I was wrong to be skeptical in '91."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PitMaster"
+subject = "Re: Metallica Black Album -- two years in, still selling millions"
+timestamp = "08/13/93 10:30"
+body = """
+The genius of it is the dynamics. 'Nothing Else Matters' works because
+it's surrounded by absolute brutality. The contrast makes both hit harder.
+'Enter Sandman' is a perfect opener -- you know immediately that this is different.
+'Wherever I May Roam' has the best groove they've ever written. Fight me."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NoiseMaker"
+subject = "Re: Metallica Black Album -- two years in, still selling millions"
+timestamp = "08/14/93 00:15"
+body = """
+I defended it when the thrash crowd was calling them sellouts. Still defending.
+The production does sound dated in places -- the snare is very 1991 Bob Rock.
+But the songwriting is the best of their career. 'The God That Failed' is flawless.
+Wherever they go next, this is the commercial peak. Enjoy it while it lasts."""
+
+[[boards.threads]]
+id = 2
+subject = "Pantera Vulgar Display of Power -- heaviest thing this decade"
+
+[[boards.threads.posts]]
+id = 1
+author = "PitMaster"
+subject = "Pantera Vulgar Display of Power -- heaviest thing this decade"
+timestamp = "03/01/93 19:30"
+body = """
+Vulgar Display came out February last year and one year later nothing touches it.
+Phil Anselmo's vocal on 'Walk' is a declaration. Pure aggression, perfect control.
+Dimebag's guitar tone is its own character -- that crunch on 'Mouth for War.'
+Cowboys From Hell was their breakthrough. This is their masterpiece."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AxeGrinder"
+subject = "Re: Pantera Vulgar Display of Power -- heaviest thing this decade"
+timestamp = "03/02/93 12:45"
+body = """
+'A New Level' and 'This Love' show they're not just a one-speed band.
+The slow grooves hit as hard as the fast parts. Vinnie Paul's kick drum is a weapon.
+Rex Brown is criminally underrated -- that bass on 'Live in a Hole' locks in perfectly.
+Hearing they're working on Far Beyond Driven. If they push further: good lord."""
+
+[[boards.threads.posts]]
+id = 3
+author = "NoiseMaker"
+subject = "Re: Pantera Vulgar Display of Power -- heaviest thing this decade"
+timestamp = "03/03/93 03:00"
+body = """
+The production is part of the identity. Terry Date knew exactly what he was doing.
+That guitar tone doesn't happen by accident -- Dime's setup and the engineering
+together make a sound that nobody before or after has quite replicated.
+This is what metal sounds like when everyone in the band is playing at 100%."""
+
+# ── Hip-Hop ───────────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "hip_hop"
+name = "Hip-Hop"
+
+[[boards.threads]]
+id = 1
+subject = "Dr. Dre The Chronic -- one year in, still dominating"
+
+[[boards.threads.posts]]
+id = 1
+author = "BeatBoxer"
+subject = "Dr. Dre The Chronic -- one year in, still dominating"
+timestamp = "12/01/93 20:00"
+body = """
+The Chronic came out a year ago and 1993 has been one long G-funk aftershock.
+Every producer is chasing that synthesized Parliament-Funkadelic sound now.
+Dre didn't just make an album -- he invented a new West Coast sub-genre.
+The laid-back tempo, the low riders, the Valley haze. It's a complete aesthetic."""
+
+[[boards.threads.posts]]
+id = 2
+author = "WaxPoetic"
+subject = "Re: Dr. Dre The Chronic -- one year in, still dominating"
+timestamp = "12/02/93 02:30"
+body = """
+What gets overlooked is the production craft. Every sample placement is deliberate.
+The Roger Troutman talk-box that runs through half the album ties it together.
+'Nuthin' But a G Thang' has one of the best intros in hip-hop history.
+And Snoop was an unknown when they made this. Dre heard something and trusted it."""
+
+[[boards.threads.posts]]
+id = 3
+author = "SpinDr"
+subject = "Re: Dr. Dre The Chronic -- one year in, still dominating"
+timestamp = "12/02/93 21:00"
+body = """
+Sysop perspective: Snoop's flow on 'Gin and Juice' is unteachable.
+You can study it, transcribe it, learn every word -- and still not be Snoop.
+Some voices just fit a beat the way a key fits a lock. His fits every Dre beat.
+The Chronic launched a career (Snoop) and reinvented another (Dre). Rare."""
+
+[[boards.threads]]
+id = 2
+subject = "Wu-Tang Clan 36 Chambers -- just dropped, holy moly"
+
+[[boards.threads.posts]]
+id = 1
+author = "TuneHead"
+subject = "Wu-Tang Clan 36 Chambers -- just dropped, holy moly"
+timestamp = "11/09/93 22:00"
+body = """
+Wu-Tang dropped today. Enter the Wu-Tang: 36 Chambers.
+RZA's production is from another planet -- those dusty piano loops, the kung fu samples,
+the drums that sound like they were recorded in a stairwell. Nothing sounds like this.
+Nine MCs and not one of them sounds like another. This is its own universe."""
+
+[[boards.threads.posts]]
+id = 2
+author = "BeatBoxer"
+subject = "Re: Wu-Tang Clan 36 Chambers -- just dropped, holy moly"
+timestamp = "11/10/93 01:15"
+body = """
+GZA is the wordsmith. Method Man has the hooks. Raekwon is the storyteller.
+ODB is chaos in human form and I mean that as the highest compliment.
+'C.R.E.A.M.' is going to be everywhere -- that piano loop over those drums is perfect.
+'Protect Ya Neck' is how you announce a crew has arrived. Fully arrived."""
+
+[[boards.threads.posts]]
+id = 3
+author = "FreqWave"
+subject = "Re: Wu-Tang Clan 36 Chambers -- just dropped, holy moly"
+timestamp = "11/10/93 18:45"
+body = """
+The lo-fi production is a choice, not a limitation. RZA knew exactly what he wanted.
+The Shaolin mythology layered over Staten Island street life is completely unique.
+No other hip-hop collective has this kind of individual character depth per member.
+Ten years from now we'll call this the New York answer to The Chronic. Watch."""
+
+[[boards.threads]]
+id = 3
+subject = "Snoop Dogg Doggystyle debut -- worth the hype?"
+
+[[boards.threads.posts]]
+id = 1
+author = "SpinDr"
+subject = "Snoop Dogg Doggystyle debut -- worth the hype?"
+timestamp = "11/23/93 20:30"
+body = """
+Doggystyle dropped this week. Debut albums this complete don't come along often.
+'What's My Name?' sets the tone immediately -- relaxed, confident, total control.
+Dre produced every track and it shows, but Snoop's personality takes it somewhere
+The Chronic couldn't go. It's his record from the first bar. Zero doubt."""
+
+[[boards.threads.posts]]
+id = 2
+author = "BeatBoxer"
+subject = "Re: Snoop Dogg Doggystyle debut -- worth the hype?"
+timestamp = "11/24/93 09:00"
+body = """
+'Gin and Juice' was already a hit before the album dropped. Heard it everywhere.
+Hearing it in the context of the full record: it's not even close to the best track.
+'Lodi Dodi' and 'Tha Shiznit' hit harder for me. The sequencing is smart.
+This is how you follow up a guest-star career moment. Snoop understood the assignment."""
+
+[[boards.threads.posts]]
+id = 3
+author = "WaxPoetic"
+subject = "Re: Snoop Dogg Doggystyle debut -- worth the hype?"
+timestamp = "11/25/93 02:20"
+body = """
+The Chronic showed Snoop could steal every track he was on. Doggystyle confirms it.
+Dre's production is tailored to Snoop's delivery -- slow enough for him to drawl.
+The genius: Snoop never sounds rushed. Even when the track is moving, he glides.
+Two records. Two artists redefining West Coast hip-hop. 1993 belongs to Compton."""
+
+# ── New Releases ──────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "new_releases"
+name = "New Releases"
+
+[[boards.threads]]
+id = 1
+subject = "Depeche Mode Songs of Faith and Devotion -- darkest yet"
+
+[[boards.threads.posts]]
+id = 1
+author = "AnalogFreak"
+subject = "Depeche Mode Songs of Faith and Devotion -- darkest yet"
+timestamp = "03/22/93 20:00"
+body = """
+DM went full gospel in the most secular and menacing way possible.
+'I Feel You' opens with a guitar riff -- a guitar riff! -- and it's their heaviest moment.
+Dave Gahan's voice has dropped an octave from the Violator era. He sounds dangerous.
+Alan Wilder's arrangements are extraordinary. Synths plus live orchestra. Wild."""
+
+[[boards.threads.posts]]
+id = 2
+author = "VinylJunkie"
+subject = "Re: Depeche Mode Songs of Faith and Devotion -- darkest yet"
+timestamp = "03/23/93 12:45"
+body = """
+'Walking in My Shoes' is their most honest lyric -- no metaphor, just confession.
+'In Your Room' is seven minutes of pure slow-burn tension. Best track they've done.
+The production by Flood and Wilder gives it a live, organic feel despite being synths.
+Whatever Gahan is going through personally is going into this record. It's intense."""
+
+[[boards.threads.posts]]
+id = 3
+author = "TapeHead"
+subject = "Re: Depece Mode Songs of Faith and Devotion -- darkest yet"
+timestamp = "03/24/93 01:30"
+body = """
+The Devotional tour that's following this album looks absolutely massive.
+Giant industrial stage, video screens, elaborate production. They've earned it.
+One of the best records of the year for me. Consistently surprising.
+They've been making records for 13 years and this is one of their top three. Remarkable."""
+
+[[boards.threads]]
+id = 2
+subject = "Counting Crows debut -- Mr. Jones is everywhere"
+
+[[boards.threads.posts]]
+id = 1
+author = "GrungeKid"
+subject = "Counting Crows debut -- Mr. Jones is everywhere"
+timestamp = "10/05/93 18:00"
+body = """
+'Mr. Jones' is on every radio station simultaneously. Can't escape it.
+August and Everything After is actually a great album underneath the mega-hit.
+Adam Duritz writes the kind of painfully honest lyrics that make you feel exposed.
+T Bone Burnett's production is warm and woody -- the opposite of Siamese Dream."""
+
+[[boards.threads.posts]]
+id = 2
+author = "FreqWave"
+subject = "Re: Counting Crows debut -- Mr. Jones is everywhere"
+timestamp = "10/06/93 10:30"
+body = """
+'Anna Begins' and 'Rain King' are the best cuts and they get no radio play.
+That's how you know an album is worth your time: the deep cuts hold up.
+Duritz's Van Morrison obsession is obvious but he's made it his own thing.
+The band is phenomenal live apparently. Seeing them next month."""
+
+[[boards.threads.posts]]
+id = 3
+author = "StaticNoise"
+subject = "Re: Counting Crows debut -- Mr. Jones is everywhere"
+timestamp = "10/07/93 23:45"
+body = """
+'A Murder of One' is the album closer and it's devastating. Nobody's talking about it.
+The whole record is about longing -- for connection, for fame, for something to be real.
+Duritz actually got famous after wanting it for so long and seems confused by it.
+That's the most human thing a rock star can be. This album will age beautifully."""
+
+[[boards.threads]]
+id = 3
+subject = "U2 Zooropa -- their weirdest record yet"
+
+[[boards.threads.posts]]
+id = 1
+author = "VinylJunkie"
+subject = "U2 Zooropa -- their weirdest record yet"
+timestamp = "07/05/93 19:00"
+body = """
+Zooropa came out of the Zoo TV tour and it sounds like it -- fractured, electronic,
+postmodern in a way that U2 has never been before and may never be again.
+The title track opener is genuinely strange for a stadium band's release.
+Bono treating his voice as a texture rather than a delivery mechanism is fascinating."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AnalogFreak"
+subject = "Re: U2 Zooropa -- their weirdest record yet"
+timestamp = "07/06/93 14:00"
+body = """
+Johnny Cash singing closer 'The Wanderer' is the most inspired guest spot in years.
+His ancient voice against the cold electronics sounds like the end of everything.
+The Edge's guitar is almost absent in places -- replaced by Brian Eno textures.
+They're not trying to make The Joshua Tree again. Good. We already have that."""
+
+[[boards.threads.posts]]
+id = 3
+author = "WaxPoetic"
+subject = "Re: U2 Zooropa -- their weirdest record yet"
+timestamp = "07/07/93 03:10"
+body = """
+Either their most important record since Achtung Baby or a well-produced wrong turn.
+I've been going back and forth every week. But I keep going back. That means something.
+'Numb' is The Edge singing in monotone over a drum machine and it works perfectly.
+This is U2 risking failure. I'll take that over safe U2 every time."""
+
+# ── Concert Talk ──────────────────────────────────────────────────────────────
+
+[[boards]]
+id = "concert_talk"
+name = "Concert Talk"
+
+[[boards.threads]]
+id = 1
+subject = "Lollapalooza '93 -- best lineup they've done yet"
+
+[[boards.threads.posts]]
+id = 1
+author = "GigGoer"
+subject = "Lollapalooza '93 -- best lineup they've done yet"
+timestamp = "08/14/93 23:00"
+body = """
+Was at the Chicago date earlier this month. Primus opened, then Rage Against the Machine,
+Alice in Chains headlined. Nine Inch Nails on the second stage before sunset.
+Trent absolutely destroyed -- Broken just came out and they were ferocious.
+Fishbone and Arrested Development were undercard highlights. Perfect summer day."""
+
+[[boards.threads.posts]]
+id = 2
+author = "TapeHead"
+subject = "Re: Lollapalooza '93 -- best lineup they've done yet"
+timestamp = "08/15/93 11:30"
+body = """
+Rage Against the Machine playing to 50,000 people is something. The energy was wild.
+Zack de la Rocha's stage presence is unlike anything in rock right now.
+Tom Morello's guitar sounds like a DJ, a machine gun, and a buzzsaw simultaneously.
+For a band with one album they played like they'd been headlining for ten years."""
+
+[[boards.threads.posts]]
+id = 3
+author = "VinylJunkie"
+subject = "Re: Lollapalooza '93 -- best lineup they've done yet"
+timestamp = "08/16/93 02:45"
+body = """
+Perry Farrell's Lollapalooza model is the best thing that's happened to live music.
+Diverse lineup, traveling festival, second stage for discovery acts.
+The corporate sponsorship is creeping in but it hasn't ruined it yet.
+Alice in Chains headlining: Layne Staley's voice in a field at night is haunting."""
+
+[[boards.threads]]
+id = 2
+subject = "Concert horror stories -- worst shows you've survived"
+
+[[boards.threads.posts]]
+id = 1
+author = "FreqWave"
+subject = "Concert horror stories -- worst shows you've survived"
+timestamp = "06/10/93 20:00"
+body = """
+Guns N' Roses in '92. Axl was two hours late. Played forty-five minutes.
+Quit because someone in the crowd threw a bottle near him. $45 gone.
+The St. Louis riot in '91 was because of the exact same thing -- early exit.
+I don't know why anyone pays Axl Rose money anymore. He owes us all."""
+
+[[boards.threads.posts]]
+id = 2
+author = "GrungeKid"
+subject = "Re: Concert horror stories -- worst shows you've survived"
+timestamp = "06/11/93 09:15"
+body = """
+Metallica/GN'R stadium tour in '92 -- pyrotechnics malfunction burned James Hetfield.
+He finished the set with burns on his arm. Then Guns N' Roses played for 45 minutes
+and Axl quit when Slash walked off. Fifty thousand confused people in a parking lot.
+Worst managed stadium show in history. But James Hetfield finishing his set: legend."""
+
+[[boards.threads.posts]]
+id = 3
+author = "GigGoer"
+subject = "Re: Concert horror stories -- worst shows you've survived"
+timestamp = "06/12/93 01:00"
+body = """
+Less dramatic but: saw a band whose singer was too drunk to remember lyrics.
+Every song. He'd start the first verse and then just wave the mic at the crowd.
+Eventually the crowd just... took over. We sang the whole set for him.
+Weirdly it became the best show I've ever seen. That crowd was incredible."""
+
+[[boards.threads.posts]]
+id = 4
+author = "PitMaster"
+subject = "Re: Concert horror stories -- worst shows you've survived"
+timestamp = "06/12/93 15:30"
+body = """
+Saw a metal band where the PA blew out after the second song. Dead silence.
+The drummer kept playing, then the bassist joined in, then both guitarists unplugged
+and played acoustically. Vocalist did the whole set acoustic and screaming.
+Two hundred people absolutely losing their minds in a tiny club with no PA. Perfect."""

@@ -236,3 +236,251 @@ Going with Planescape for best RPG. TSR marketing machine will push it hard.
 Computer side: Ultima VII Serpent Isle is stunning but UU2 might edge it.
 The Ultima franchise has dominated that category for three years running.
 Dark Sun is a dark horse -- the atrocity cards mechanic is genuinely innovative."""
+
+[[boards.threads]]
+id = 4
+subject = "Betrayal at Krondor -- best writing in an RPG?"
+
+[[boards.threads.posts]]
+id = 1
+author = "LoreDigger"
+subject = "Betrayal at Krondor -- best writing in an RPG?"
+timestamp = "04/01/93 20:00"
+body = """
+Just finished Betrayal at Krondor for the third time. The writing still hits.
+Raymond E. Feist co-wrote the story directly and it shows.
+The chapter-based structure with interlude poems and genuine plot twists.
+Sierra published it but it plays nothing like their other games. A unique gem."""
+
+[[boards.threads.posts]]
+id = 2
+author = "CrawlMaster"
+subject = "Re: Betrayal at Krondor -- best writing in an RPG?"
+timestamp = "04/02/93 10:30"
+body = """
+The chest riddles alone put it above 90% of the genre.
+The combat is turn-based hex grid -- satisfying and tactical without being punishing.
+Locklear is one of the better companions in RPG history. Actually has personality.
+If you're coming from the Riftwar novels the fan service is generous."""
+
+[[boards.threads.posts]]
+id = 3
+author = "ADnDFan"
+subject = "Re: Betrayal at Krondor -- best writing in an RPG?"
+timestamp = "04/03/93 18:15"
+body = """
+The overland map exploration reminds me of Might and Magic but classier.
+The enemy scaling means you can tackle regions in non-linear order.
+Return to Krondor is supposedly planned. Cannot happen fast enough.
+Dynamix really committed to the Midkemia setting. Feels lived-in."""
+
+[[boards.threads]]
+id = 5
+subject = "System Shock -- Looking Glass goes dark"
+
+[[boards.threads.posts]]
+id = 1
+author = "DungeonMstr"
+subject = "System Shock -- Looking Glass goes dark"
+timestamp = "05/14/93 21:00"
+body = """
+Got a preview build of System Shock from a friend at Origin. This game is something else.
+You're a hacker fighting a rogue AI called SHODAN on a space station.
+The immersive sim engine from Ultima Underworld but darker, cyberpunkier.
+The audio logs to build atmosphere instead of cutscenes -- brilliant and cheap. Smart design."""
+
+[[boards.threads.posts]]
+id = 2
+author = "CrawlMaster"
+subject = "Re: System Shock -- Looking Glass goes dark"
+timestamp = "05/15/93 09:00"
+body = """
+SHODAN's voice lines from that preview are unsettling in a way most games never achieve.
+"Insect" is going to be the gaming insult of 1994. Calling it now.
+The full 3D environment with room above and below you changes everything about movement.
+Looking Glass keep pushing what a game environment can be. They deserve all the hype."""
+
+[[boards.threads.posts]]
+id = 3
+author = "RollD20"
+subject = "Re: System Shock -- Looking Glass goes dark"
+timestamp = "05/16/93 23:30"
+body = """
+The inventory and interface look dense but apparently it clicks once you're in.
+Runs on a 486/33 minimum which is reasonable for what it's doing.
+SHODAN as an antagonist is a real character not just a final boss obstacle.
+The philosophical questions about artificial consciousness -- this is cyberpunk done right."""
+
+# ── D&D additions ──────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Ravenloft campaign -- horror atmosphere tips"
+
+[[boards.threads.posts]]
+id = 1
+author = "CampaignNerd"
+subject = "Ravenloft campaign -- horror atmosphere tips"
+timestamp = "03/15/93 19:00"
+body = """
+Running a Ravenloft campaign for four months now. The horror atmosphere is hard to sustain.
+Tip 1: remove healing surges. Let wounds linger. Players should feel fragile.
+Tip 2: Strahd appears before players expect him. Presence without confrontation.
+Tip 3: no resurrection. Death in Ravenloft is permanent. Table gasps confirmed."""
+
+[[boards.threads.posts]]
+id = 2
+author = "DiceGoblin"
+subject = "Re: Ravenloft campaign -- horror atmosphere tips"
+timestamp = "03/16/93 08:45"
+body = """
+Sound at the table is underrated for Ravenloft. Silence is powerful.
+I play a recording of rain and thunder very quietly during sessions.
+Describe smells. The mildew of a crypt, the copper of blood. Sensory detail sells horror.
+Also: let the players win small victories. Ravenloft loses its teeth if it's all doom."""
+
+[[boards.threads.posts]]
+id = 3
+author = "OldSchoolRoller"
+subject = "Re: Ravenloft campaign -- horror atmosphere tips"
+timestamp = "03/17/93 22:00"
+body = """
+The Powers Check mechanic is the best fear-management tool in any RPG supplement.
+When players do dark deeds for good reasons and slowly feel the domain corrupting them --
+that slow burn is better than any monster encounter.
+Read I, Strahd if you haven't. Gives Strahd actual dimension beyond just villain."""
+
+[[boards.threads.posts]]
+id = 4
+author = "CampaignNerd"
+subject = "Re: Ravenloft campaign -- horror atmosphere tips"
+timestamp = "03/18/93 11:00"
+body = """
+The sound tip is excellent -- started with a low drone track last session.
+One player said it was the most scared they've been at a game table.
+For the mists: I describe them with smell now. Wet earth, old stone, something wrong.
+The Tarokka card deck for divination adds ritual texture the players love."""
+
+[[boards.threads]]
+id = 4
+subject = "Dark Sun -- the most brutal campaign setting?"
+
+[[boards.threads.posts]]
+id = 1
+author = "DiceGoblin"
+subject = "Dark Sun -- the most brutal campaign setting?"
+timestamp = "04/10/93 20:00"
+body = """
+Running Dark Sun for six months. The setting is uncompromisingly bleak and I love it.
+No clerics with divine backing. Metal is almost nonexistent. Slavery is normalized.
+The psionics-heavy world changes every encounter dynamic.
+My players hate how hard it is and refuse to stop playing. Perfect game design."""
+
+[[boards.threads.posts]]
+id = 2
+author = "RollD20"
+subject = "Re: Dark Sun -- the most brutal campaign setting?"
+timestamp = "04/11/93 10:15"
+body = """
+The pregenerated characters starting at higher levels is actually smart for setting tone.
+An Athas fighter in arena combat at level 7 is not the same as a level 1 sewer rat.
+The sorcerer-king politics give the setting real stakes beyond dungeon crawling.
+The Dragon of Tyr as a background threat puts Strahd to shame for pure menace."""
+
+[[boards.threads.posts]]
+id = 3
+author = "OldSchoolRoller"
+subject = "Re: Dark Sun -- the most brutal campaign setting?"
+timestamp = "04/12/93 17:30"
+body = """
+Troy Denning's Prism Pentad novels are worth reading for setting flavor.
+The defiler/preserver magic system -- using life force to power spells -- is genius.
+Watching a player decide whether to deforest the oasis they're camped in for a big spell.
+That moral weight is what AD&D can do when the designers commit to a vision."""
+
+# ── General additions ─────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "What first got you into RPGs?"
+
+[[boards.threads.posts]]
+id = 1
+author = "DungeonMstr"
+subject = "What first got you into RPGs?"
+timestamp = "01/08/93 18:00"
+body = """
+Mine was the Basic D&D red box in 1982. Found it at a garage sale for 50 cents.
+Read the whole rulebook in one night. Ran my first session the next day.
+The dungeon was terrible and the rules were half-wrong but we had a blast.
+Thirty sessions later I had graph paper notebooks full of maps. Never stopped."""
+
+[[boards.threads.posts]]
+id = 2
+author = "CrawlMaster"
+subject = "Re: What first got you into RPGs?"
+timestamp = "01/09/93 10:00"
+body = """
+Ultima III on the Apple II, 1983. Didn't know it was an RPG, just knew it was magic.
+Spent three months mapping the dungeons on graph paper.
+Found the D&D rulebooks at a library the next year and the connection clicked.
+Computer RPGs and tabletop RPGs: same love, different expression."""
+
+[[boards.threads.posts]]
+id = 3
+author = "WizardKing"
+subject = "Re: What first got you into RPGs?"
+timestamp = "01/10/93 22:30"
+body = """
+A friend's older brother ran us through Keep on the Borderlands in 7th grade.
+We didn't know what we were doing at all. Everybody died in the first room.
+We came back the next week and did it again. That was '85.
+Still playing with three of those same people."""
+
+[[boards.threads.posts]]
+id = 4
+author = "LoreDigger"
+subject = "Re: What first got you into RPGs?"
+timestamp = "01/11/93 14:15"
+body = """
+Lone Wolf gamebooks before I found proper RPGs. Choose Your Own Adventure but with stats.
+The jump to proper D&D felt natural -- same underlying fantasy but with friends.
+The social aspect is what kept me. Gaming alone is fine; gaming with a table is something else.
+My group has been together eight years. These people know me better than family."""
+
+[[boards.threads]]
+id = 4
+subject = "GenCon 1993 -- anyone going to Milwaukee?"
+
+[[boards.threads.posts]]
+id = 1
+author = "CampaignNerd"
+subject = "GenCon 1993 -- anyone going to Milwaukee?"
+timestamp = "06/15/93 20:00"
+body = """
+GenCon is August 19-22 in Milwaukee. Who's making the trip?
+It's the biggest gaming convention in the country -- TSR basically owns it.
+New releases from TSR, White Wolf, FASA all dropping at the con.
+The auction hall alone is worth the drive."""
+
+[[boards.threads.posts]]
+id = 2
+author = "DiceGoblin"
+subject = "Re: GenCon 1993 -- anyone going to Milwaukee?"
+timestamp = "06/16/93 09:30"
+body = """
+Going for the third year. If you haven't been: the auction is where to be.
+First editions, rare modules, out of print supplements at fair prices.
+The seminar schedule is packed with designers. The FASA Shadowrun team is presenting.
+If you're in the midwest and call yourself a gamer there's no excuse not to go."""
+
+[[boards.threads.posts]]
+id = 3
+author = "OldSchoolRoller"
+subject = "Re: GenCon 1993 -- anyone going to Milwaukee?"
+timestamp = "06/17/93 15:00"
+body = """
+Got my hotel booked. Staying at the Hyatt near the convention center.
+Bring a cart for the dealer room -- you will buy more than you planned.
+The Thursday night games are where the real memories get made. Sign up early.
+TSR always has a big announcement Friday morning. Worth being there for."""

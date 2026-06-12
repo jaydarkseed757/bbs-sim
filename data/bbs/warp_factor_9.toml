@@ -232,3 +232,251 @@ body = """
 On my second read. The footnotes alone are worth the price.
 Shirow explains the tech in detail -- the cyborg augmentation economics are fascinating.
 The Major is such a well-written character. Complex in ways most fiction isn't."""
+
+[[boards.threads]]
+id = 4
+subject = "X-Files pilot -- new show to watch?"
+
+[[boards.threads.posts]]
+id = 1
+author = "NightOwl_TX"
+subject = "X-Files pilot -- new show to watch?"
+timestamp = "09/12/93 01:00"
+body = """
+X-Files premiered Friday on Fox. Nobody seems to know about it yet.
+FBI agents investigating paranormal cases. Mulder and Scully are the duo.
+The pilot is doing Silence of the Lambs atmosphere on a TV budget.
+Something about the Pacific Northwest setting + government conspiracy angle hits right."""
+
+[[boards.threads.posts]]
+id = 2
+author = "SciFiJunky"
+subject = "Re: X-Files pilot -- new show to watch?"
+timestamp = "09/12/93 14:30"
+body = """
+Watched it live. Fox buried it on a Friday which is a death slot but it's too good to die.
+The monster-of-the-week format with a running mythology arc is smart TV design.
+Mulder believing everything and Scully believing nothing creates built-in tension.
+The music from Mark Snow is great. Not quite Herrmann but eerie in the right way."""
+
+[[boards.threads.posts]]
+id = 3
+author = "WarpCore"
+subject = "Re: X-Files pilot -- new show to watch?"
+timestamp = "09/13/93 10:00"
+body = """
+The government conspiracy angle is the long game. Pilot plants seeds carefully.
+The alien-abduction story connects personal tragedy to the larger mythology.
+Gillian Anderson is doing something interesting with Scully -- skepticism without smugness.
+This is the show I didn't know I wanted. Record every episode."""
+
+[[boards.threads.posts]]
+id = 4
+author = "KirkFan"
+subject = "Re: X-Files pilot -- new show to watch?"
+timestamp = "09/14/93 22:00"
+body = """
+Set my VCR. If this gets cancelled I'm writing angry letters.
+The government-knows-about-aliens premise is well-worn but the execution is fresh.
+The paranoia feels timely after everything this year. Waco, WTC, the whole thing.
+"The truth is out there" as a thesis statement for 1993 America. Unironic."""
+
+[[boards.threads]]
+id = 5
+subject = "Babylon 5 -- series officially confirmed"
+
+[[boards.threads.posts]]
+id = 1
+author = "SciFiJunky"
+subject = "Babylon 5 -- series officially confirmed"
+timestamp = "05/20/93 20:00"
+body = """
+PTEN picked up Babylon 5 for a full 22-episode season. Fall 1993.
+Straczynski says he already has the 5-year arc written. All of it.
+If he actually pulls that off it'll be the most ambitious SF television ever attempted.
+The pilot CGI was rough. The series reportedly has more budget for the effects."""
+
+[[boards.threads.posts]]
+id = 2
+author = "WarpCore"
+subject = "Re: Babylon 5 -- series officially confirmed"
+timestamp = "05/21/93 10:00"
+body = """
+The Londo and G'Kar dynamic is the show. Everything else is scaffolding.
+Two characters who are mirror images -- one declining empire, one rising cause.
+Straczynski really thought through the alien politics as actual alien politics.
+Not rubber-forehead humans. Actual different values and worldviews."""
+
+[[boards.threads.posts]]
+id = 3
+author = "Tribble99"
+subject = "Re: Babylon 5 -- series officially confirmed"
+timestamp = "05/22/93 18:30"
+body = """
+DS9 and B5 both doing the stationary-station premise in the same season.
+The DS9 camp says B5 copied them. The B5 camp says the opposite.
+Both shows look like they're going to be good, which should be the conversation.
+I'll watch both. The nerd wars about which one "came first" are pointless."""
+
+# ── Gaming additions ─────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Star Wars: X-Wing -- finally a proper space sim"
+
+[[boards.threads.posts]]
+id = 1
+author = "StarPilot"
+subject = "Star Wars: X-Wing -- finally a proper space sim"
+timestamp = "02/10/93 22:00"
+body = """
+X-Wing from LucasArts is the game I've been waiting for since 1977.
+Proper 3D space combat from the cockpit of an X-Wing or Y-Wing or A-Wing.
+The campaign tracks the Rebellion timeline including a full Death Star mission.
+The targeting computer, the wingmen, the briefings -- this is Star Wars as simulation."""
+
+[[boards.threads.posts]]
+id = 2
+author = "AvatarSeeker"
+subject = "Re: Star Wars: X-Wing -- finally a proper space sim"
+timestamp = "02/11/93 10:30"
+body = """
+The Tour of Duty system with persistent wingmen who can die is brilliant.
+Lost Rookie One on the third mission. Took it personally.
+The mission design rewards knowing the Star Wars universe -- the Easter eggs are everywhere.
+The difficulty on Hard is genuinely hard. The Empire AI in TIE fighters is aggressive."""
+
+[[boards.threads.posts]]
+id = 3
+author = "PixelQuest"
+subject = "Re: Star Wars: X-Wing -- finally a proper space sim"
+timestamp = "02/12/93 18:00"
+body = """
+Running it on my 486/33 with a joystick. The joystick is essential.
+Keyboard control works but the analog stick for fine aim in a dogfight is the difference.
+The Thrustmaster FCS is the gold standard. Worth the $80.
+The B-Wing missions with the heavy laser cannons are the most satisfying combat in the game."""
+
+[[boards.threads.posts]]
+id = 4
+author = "QuestMaster"
+subject = "Re: Star Wars: X-Wing -- finally a proper space sim"
+timestamp = "02/14/93 01:30"
+body = """
+The mission editor for creating custom missions is the long tail.
+Already downloaded a dozen user missions from various boards. Quality varies wildly.
+The best ones understand how the game's systems create drama. 
+A well-designed ambush scenario is genuinely tense. The tool is powerful in the right hands."""
+
+[[boards.threads]]
+id = 4
+subject = "Sam and Max Hit the Road -- LucasArts is on a roll"
+
+[[boards.threads.posts]]
+id = 1
+author = "QuestMaster"
+subject = "Sam and Max Hit the Road -- LucasArts is on a roll"
+timestamp = "11/10/93 20:00"
+body = """
+Sam and Max dropped and it might be funnier than Day of the Tentacle.
+MIGHT be. The Freelance Police are perfect video game protagonists.
+The roadside America setting is inspired -- every location is its own absurdist joke.
+The mafia dinosaurs subplot is the best thing in adventure games this year."""
+
+[[boards.threads.posts]]
+id = 2
+author = "PixelQuest"
+subject = "Re: Sam and Max Hit the Road -- LucasArts is on a roll"
+timestamp = "11/11/93 10:00"
+body = """
+The voice acting is what puts it over the top. The actors get it completely.
+Max especially -- the delivery on his non-sequiturs is perfectly deadpan.
+LucasArts has put out Day of the Tentacle and this in the same year.
+No other game company has this hit rate. Not even close."""
+
+[[boards.threads.posts]]
+id = 3
+author = "AvatarSeeker"
+subject = "Re: Sam and Max Hit the Road -- LucasArts is on a roll"
+timestamp = "11/12/93 22:30"
+body = """
+The inventory interactions are funnier than the puzzle solutions.
+Try using everything on everything just to hear the dialogue.
+The bigfoot mythology subplot ties together in a way you don't expect until it does.
+Steve Purcell's comic sensibility translates perfectly. This medium needs more of this."""
+
+# ── Anime additions ─────────────────────────────────────────────────────────────
+
+[[boards.threads]]
+id = 3
+subject = "Fansub scene -- what's getting passed around?"
+
+[[boards.threads.posts]]
+id = 1
+author = "AnimeExport"
+subject = "Fansub scene -- what's getting passed around?"
+timestamp = "04/01/93 20:00"
+body = """
+The fansub scene is exploding. Groups are subtitling new series faster than ever.
+Currently circulating: Tenchi Muyo OVAs, Ranma 1/2 season 3, Slayers preview.
+Tape quality varies enormously -- some groups are doing proper typesetting now.
+The best fansubs are actually better translated than some official dubs. No question."""
+
+[[boards.threads.posts]]
+id = 2
+author = "MangaFan88"
+subject = "Re: Fansub scene -- what's getting passed around?"
+timestamp = "04/02/93 10:30"
+body = """
+Project A-Ko and Bubblegum Crisis are the gateway drugs. Get them on anyone you're converting.
+The Tenchi Muyo OVAs are gorgeous -- Pioneer's animation budget is obvious.
+The tape trading network is the internet before the internet.
+Send a blank tape with return postage and you get something back. It just works."""
+
+[[boards.threads.posts]]
+id = 3
+author = "CyberGhost"
+subject = "Re: Fansub scene -- what's getting passed around?"
+timestamp = "04/03/93 02:00"
+body = """
+Neon Genesis Evangelion is apparently in production at Gainax. Rumor only.
+If Anno is directing it's going to be something. GAINAX doesn't do safe.
+Gunbuster is still the benchmark for mecha pacing and emotional payoff.
+The fansub of Gunbuster has been copied so many times the 10th-gen tapes are artifacts."""
+
+[[boards.threads]]
+id = 4
+subject = "Sailor Moon -- worth tracking down?"
+
+[[boards.threads.posts]]
+id = 1
+author = "MangaFan88"
+subject = "Sailor Moon -- worth tracking down?"
+timestamp = "05/15/93 19:00"
+body = """
+Sailor Moon has been running in Japan since '92. The DiC dub deal was just announced.
+The manga by Takeuchi Naoko is excellent -- better than the anime in some ways.
+Nausicaa-quality art at its best. The senshi designs are genuinely iconic.
+Fansubs are coming if anyone wants the Japanese version while waiting for the dub."""
+
+[[boards.threads.posts]]
+id = 2
+author = "KirkFan"
+subject = "Re: Sailor Moon -- worth tracking down?"
+timestamp = "05/16/93 10:00"
+body = """
+Watched the first episode of the fansub. Not what I expected from the synopsis.
+The transformation sequences are clearly aimed at kids but the monster-of-the-week structure works.
+Usagi is annoying in the best possible way. The supporting senshi are more interesting.
+The outer senshi that supposedly appear later are apparently where it gets good."""
+
+[[boards.threads.posts]]
+id = 3
+author = "AnimeExport"
+subject = "Re: Sailor Moon -- worth tracking down?"
+timestamp = "05/17/93 22:00"
+body = """
+The R season is where it finds its voice. The first season is setup.
+The Mamoru/Usagi dynamic improves dramatically once the amnesia arc pays off.
+The Japanese voice acting for Usagi is specifically calibrated as deliberately annoying.
+If the DiC dub softens her too much they'll lose what makes the character work."""
