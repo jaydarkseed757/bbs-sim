@@ -1,6 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Caller {
+    pub handle: String,
+    pub location: String,
+    pub time_on: String,
+    pub date: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BbsEntry {
     pub name: String,
     pub number: String,
@@ -105,4 +113,14 @@ pub struct BbsFile {
 pub struct FileSection {
     pub name: String,
     pub files: Vec<BbsFile>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Poll {
+    pub id: u32,
+    pub question: String,
+    #[serde(default)]
+    pub yes_votes: u32,
+    #[serde(default)]
+    pub no_votes: u32,
 }

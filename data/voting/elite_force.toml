@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Should the government be allowed to ban strong encryption?"
+yes_votes = 18
+no_votes = 412
+
+[[polls]]
+id = 2
+question = "Is the Clipper Chip a serious threat to personal privacy?"
+yes_votes = 389
+no_votes = 34
+
+[[polls]]
+id = 3
+question = "Should phone phreaking be treated as a serious crime?"
+yes_votes = 29
+no_votes = 356
+
+[[polls]]
+id = 4
+question = "Is 2600 Magazine worth reading regularly?"
+yes_votes = 301
+no_votes = 47
+
+[[polls]]
+id = 5
+question = "Should security researchers be protected from prosecution?"
+yes_votes = 378
+no_votes = 21

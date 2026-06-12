@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Should online speech be regulated by the government?"
+yes_votes = 14
+no_votes = 398
+
+[[polls]]
+id = 2
+question = "Is the Clipper Chip unconstitutional?"
+yes_votes = 356
+no_votes = 43
+
+[[polls]]
+id = 3
+question = "Does the EFF truly represent the interests of BBS users?"
+yes_votes = 287
+no_votes = 112
+
+[[polls]]
+id = 4
+question = "Should ISPs be legally required to monitor user content?"
+yes_votes = 19
+no_votes = 334
+
+[[polls]]
+id = 5
+question = "Will the information superhighway be free and open to all?"
+yes_votes = 201
+no_votes = 167

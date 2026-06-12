@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Is DS9 better than The Next Generation?"
+yes_votes = 134
+no_votes = 178
+
+[[polls]]
+id = 2
+question = "Will DOOM replace Wolfenstein as the definitive FPS?"
+yes_votes = 312
+no_votes = 41
+
+[[polls]]
+id = 3
+question = "Is the SNES superior to the Sega Genesis?"
+yes_votes = 189
+no_votes = 203
+
+[[polls]]
+id = 4
+question = "Should video games carry content ratings like movies?"
+yes_votes = 167
+no_votes = 145
+
+[[polls]]
+id = 5
+question = "Is Jurassic Park the best film of 1993?"
+yes_votes = 276
+no_votes = 88

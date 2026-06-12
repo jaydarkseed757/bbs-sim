@@ -10,13 +10,16 @@ overlay.
 ## Features
 
 - **Phonebook dialer** — select a BBS and watch the modem handshake animate at the board's baud rate, or manually dial any number (known numbers connect; unknown ones ring out with NO ANSWER)
-- **Login** — per-BBS ASCII art banner types out through the baud limiter; handle + password prompt
+- **Login** — per-BBS ANSI or ASCII art banner; handle + password prompt; call stats on login
 - **Per-BBS themes** — each board has its own color palette (green phosphor, LCARS blue, amber, hacker red, purple, hot orange…) applied across every screen
 - **Message boards** — browse boards → thread list → read posts; compose new threads or replies
 - **Private mail** — inbox with unread indicators; read, reply, and compose new messages
 - **Files area** — per-BBS file libraries with sections; text files open in an inline viewer; binary files run a simulated ZMODEM transfer with progress bar and CPS readout
 - **Graffiti wall** — scrolling one-liner wall; add your own line
 - **Top 10 lists** — top callers, downloads, and posters per BBS
+- **Voting booth** — yes/no polls with bar-chart results once you've voted
+- **Last callers** — recent-caller log per BBS ([W]ho's been on)
+- **Door game** — The Gauntlet: pick a class, battle escalating monsters, chase a high score
 - **Sysop chat** — page the sysop (they're never around)
 - **Save game** — posts, sent mail, graffiti lines, and phonebook call history persist to `save.json`; written after every change so nothing is lost on window close
 - **Logout** — goodbye message types out at modem speed, `NO CARRIER` on disconnect
@@ -48,6 +51,9 @@ Requires a desktop environment (macroquad opens a native window).
 | `F` | Files |
 | `O` | Graffiti Wall (one-liners) |
 | `T` | Top 10 Lists |
+| `V` | Voting Booth |
+| `W` | Last Callers |
+| `D` | Door Game (The Gauntlet) |
 | `C` | Chat with Sysop |
 | `G` / `L` / `Esc` | Logout |
 
@@ -107,6 +113,9 @@ data/
   files/        # file libraries (sections + files)
   oneliners/    # graffiti wall lines
   top10/        # top callers / files / posters
+  voting/       # yes/no polls
+  callers/      # last-callers log
+  banners/      # ANSI art login banners (<slug>.ans)
 ```
 
 Each BBS has a `slug` field in the hardcoded phonebook that maps to its TOML
@@ -130,7 +139,10 @@ src/
     files.rs      # files TOML loader
     oneliners.rs  # graffiti wall TOML loader
     top10.rs      # top-10 lists TOML loader
-    banners.rs    # per-BBS ASCII art login banners
+    voting.rs     # polls TOML loader
+    callers.rs    # last-callers TOML loader
+    banner.rs     # ANSI art banner file loader
+    banners.rs    # per-BBS ASCII art login banners (fallback)
     session.rs    # login session state
   sim/
     modem.rs      # modem handshake simulation (AT commands, line noise)
@@ -152,6 +164,9 @@ src/
     download.rs   # simulated ZMODEM transfer screen
     graffiti.rs   # graffiti wall
     top10.rs      # top-10 lists
+    voting.rs     # voting booth
+    callers.rs    # last-callers log
+    door.rs       # door game (The Gauntlet)
     sysop.rs      # sysop chat screen
     logout.rs     # goodbye / NO CARRIER screen
     ansi.rs       # ANSI escape handling

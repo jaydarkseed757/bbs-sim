@@ -1,0 +1,29 @@
+[[polls]]
+id = 1
+question = "Is In Utero better than Nevermind?"
+yes_votes = 178
+no_votes = 134
+
+[[polls]]
+id = 2
+question = "Will CDs completely kill vinyl by 1995?"
+yes_votes = 89
+no_votes = 156
+
+[[polls]]
+id = 3
+question = "Is Pearl Jam selling out by refusing to make videos?"
+yes_votes = 31
+no_votes = 244
+
+[[polls]]
+id = 4
+question = "Best hip-hop release this fall: 36 Chambers over Doggystyle?"
+yes_votes = 117
+no_votes = 121
+
+[[polls]]
+id = 5
+question = "Should FREQ 867 add a metal-only second line?"
+yes_votes = 203
+no_votes = 48

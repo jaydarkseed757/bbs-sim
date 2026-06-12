@@ -52,9 +52,9 @@ Game state persists to `save.json` (pretty JSON, working directory):
 ### Three sub-modules (`src/bbs/`, `src/sim/`, `src/tui/`)
 
 **`src/bbs/`** — data layer
-- `data.rs`: all shared structs (`BbsEntry`, `Board`, `Thread`, `Message`, `MailMessage`, `BbsFile`, `FileSection`, `TopLists`, etc.) — all derive Serialize/Deserialize
-- Loaders (`boards.rs`, `mail.rs`, `files.rs`, `oneliners.rs`, `top10.rs`): each reads `data/<category>/<slug>.toml` via serde + toml; returns empty Vec on missing/malformed file. `load_mail` personalizes each message's `to` field with the session handle.
-- `banners.rs`: per-slug ASCII art, dispatched by `bbs_banner(bbs)`
+- `data.rs`: all shared structs (`BbsEntry`, `Board`, `Thread`, `Message`, `MailMessage`, `BbsFile`, `FileSection`, `TopLists`, `Poll`, `Caller`, etc.) — all derive Serialize/Deserialize
+- Loaders (`boards.rs`, `mail.rs`, `files.rs`, `oneliners.rs`, `top10.rs`, `voting.rs`, `callers.rs`): each reads `data/<category>/<slug>.toml` via serde + toml; returns empty Vec on missing/malformed file. `load_mail` personalizes each message's `to` field with the session handle.
+- `banner.rs`: loads `data/banners/<slug>.ans` ANSI art (returns `Option<String>`); `banners.rs`: per-slug ASCII art fallback, dispatched by `bbs_banner(bbs)`. `LoginState::new` paints the ANSI banner instantly via `AnsiParser` when the `.ans` file exists, otherwise types the ASCII banner through the baud limiter.
 - `session.rs`: thin `Session` struct (login/logout, no persistence)
 
 **`src/sim/`** — simulation
@@ -63,7 +63,7 @@ Game state persists to `save.json` (pretty JSON, working directory):
 - `audio.rs`: WAV bytes baked in at compile time for modem sounds
 
 **`src/tui/`** — rendering
-- One file per screen (`dialer.rs`, `dialing.rs`, `login.rs`, `menus.rs`, `boards.rs`, `compose.rs`, `mail.rs`, `files.rs`, `graffiti.rs`, `top10.rs`, `download.rs`, `logout.rs`, `sysop.rs`)
+- One file per screen (`dialer.rs`, `dialing.rs`, `login.rs`, `menus.rs`, `boards.rs`, `compose.rs`, `mail.rs`, `files.rs`, `graffiti.rs`, `top10.rs`, `voting.rs`, `callers.rs`, `door.rs`, `download.rs`, `logout.rs`, `sysop.rs`)
 - `font.rs`: `ch()` (line height), `cw()` (char width), `s()` (identity px pass-through), `txt()`, `tw()` (text width measure), `BODY_PAD` — import these instead of raw macroquad calls
 - `terminal.rs`: `TerminalBuffer` — scrolling per-character color grid used for animated dialing/login/logout/sysop screens; `push_char` handles `\r`/`\n`; `visible_lines(n)` returns the last n rows
 - `theme.rs`: `BbsTheme` with 10 color fields; `BbsTheme::for_slug(slug)` returns the palette
@@ -82,6 +82,9 @@ data/
   files/<slug>.toml       # [[sections]] each with [[sections.files]]
   oneliners/<slug>.toml   # [[lines]] with handle/message/date
   top10/<slug>.toml       # [[callers]], [[files]], [[posters]]
+  voting/<slug>.toml      # [[polls]] with question/yes_votes/no_votes
+  callers/<slug>.toml     # [[callers]] with handle/location/time_on/date
+  banners/<slug>.ans      # ANSI art login banner (optional; ASCII fallback in banners.rs)
 ```
 
 Content is period-accurate to 1993. Adding or editing content only requires TOML edits — no code changes. Note: once a BBS has an entry in `save.json`, its boards/mail/oneliners load from the save, so TOML edits to those categories won't appear until the save entry (or file) is deleted.
@@ -89,6 +92,6 @@ Content is period-accurate to 1993. Adding or editing content only requires TOML
 ### Adding a new BBS
 
 1. Add a `BbsEntry` to `hardcoded_phonebook()` in `app.rs` with a unique `slug`
-2. Create `data/{bbs,mail,files,oneliners,top10}/<slug>.toml`
-3. Add a banner function in `src/bbs/banners.rs` and wire it in `bbs_banner()`
+2. Create `data/{bbs,mail,files,oneliners,top10,voting,callers}/<slug>.toml`
+3. Add `data/banners/<slug>.ans` (ANSI art) or a banner function in `src/bbs/banners.rs` wired into `bbs_banner()`
 4. Add a palette constructor in `src/tui/theme.rs` and wire it in `BbsTheme::for_slug()`
